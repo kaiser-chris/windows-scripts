@@ -9,10 +9,10 @@ regedit /S registry\computer.reg
 start .\batch\computer_links.bat
 echo   - Adjusted My Computer
 
-REM start .\Batch\context_menu.bat
+REM start .\batch\context_menu.bat
 REM echo   - Adjusted Context Menus
 
-REM start .\Batch\file_endings.bat
+REM start .\batch\file_endings.bat
 REM echo   - Adjusted File Associations
 
 regedit /S registry\library.reg
