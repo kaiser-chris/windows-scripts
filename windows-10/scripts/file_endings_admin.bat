@@ -22,10 +22,6 @@ Assoc .css=NotepadPlusPlus
 Ftype JDownloader="D:\Programs\JDownloader 2\JDownloader2.exe" "%%1"
 Assoc .dlc=JDownloader
 
-:: Photoshop
-Ftype Photoshop="D:\Programs\Photoshop CC 2015\PhotoshopPortable.exe" "%%1"
-Assoc .psd=Photoshop
-
 :: VLC Player
 Ftype VLC="D:\Programs\VLC Player\vlc.exe" "%%1"
 Assoc .mp4=VLC
