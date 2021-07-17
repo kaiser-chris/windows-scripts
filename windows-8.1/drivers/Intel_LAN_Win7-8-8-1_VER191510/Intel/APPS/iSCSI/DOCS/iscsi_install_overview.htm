@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>Intel&reg; Ethernet iSCSI Boot Installation and Setup</h1>
+<p>This section provides how to install and setup Intel&reg; Ethernet iSCSI  Boot components.  The first step after hardware preparation is to program Intel 
+Ethernet iSCSI  Boot firmware on 
+an iSCSI  Boot-capable adapter.  See the Installing Firmware section below.</p>
+<p>The default iSCSI  Boot configuration uses DHCP. If using Static IP, it is necessary to set up the 
+firmware for static IP configurations. See the section
+<a href="iscsi_firmware_setup.htm">Firmware Setup</a>.</p>
+<p>Depending on the target OS to be booted from the iSCSI target disk volume, follow 
+the detailed instructions in <a href="iscsi_windows_install.htm">Microsoft* Windows Setup</a> or
+<a href="iscsi_linux_install.htm">Linux Setup</a>.<br></p><hr>
+<h2>Installation Overview for Intel&reg; Ethernet iSCSI Boot</h2>
+
+<p>For information on System Requirements see <a href="iscsi_system_requirements.htm">System 
+Requirements</a>.</p>
+<ol>
+	<li>Install Intel&reg; Ethernet iSCSI  Boot-capable adapters in the system. For a list of supported adapters, see
+<a href="iscsi_supported_hw.htm">Supported Adapters</a>.</li>
+	<li>Boot via DOS.</li>
+	<li>Install the latest Intel Ethernet iSCSI  Boot firmware using BootUtil DOS utility.<br>
+	Command 
+	<code>&quot;BOOTUTIL -UP=iSCSI -ALL&quot;</code> programs the firmware on flash ROM of all 
+	iSCSI Remote Boot-capable adapters in the system.  See
+	<a href="boot_util.htm">BootUtility</a> section for details. </li>
+	<li>Connect the adapter(s) by cable in the iSCSI initiator system to a network with the
+	<a href="iscsi_target_config.htm">iSCSI target</a> disk.</li>
+	<li>If employing Static IP follow the <a href="iscsi_firmware_setup.htm">Firmware Setup</a> instructions to configure the Intel 
+	iSCSI  Boot firmware to boot from a pre-configured
+	<a href="iscsi_target_config.htm">iSCSI target</a> 
+</li>
+	<li>To setup the initiator system to boot from a remote iSCSI disk using Microsoft* Windows*, follow the steps in
+	<a href="iscsi_windows_install.htm">Windows Setup</a>.</li>
+	<li>To setup the initiator system to boot from a remote iSCSI disk using Linux, follow the steps in
+	<a href="iscsi_linux_install.htm">Linux Setup</a>.</li>
+	<li>After following the above steps if you are having problems, refer to
+	<a href="iscsi_trouble_shooting.htm">Troubleshooting</a>.</li>
+	</ol>
+
+
+<hr>
+<h2><a name="Installing"></a>Installing iSCSI Boot Firmware</h2>
+<p>In order to enable Intel&reg; Ethenet iSCSI  Boot, the firmware should be loaded as Option ROM while booting 
+the BIOS in the system. <code>&quot;Intel&reg; iSCSI  Boot&quot;</code> followed by the firmware version number is displayed, if the firmware is installed correctly.</p>
+<p>If you are installing or upgrading Intel Ethernet iSCSI  Boot firmware on Intel PRO/1000 PT/PF Single/Dual/Quad Port Server Adapter,
+<a href="boot_util.htm">BootUtil</a> is a DOS utility software 
+used to install the firmware.&nbsp; BootUtil is not intended as a utility for LAN-On-Motherboard (LOM) implementations.&nbsp; If you are using 
+an Intel Ethernet iSCSI  Boot-capable OEM server system, please refer to instructions provided from 
+the OEM to enable Intel Ethernet iSCSI  Boot.</p>
+
+</body>
+</html>

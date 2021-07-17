@@ -1,0 +1,158 @@
+Push Install Instructions for 32-bit Microsoft* Windows* Operating Systems
+================================================================================
+
+- Introduction 
+- Setting up an Install Directory on the File Server
+- Instructions for Creating Teams and VLANs (Optional)
+- Push Instructions
+  - Deployment methods 
+  - Microsoft documentation for unattended installations 
+ 
+================================================================================
+
+Introduction
+================================================================================
+
+A "Push", or unattended installation provides a means for network administrators
+to easily install a Microsoft Windows* operating system on similarly equipped 
+systems. The network administrator can create a bootable media that will 
+automatically log into a central server and install the operating system from an 
+image of the Windows installation directory stored on that server. This 
+document provides instructions for a basic unattended installation that includes 
+the installation of drivers for Intel(R) Networking Devices. 
+
+As part of the unattended installation, you can create Teams and VLANs. If you 
+wish to create one or more team/VLANs as part of the unattended installation, 
+you must also follow the instructions in the "Instructions for Creating Teams 
+and VLANs (Optional)" section of this document. 
+
+Supported operating systems are:
+- Microsoft Windows* 7
+- Microsoft Windows 8
+- Microsoft Windows 8.1
+
+NOTE: Intel(R) 10GbE Network Adapters do not support unattended driver 
+installation.
+
+================================================================================
+
+Setting up an Install Directory on the File Server
+================================================================================
+
+The server must be setup with a distribution folder that holds the required 
+Windows files. Clients must also be able to read this folder when connecting 
+via TCP/IP or IPX.
+
+For illustration purposes, the examples in this document use the network share 
+D:\WINPUSH. To create this share:
+
+1) Create a directory on the server, (EX: D:\WINPUSH).
+2) Use the My Computer applet to locate the D:\WINPUSH folder.  
+3) Right-click the folder and select Sharing. Select Share this folder. 
+4) Give it a share name (EX: WINPUSH). This share name will be used to connect 
+   to this directory from the remote target systems.   
+5) Adjust permissions as necessary and click OK.  
+
+================================================================================
+
+Instructions for Creating Teams and VLANs (Optional)
+================================================================================
+
+If you wish to create teams/VLANS as part of the unattended installation, you need
+to create a configuration file with the team/VLAN information in it. To create
+this file you need a sample system that has the same type of adapter(s) that will
+be in the systems receiving the push installation. On the sample system, use 
+Intel(R) PROSet for Windows Device Manager to set up the adapters in the 
+team/VLAN configuration you want.
+
+1) Prepare the distribution folder on the file server as detailed in the following 
+   section.
+2) Copy SavResDX.vbs from the Intel CD to the configured system. The file is 
+   located in the APPS\WMI\ directory on the Intel CD. 
+3) Open a command prompt on the configured system and navigate to the 
+   directory containing SavResDX.vbs. 
+4) Run the following command: cscript SavResDX.vbs save. A configuration file 
+   called WmiConf.txt is created in the same directory. 
+5) Copy the SavResDX.vbs and WmiConf.txt files to the $OEM$\$1\WMIScr directory on 
+   the file server.  
+6) Locate the batch file, Install.bat, in $OEM$\$1\WMIScr.  Edit the batch 
+   file by removing the comment that preceeds the second START command.
+   The file should look like the follow when finished:
+   
+   Start /wait %systemdrive%\drivers\net\INTEL\APPS\ProsetDX\Win32\DXSetup.exe /qn /li %temp%\PROSetDX.log
+   REM Uncomment the next line if VLANs or Teams are to be installed.
+   Start /wait /b cscript %systemdrive%\wmiscr\SavResDX.vbs restore %systemdrive%\wmiscr\wmiconf.txt > %systemdrive%\wmiscr\output.txt
+   exit
+
+================================================================================
+
+Push Instructions
+================================================================================
+
+To prepare the distribution folder:
+
+1) Copy the entire contents from the Windows Install DVD to D:\WINPUSH. Use Windows 
+   Explorer or XCOPY to maintain the same directory structure as on the 
+   Windows Install DVD. When the copy is complete, the Windows installation 
+   files should be in the D:\WINPUSH directory. 
+2) Use the Windows System Image Manager to edit/generate the Unattend.xml file and 
+   save it to the D:\WINPUSH directory.
+3) Create the driver install directory structure and copy the driver files 
+   to it. 
+
+Example: From a Windows command prompt where e: is the drive letter of 
+your CDROM drive: 
+ e:
+ cd \APPS\SETUP\PUSH 
+	(you must be in the APPS\SETUP\PUSH\ directory to run PUSHCOPY)
+ pushcopy D:\WINPUSH [WIN8]
+
+The above command creates the $OEM$ directory structure and copy all the 
+necessary files to install the driver and Intel(R) PROSet for Windows Device 
+Manager. However, Intel(R) PROSet for Windows Device Manager is not installed 
+unless the FirstLogonCommands is added as seen in the example below.
+
+[Microsoft-Windows-Shell-Setup\FirstLogonCommands\SynchronousCommand]
+CommandLine= %systemdrive%\WMIScr\Install.bat
+Description= Begins silent unattended install of Intel PROSet for Windows Device Manager
+Order= 1
+
+--------------------------------------------------------------------------------
+Deployment methods
+--------------------------------------------------------------------------------
+
+Boot using your WinPE 2.0 media and connect to the server containing your Windows
+installation share. 
+
+Run the command from the \\Server\WINPUSH prompt: 
+	setup /unattend:<full path to answer file> 
+
+NOTE: In the above procedure, setup runs the installation in unattended mode 
+and also detects the plug and play network adapters. All driver files are 
+copied from the shared directory to the target system directories and 
+installation of the OS and Network Adapters continues without user 
+intervention. 
+
+If you installed VLANs as part of the unattended installation, view the 
+results of the script execution in the output.txt file. This file is in 
+the same directory as the SavResDX.vbs file.
+
+--------------------------------------------------------------------------------
+Microsoft Documentation for Unattended Installations
+--------------------------------------------------------------------------------
+
+For a complete description of the parameters supported in Unattend.XML visit 
+support.microsoft.com to view the Windows Automated Installation Kit (WAIK) 
+documentation.
+
+================================================================================
+
+Copyright (C) 1998-2013, Intel Corporation.  All rights reserved.
+
+Intel Corporation assumes no responsibility for errors or omissions in 
+this document. Nor does Intel make any commitment to update the information 
+contained herein.
+
+* Other product and corporate names may be trademarks of other companies 
+and are used only for explanation and to the owners' benefit, without intent 
+to infringe.

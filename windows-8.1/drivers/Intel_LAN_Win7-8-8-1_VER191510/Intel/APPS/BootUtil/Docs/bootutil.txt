@@ -1,0 +1,450 @@
+Intel(R) Ethernet Flash Firmware Utility
+========================================
+November 28, 2012
+
+CONTENTS
+========
+- DISCLAIMER
+- INTRODUCTION
+- RUNNING BootUtil
+- COMMAND LINE OPTIONS
+- EXAMPLES
+- EXIT CODES
+
+
+DISCLAIMER
+==========
+This README.TXT, as well as the software described in it, is furnished under
+license and may only be used or copied in accordance with the terms of the
+license. The information in this manual is furnished for informational
+use only, is subject to change without notice, and should not be construed
+as a commitment by Intel Corporation. Intel Corporation assumes no
+responsibility or liability for any errors or inaccuracies that may appear
+in this document or any software that may be provided in association with
+this document.
+
+Except as permitted by such license, no part of this document may be
+reproduced, stored in a retrieval system, or transmitted in any form or
+by any means without the express written consent of Intel Corporation.
+
+
+INTRODUCTION
+============
+The Intel(R) Ethernet Flash Firmware Utility (BootUtil) is a utility that
+can be used to program the PCI option ROM on the flash memory of supported 
+Intel PCI and PCI-Express-based network adapters, and to update configurations.
+BootUtil replaces existing utilities and provides the functionality of the 
+older IBAUTIL, ISCSIUTL, LANUTIL, and FLAUTIL. BootUtil supports all the 
+adapters supported by the previous utilities.
+
+NOTE: Updating the adapter's flash memory using BootUtil will erase any existing
+firmware image from the flash memory.
+
+Intel provides the following flash firmware in FLB file format for programming to
+the flash memory:
+
+- Intel(R) Boot Agent as PXE Option ROM for legacy BIOS
+  http://www.intel.com/support/network/adapter/pro100/bootagent/
+
+- Intel(R) iSCSI Remote Boot as iSCSI Option ROM for legacy BIOS
+  http://www.intel.com/support/network/iscsi/remoteboot/
+
+- Network Connectivity, UEFI network driver
+  http://www.intel.com/support/network/sb/cs-006120.htm
+
+OEMs may provide custom flash firmware images for OEM network adapters. Please
+refer to the instructions given by OEMs.
+
+BootUtil allows the user to flash supported firmware to the adapter from
+the included master FLB file. This option ROM includes PXE, iSCSI, FCoE,
+and UEFI drivers, and the image is programmed to the flash memory at once. 
+BootUtil will also build the required combo images for supported adapter
+and program those images to the flash, as well. Since both discrete and combo
+images are supported, the -BOOTENABLE command ONLY works on combo images.
+
+PXE+EFI and iSCSI+EFI image combinations are supported for all OEM generic 
+adapters, however support is limited to devices which support both technologies
+as discrete images. However, flash size is a limiting factor, as the image size
+can change without notice.
+
+The Master FLB file (BOOTIMG.FLB) is the new container for all the Intel(R)
+boot Option ROMs. This file replaces the existing FLB files for iSCSI, PXE, 
+FCoE and EFI. 
+
+NOTE: BootUtil supports older flb files to maintain backwards compatibility
+with the previous utilities.
+
+BootUtil without command-line options will display a list of all supported 
+Intel network ports in the system. BootUtil will also allow the user to enable
+or disable the flash memory on specific ports by using -FLASHENABLE or 
+-FLASHDISABLE options in order to control access to the firmware from the 
+system.
+
+BootUtil allows the user to individually set iSCSI, FCoE, UEFI and PXE boot
+configurations by -NIC=xx -[OPTION]=[VALUE] options. The -I option is iSCSI 
+specific and will not work for PXE configurations.
+
+NOTES: BootUtil displays up to 128 adapter ports.
+No configuration settings are supported for the UEFI driver. 
+Functionality from the previous utility, IBAutil, is preserved in BootUtil.
+
+BootUtil is located on the software installation CD in the \APPS\BootUtil
+directory. Check the Intel Customer Support (http://support.intel.com) website
+for the latest information and component updates.
+
+
+RUNNING BootUtil
+================
+The syntax for issuing BootUtil command-line options is:
+
+BOOTUTIL -[OPTION] or -[OPTION]=[VALUE]
+
+
+COMMAND LINE OPTIONS
+====================
+BootUtil accepts one executable option and its associated non-executable
+options in an execution. If conflicting executable options (such as 
+-FLASHENABLE and -UPDATE used together) are supplied, BOOTUTIL exits with an 
+error.
+
+The options, where applicable, are listed in logical groups.
+
+NOTE: If you run BootUtil without any command-line options, the utility
+displays a list of all supported Intel network ports found in the system.
+
+GENERAL OPTIONS:
+    -HELP or -?
+      Displays a list of command-line options.
+    -EXITCODES
+      Displays exit codes returned to the OS environment by BootUtil.
+    -IMAGEVERSION or -IV
+      Displays firmware types and version numbers from a resource image.
+      If used with the -FILE option, the resource image is in the FLB file.
+      If used with the -NIC option, the resource image is in the adapter flash.
+      If used with the -ALL option, each resource image is continuously
+      displayed for all adapters.
+    -E
+      Enumerates all supported network ports in the system.
+    -O=[FILENAME]
+      Must be used with -E or -NIC.
+      If used with the -E option, saves a list of all NICs and their MAC 
+      addresses to the specified file.
+      If used with the -NIC option, saves all iSCSI Remote Boot configuration 
+      options for the specified NIC to the specified file.
+    -I=[FILENAME]
+      Reads iSCSI boot configuration options from [FILENAME] script file and
+      program settings on the selected port.
+    -FILE=[FILENAME]
+      Specifies the file name for -SAVEIMAGE, -RESTOREIMAGE, -SAVECONFIG, 
+      -RESTORECONFIG, -UP or -UPDATE options.
+    -P
+      With this command, BootUtil pauses screen after displaying every 25th 
+      line. 
+      In pause mode, last line of the screen will contain information that:
+      - screen has been paused, and
+      - user can press Enter to continue
+    -NODPL
+      With command, BootUtil does not display the PCI device location.
+
+
+POWER MANAGEMENT OPTIONS:
+    -WOLENABLE or -WOLE
+      Enables Wake On Lan (WOL) functionality on the selected port.
+    -WOLDISABLE or -WOLD
+      Disables Wake On Lan (WOL) functionality on the selected port.
+
+ADAPTER SELECTION OPTIONS:
+    -ALL
+      Selects all supported network ports found in the system.
+    -NIC=XX
+      Selects a specific network port in the system. If used without any
+      executable option, it prints the iSCSI boot configuration of the
+      selected port, or saves it in the file when the -O option is used.
+    -TARGET=XX
+     This is an FCoE-specific selection option. Legal values are 1,2,3,and 4.
+     This option is required for configuration commands -WWPN, -FCOELUN,
+     FCOEVLAN, and -BOOTORDER.
+    -BLINK
+      Blinks the LED on the selected port for ten seconds.
+
+ADAPTER FLASH ENABLE/DISABLE OPTIONS:
+    -FLASHENABLE or -FE
+      Enables the capability to run flash firmware on the selected adapter.
+
+      NOTE: This parameter is not supported on the following adapters. 
+            - Intel(R) Gigabit ET Quad Port Mezzanine Card
+            - Intel(R) Ethernet X520 10GbE Dual Portr KX4 Mezz
+            - Intel(R) Ethernet X520 10GbE Dual Portr KX4-KR Mezz
+
+    -FLASHDISABLE or -FD
+      Disables the capability to run flash firmware on the selected adapter.
+
+      NOTE: This parameter is not supported on the following adapters. 
+            - Intel(R) Gigabit ET Quad Port Mezzanine Card
+            - Intel(R) Ethernet X520 10GbE Dual Portr KX4 Mezz
+            - Intel(R) Ethernet X520 10GbE Dual Portr KX4-KR Mezz
+
+    -BOOTENABLE=[PXE, ISCSIPRIMARY, ISCSISECONDARY, FCOE, or DISABLED]
+      Selects flash firmware type to enable or disable on the selected port.
+      The combo option ROM could have all capabilities. The monolithic
+      option ROM has either PXE, iSCSI, or FCoE capability but not all. This
+      command will NOT WORK on monolithic Option ROMs. 
+      
+      NOTES:
+      This manual command is not applicable to the UEFI network driver.
+      The UEFI network driver is enabled by default and loaded automatically
+      unless network ports are already used by other flash firmware.
+
+      BOOTENABLE=DISABLED
+      Disables iSCSI, PXE and FCoE functionalities for legacy BIOS.
+
+      BOOTENABLE=ISCSIPRIMARY
+      Enables port as iSCSI primary and disables PXE/FCoE for legacy BIOS. 
+
+      BOOTENABLE=ISCSISECONDARY
+      Enables port as iSCSI secondary and disables PXE/FCoE for legacy BIOS.
+
+      BOOTENABLE=PXE
+      Enables PXE and disables iSCSI/FCoE boot for legacy BIOS.
+
+      BOOTENABLE=FCOE
+      Enables FCoE and disables iSCSI/PXE boot for legacy BIOS.
+
+FLASH PROGRAMMING OPTIONS:
+    -UP or -UPDATE=[ROMType] [-FILE=Filename]
+      Updates the flash memory of the adapter specified by the -NIC option with
+      the given FLB flash firmware image file. If -QUIET is not specified, 
+      the user is prompted to confirm overwriting the existing firmware image 
+      before upgrading. If a Filename is not provided, the utility looks for the
+      default bootimg.FLB file which contains all image types.
+      
+      The following examples use pxe, but could also be efi, efi64, FCoE or 
+      iSCSI.
+      eg: Bootutil -Nic=x -up=pxe
+      or Bootutil -Nic=x -up=pxe -file=pxeimg.flb
+
+      If your adapter supports a combo option rom, the following command option 
+      automatically detects the supported combo image and programs the adapter 
+      with that image.
+      -up=combo
+       up=pxe+efi and up=iscsi+efi are valid.
+    -SAVEIMAGE or SI
+      Saves the existing firmware image in the flash memory of the adapter
+      specified by the -NIC option to a disk file. The destination file is
+      specified by the -FILE option.
+    -RESTOREIMAGE or RI
+      Restores a previously-saved firmware image to the same network adapter
+      using the -NIC option. The source file is specified by the -FILE option.
+    -QUIET
+      Runs BootUtil without confirmation prompts. This option is used with
+      -IMAGEVERSION, -UP, -UPDATE, -RESTOREIMAGE, or -HELP option.
+
+PXE BOOT CONFIGURATION OPTIONS: (Can be used with -NIC or -ALL)        
+    -DEFAULTCONFIG or -DEFCFG
+      Sets the PXE configuration of the selected NIC back to default settings.
+    -SETUPENABLE or -STE
+      Enables Setup Menu.
+    -SETUPDISABLE OR -STD
+      Disables Setup Menu.
+    -TITLEENABLE OR -TLE
+      Enables Initial Title Message.
+    -TITLEDISABLE OR -TLD
+      Disables Initial Title Message.
+    -MESSAGEENABLE or -MSE
+      Enables display of the Control-S Setup message when PXE initializes.
+    -MESSAGEDISABLE or -MSD
+      Disables display of the Control-S Setup message when PXE initializes. 
+    -SETWAITTIME=X or -SWT=X
+      Set the setup delay time for the NIC to X seconds.  Valid delay times are 0,
+      2, 3, and 5.
+    -MODE
+      This parameter should not be used except as advised by Intel Support 
+      personnel.
+
+ISCSI BOOT CONFIGURATION OPTIONS:
+    -SAVECONFIG
+      Saves a snapshot of iSCSI boot configurations on the selected port to a
+      binary file. Need to specify the file name by the -FILE option.
+      WARNING: For security reasons it is recommended that CHAP settings are
+      disabled when using this option.
+    -RESTORECONFIG
+      Restores previously-saved iSCSI boot configuration snapshot on the 
+      selected port. Need the -FILE option to specify the saved data.
+      WARNING: This feature may create multiple primary or secondary ports if
+      the same command is issued to multiple ports. Review the boot priority
+      setting in the iSCSI setup menu for the next system boot.
+
+PORT CONFIGURATION OPTIONS FOR ISCSI INITIATOR:
+    These options can either be used individually with the -NIC=XX option,
+    or in a script file with the -I option. The value is specified in
+    -[OPTION]=[VALUE] format.
+    -INITIATORNAME
+      Specifies the iSCSI Qualified Name (IQN) for the initiator.
+    -INITIATORIP
+      Specifies the initiator IPv4 address in dotted decimal notation.
+    -INITIATORDHCP
+      Enable or disable to get initiator configuration from DHCP. 
+    -NETMASK
+      Specifies the initiator subnet mask in dotted decimal notation.
+    -GATEWAY
+      Specifies the gateway IPv4 address in dotted decimal notation.
+    -BOOTPRIORITY
+      Specifies iSCSI boot priority as PRIMARY, SECONDARY or DISABLE.
+
+ISCSI TARGET CONFIGURATION OPTIONS:
+    These options can either be used individually with the -NIC=XX option,
+    or in a script file with the -I option. The value is specified in
+    -[OPTION]=[VALUE] format.
+    -TARGETNAME
+      Specifies the iSCSI Qualified Name (IQN) for the target.
+    -TARGETIP
+      Specifies the target IPv4 address in dotted decimal notation.
+    -TARGETDHCP
+      Enable or Disable to get the target information from DHCP Root Path.
+    -TARGETPORT
+      Specifies the TCP port number on the target to connect to.
+    -BOOTLUN
+      Specifies the LUN number to boot from.
+
+AUTHENTICATION CONFIGURATION OPTIONS:
+    These options can either be used individually with the -NIC=XX option,
+    or in a script file with the -I option. The value is specified in
+    -[OPTION]=[VALUE] format.
+    -AUTHENTICATIONMETHOD
+      Specifies either NONE, CHAP or MUTUALCHAP.
+    -CHAPUSERNAME
+      Specifies CHAP user name
+    -CHAPSECRET
+      Specifies a secret text string to go with the CHAP user name.
+      (secret must be 12 to 16 characters long)
+    -MUTUALCHAPSECRET
+      Specifies the reverse (target) CHAP secret text string.
+      (secret must be 12 to 16 characters long)
+
+FCOE GENERAL CONFIGURATION OPTIONS:
+    These options have to be used with the -NIC=XX option. They cannot be used
+    with the -ALL option.
+    -WWPNPREFIX
+      Specifies the Prefix to use for the WWPN. The prefix comprises of 4 hex 
+      digits. Separators '-' or ':' are allowed but optional. 
+      Eg: BOOTUTIL -NIC=1 -WWPNPREFIX=20-00 
+    -WWNNPREFIX
+      Specifies the Prefix to use for the WWNN. The prefix comprises of 4 hex 
+      digits. Separators '-' or ':' are allowed but optional. 
+      Eg: BOOTUTIL -NIC=1 -WWNNPREFIX=1000-00
+
+FCOE TARGET CONFIGURATION OPTIONS:
+    These Options require the use of both the -NIC=XX Option AND the -TARGET=XX
+    Option. The -ALL option is not allowed.
+    -WWPN
+      Specifies the WWPN for the selected Target. The WWPN consists of 16 HEX 
+      digits or 8 bytes. Each byte can be separated with '-' or ':' as an 
+      optional separator.
+      Eg: BOOTUTIL -NIC=1 -TARGET=1 -WWPN=00-11-22-33-44-55-66-77
+    -FCOELUN
+      Specifies the LUN for the selected FCoE Target. Valid range is 0..255.
+    -FCOEVLAN
+      Specifies the VLAN to use in order to connect to the selected target.
+      Valid range is 0..4094.
+    -BOOTORDER
+      Specifies the boot order for the selected target. Valid range is 1-4. 
+      Boot order values of 1-4 can only be assigned once to target(s) across 
+      all FCoE boot-enabled ports.
+      If 0 is specified then this target will be excluded from the boot order.
+     NOTE: These commands can all be used on the same command-line to configure
+           an entire target in one shot
+     Eg: BOOTUTIL -NIC=1 -TARGET=2 -WWPN=0011223344556677 -FCOELUN=0 
+                  -FCOEVLAN=1 -BOOTORDER=2     	
+
+
+The CHAP Authentication feature of this product requires the following 
+acknowledgements:
+This product includes cryptographic software written by Eric Young 
+(eay@cryptsoft.com). This product includes software written by Tim Hudson
+(tjh@cryptsoft.com)
+This product includes software developed by the OpenSSL Project for use in the
+OpenSSL Toolkit. (http://www.openssl.org/)
+
+EXAMPLES
+========
+The following examples show how to enter some typical BootUtil command lines:
+
+Example 1:
+To enable the flash firmware on the first network adapter for the system to be
+capable of executing the flash firmware.
+    BootUtil -NIC=1 -FLASHENABLE
+
+Example 2:
+To disable the flash firmware on all the network adapters.
+    BootUtil -ALL -FD
+
+Example 3:
+To display BootUtil FLB flash firmware types and versions.
+    BootUtil -IMAGEVERSION
+
+Example 4:
+To update all ports of a supported NIC with PXE. 
+    1. BootUtil -UP=PXE -ALL (Assumes input file is bootimg.flb)
+    2. Bootutil -UP=PXE -ALL -FILE=BOOTIMG.FLB (explicit user specified file)
+
+Example 5:
+To update a combo image on supported adapter (eg, pxe+iscsi)
+    1. Bootutil -UP=Combo -NIC=2 -FILE=BOOTIMG.FLB
+
+The above command will succeed if the PXE+ISCSI combination is supported on
+NIC #2. If not an error is displayed to the user.
+
+NOTE: THE -UP and -UPDATE commands are equivalent and interchangeable.
+
+Example 6:
+To enable PXE firmware on the third network port in the system.
+    BootUtil -BOOTENABLE=PXE -NIC=3
+
+NOTE: This command will work only if PXE is part of a combo Option ROM and
+not a discrete Option ROM.
+
+Example 7:
+To disable the firmware on the second network port in the system.
+    BootUtil -NIC=2 -BOOTENABLE=DISABLED
+
+Example 8:
+To get help descriptions.
+    BootUtil -?
+
+Example 9:
+To enable DHCP for the iSCSI initiator on all the network ports in the system.
+    BootUtil -INITIATORDHCP=ENABLE -ALL
+
+Example 10:
+To load the iSCSI boot configurations from a text script file to the first
+network port.
+    BootUtil -I=CONFIG.TXT -NIC=1
+
+
+EXIT CODES
+==========
+BootUtil returns an exit code to the OS environment. Possible exit codes are 
+listed below:
+
+Code Name                                      Value
+----------------------------------------------+-----
+All BootUtil operations completed successfully   0
+Bad command-line parameter                       1
+No supported network port detected               2
+Invalid network port selected                    3
+FLASH operation failed                           4
+EEPROM read operation failed                     5
+EEPROM write operation failed                    6
+File content is missing or corrupt               7
+Operator termination                             8
+LOM not supported for selected operation         9
+Network port is not bootable                    10
+FLASH memory is disabled for flash firmware     11
+FLASH memory too small for selected firmware    12
+Programming iSCSI boot configurations failed    13
+System memory allocation failed                 14
+File operation failed                           15
+FCoE operation failed                           16
+
+
+Copyright(c) 2011 Intel Corporation.

@@ -1,0 +1,319 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Intel&reg; Ethernet FCoE Boot Installation - Detailed Instructions</h1>
+<hr>
+<p><a href="#Detailed instructions">Detailed Instructions for Installing Windows 
+Server with Local Disk</a></p>
+<p><a href="#Appendix 1">Appendix 1</a></p>
+<p><a href="#Appendix 2">Appendix 2</a></p>
+<p><a href="#Appendix 3">Appendix 3</a><br></p>
+<hr>
+<h2><a name="Detailed instructions"></a>Detailed Instructions for Installing Windows Server with Local Disk</h2>
+<p>The following steps describe one method to install Intel&reg; Ethernet  FCoE Boot for Windows.&nbsp;Other methods, using different tools, may also  work.</p>
+<TABLE class="note" >
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> 
+<span style="color: black">Please be sure to read the Appendix information when 
+directed; they contain important details.</span>&nbsp; </TD>
+</tr>
+</TABLE>
+
+<h3 style="margin-left: 0in"><b>Prepare for partition imaging</b></h3>
+<ol>
+	<li>On the test server set up the local disk drives. These instructions 
+	will cover imaging with a partition imaging tool, so at a minimum a second 
+	partition will be needed to store the captured image. If the entire Windows 
+	disk will be captured, then a second local disk will be required.</li>
+</ol>
+<h3><b>Prepare the Adapter for FCoE Booting</b></h3>
+<blockquote>
+<TABLE class="note">
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong>  If the FCoE Option ROM does not find the FCoE LUN, perform steps 2-4. 
+Otherwise, skip to step 5.</TD>
+</tr>
+</TABLE>
+</blockquote>
+<ol start="2">
+	<li>Flash adapter with FCoE Option ROM.<ol type="a">
+		<li>Intel&reg; Ethernet drivers CD: \Apps\BootUtil\DOS\Bootutil /?</li>
+	</ol>
+	</li>
+	<li>Configure the Option ROM to boot from an FCoE LUN:<ol type="a">
+		<li>Input Ctrl+D during boot message.</li>
+		<li>Select the boot port.</li>
+		<li>Select Discover Targets.</li>
+		<li>Choose a target, enter its LUN and set its boot order to 1.</li>
+	</ol>
+	</li>
+</ol>
+<blockquote>
+<TABLE class="note">
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> Once Intel&reg; Ethernet FCoE drivers are installed, in order to uninstall them the Option ROM 
+must not be allowed to connect to an FCoE LUN.&nbsp;Either disable the boot port in 
+the Option ROM or set all boot orders to 0.</TD>
+</tr>
+</TABLE>
+
+</blockquote>
+<ol start="4">
+	<li>During POST ensure that the FCoE Option ROM loads and finds the LUN.</li>
+	<li>Ensure local disk is set as first boot option in system BIOS boot menu.</li>
+</ol>
+<h3><b>Install the OS and drivers</b></h3>
+<ol start="6">
+	<li>Install Windows Server on the first local drive.</li>
+	<li>Boot to the OS on the local disk. Install Intel&reg; Ethernet drivers via 
+	CD, selecting <b>FCoE Using Data Center Bridging</b> and reboot.&nbsp;After rebooting, re-run Intel&reg; Ethernet driver FCoE/DCB 
+  installation.</li>
+	<li>Using Disk Management, verify that FCoE LUNs are mounted.</li>
+	<li>Reboot.</li>
+</ol>
+<h3><b>Prepare Windows for imaging</b></h3>
+<ol start="10">
+	<li>As administrator: Open a command 
+	window.&nbsp;Navigate to Intel&reg; Ethernet drivers CD “APPS\FCOEBOOT\Win32” or 
+	“APPS\FCOEBOOT\Winx64” depending on installed OS. Run fcoeprep.bat and 
+	verify no error messages.</li>
+</ol>
+
+<blockquote>
+<TABLE class="note" >
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> The following steps capture the image that was created on drive C: to the secondary partition.</TD>
+</tr>
+</TABLE>
+</blockquote>
+
+
+<ol start="11">
+	<li>Reboot and ensure the server 
+	boots to a copy of WinPE.&nbsp;See <a href="#Appendix 1">Appendix 1</a> for WinPE information.</li>
+</ol>
+
+<blockquote>
+<TABLE class="note" >
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> This step is performed right after running fcoeprep.&nbsp;If the server boots back 
+into Windows, fcoeprep must be run again. This is because Windows resets the 
+settings every time it boots.</TD>
+</tr>
+</TABLE>
+</blockquote>
+
+<ol start="12">
+	<li>From the WinPE command line, 
+	capture the local Windows installation with ImageX.&nbsp;See 
+	<a href="#Appendix 2">Appendix 2 </a>for ImageX information. 
+    	Assuming WinPE mounts the Windows disk as C: and the secondary partition or disk as D:, 
+        use the following command line:
+    	<blockquote>
+    		imagex /capture /check/compress fast c: d:\fcoeboot.wim &quot;FCoE Boot Image&quot;
+    	</blockquote>
+  <li></span><b>For Windows Server 2008 R2 
+	and above.</b> Windows 2008 R2 may be installed onto two partitions: the normal 
+	Windows partition and a smaller partition called System Reserved. System 
+	Reserved contains files necessary to boot Windows. Assuming WinPE mounts 
+	the System Reserved partition as C: and the secondary partition as D:, use 
+	the following command line to capture the System Reserved partition: Reserved&quot;
+	<blockquote>
+    	imagex /capture /check /compress fast c: d:\fcoesr.wim &quot;FCoE Boot System 
+    </blockquote>
+	<p>Note that in this case WinPE should mount the System Reserved 
+	partition as C:, and the Windows partition may be mounted as D or E.</li>
+	<li>ImageX usually takes about 15 
+	minutes.&nbsp;Reboot to Windows when finished.</li>
+</ol>
+<p><b>The 
+following steps write the image to the FCoE LUN.</b></p>
+<ol start="15">
+	<li>Open <b>Disk Management</b> and verify 
+	that the boot LUN on the FCoE Target is online.&nbsp;Note the drive letter 
+	assigned to the FCoE LUN.</li>
+	<li>Open a command prompt.&nbsp;Use <b>DiskPart</b> to create the necessary partition(s) on the FCoE 		LUN. If a System 
+	Reserved partition was captured, then one should be created on the FCoE LUN.&nbsp;See 
+	<a href="#Appendix 3">Appendix 3 </a>for DiskPart information.</li>
+	<li>Assuming the image was saved to drive D: and the FCoE LUN was mounted as drive E:, 
+    	use the following command line:</li>
+    <blockquote>imagex /apply d:\fcoeboot.wim 1 e:\</blockquote>
+    
+	<li></span><b>For Windows Server 2008 R2 
+	and above</b>: If the System Reserved partition was captured above, it should be 
+	applied. In this case, you may need to use <b>Disk Management </b>to assign a 
+	drive letter to this partition on the FCoE LUN.&nbsp;Assuming the FCoE LUN’s 
+	System Reserved partition is mounted as drive F:, use the following command 
+	line:
+    <blockquote>imagex /apply d:\fcoesr.wim 1 f:\</blockquote>
+	<li><b>For Windows 2008 R2 and above</b>: Run bcdboot.exe from the local Windows installation to make the FCoE disk 
+	bootable.<ol type="a">
+		<li>Open Disk Management</li>
+		<li>If a System Reserved 
+		partition exists on the FCoE LUN, type: 
+		<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">bcdboot F:\Windows /s E</span><font face="Courier New">:</font> where 
+		E: is the FCoE System Reserved partition and F: is the FCoE partition 
+		with the Windows directory.</li>
+		<li>If a System Reserved 
+		partition does not exist, type: 
+		<span style="font-size: 10.0pt; line-height: 115%; font-family: Courier New">bcdboot E:\Windows /s E:</span> where E: is the FCoE partition with the Windows directory.</li>
+	</ol>
+	</li>
+</ol>
+<p><b>Boot 
+the system from the FCoE LUN</b></p>
+<ol start="20">
+	<li>Shutdown the system.</li>
+	<li>Use the BIOS settings to 
+	configure the server to boot from the FCoE LUN.</li>
+</ol>
+<TABLE class="note" >
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> If the server still boots from the local 
+drive, then remove the local drives.</TD>
+</tr>
+</TABLE>
+
+<ol start="22">
+	<li>Boot to the OS on the FCoE LUN.</li>
+</ol>
+<hr>
+<h2><span lang="X-NONE"><a name="Appendix 1"></a>Appendix 1: WinPE</span></h2>
+<p>WinPE is used to run ImageX to capture the local Windows partitions. WinPE versions 2.1 or later is required.&nbsp; 
+</p>
+<p>The simplest way to boot WinPE 
+is with a Windows Server  install DVD. A bootable WinPE USB 
+flash drive may  also be created and used.</p>
+<p><b>For install DVD installation only: </b>After booting, proceed to perform a “Custom” installation.&nbsp;When Windows setup 
+displays the drive selection screen, input SHIFT-F10 to open a command prompt.</p>
+<p><b><span style="color: black">Important:</span></b> 
+At the command prompt, cycle through the drive letters and use the dir command 
+to identify which disk partitions are mounted with which driver letters.&nbsp;WinPE 
+may use different drive letters than Windows, so no assumptions can be made.</p>
+<p>Once the partitions are 
+identified, ImageX can be used to capture the image.</p>
+<h2><span lang="X-NONE"><a name="Appendix 2"></a>Appendix 2: ImageX</span></h2>
+<p>ImageX is available as part of the Windows Assessment and  Deployment Kit (ADK) for Windows&reg; 8.&nbsp; To  get ImageX:
+
+<ol>
+   <li>Download the  Windows Assessment and Deployment Kit (ADK) for Windows&reg; 8 from Microsoft's web  site.</li>
+   <li>Run the  adksetup file you downloaded.</li>
+   <li>When asked to  Select the features you want to install, select Deployment Tools.</li>
+   <li>Once  installation has completed, imagex.exe may be found at one of the following  paths depending on whether you want to run it on a 32-bit or 64-bit version of  Windows:</li>
+      <ul>
+         <li>32-bit: C:\Program Files (x86)\Windows  Kits\8.0\Assessment and Deployment Kit\Deployment Tools\x86\DISM</li>
+         <li>64-bit: C:\Program Files (x86)\Windows  Kits\8.0\Assessment and Deployment Kit\Deployment Tools\amd64\DISM</li>
+      </ul>
+   <li>Copy the  appropriate ImageX to portable media for use during the imaging process.</li>
+</ol>
+
+ImageX is documented at Microsoft Technet:<br>
+<a href="http://technet.microsoft.com/en-us/library/cc748966(v=ws.10).aspx">http://technet.microsoft.com/en-us/library/cc748966(v=ws.10).aspx</a></p>
+<h2><span lang="X-NONE"><a name="Appendix 3"></a>Appendix 3: DiskPart</span></h2>
+<p>If a partition image tool is used to copy Windows to the 
+FCoE LUN, then <b>DiskPart</b> must be used to create partitions on the FCoE LUN. 
+There are two sets of instructions below.&nbsp;The first covers creating one 
+partition, while the second covers the case where a System Reserved partition is 
+captured in addition to the Windows partition.</p>
+<p>To identify the FCoE LUN disk number within DiskPart, use 
+the LIST DISK command.&nbsp;Alternatively, Disk Management also shows the disk 
+numbers.</p>
+<p><b>Windows Server  2008 R2 and above with no 
+System Reserved partition</b></p>
+<p>The following sequence of commands in <b>DiskPart</b> will create 
+a Windows partition on an FCoE LUN, suitable for imaging Windows Server  when no System Reserved partition is used (assumes FCoE 
+LUN is disk 1, and only C: and D: are already used by Windows):</p>
+<ol>
+	<li>SELECT DISK 1</li>
+	<li>CLEAN</li>
+	</ol><blockquote>
+    <TABLE class="note" >
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong>  This will destroy everything on the disk, 
+so be sure the correct disk is selected!</TD>
+</tr>
+</TABLE>
+
+	</li>
+	</blockquote>
+<ol start="3">
+	<li>CREATE PARTITION PRIMARY</li></li>
+</ol>
+<blockquote>
+	<TABLE class="note" >
+		<tr>
+			<TD valign="top" width="28">
+			<img  border="0" src="note.gif" width="28" height="21"></TD>
+			<TD valign="top"><strong>NOTE:</strong> Add SIZE=nnn to the end of the line to create a partition of size nnn 
+	in MB.</TD>
+		</tr>
+	</TABLE>
+</blockquote>
+<ol start="4">
+	<li>SELECT PARTITION 1</li>
+	<li>ACTIVE</li>
+	<li>FORMAT FS=NTFS QUICK</li>
+	<li>ASSIGN LETTER=E</li>
+	<li>EXIT</li>
+</ol>
+<p><b>Windows Server 2008 R2 and above with a System Reserved partition</b></p>
+<p>The following sequence of commands in <b>DiskPart</b> will create 
+a System Reserved and Windows partition on an FCoE LUN, suitable for imaging 
+Windows 2008 R2 (assumes FCoE LUN is disk 1, and only C: and D: are already used 
+by Windows):</p>
+<ol>
+	<li>SELECT DISK 1</li>
+	<li>CLEAN</li></ol><blockquote>
+    <TABLE class="note" >
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> This will destroy everything on the disk, 
+so be sure the correct disk is selected!</TD></tr>
+</TABLE>
+
+	</blockquote>
+	<ol start="3">
+		<li>CREATE PARTITION PRIMARY SIZE=100</li>
+	
+		<li>SELECT PARTITION 1</li>
+	
+		<li>ACTIVE</li>
+		<li>FORMAT FS=NTFS QUICK</li>
+		<li>ASSIGN LETTER=E</li>
+		<li>CREATE PARTITION PRIMARY</li></ol>
+<blockquote>
+	<TABLE class="note" >
+		<tr>
+			<TD valign="top" width="28">
+			<img  border="0" src="note.gif" width="28" height="21"></TD>
+			<TD valign="top"><strong>NOTE:</strong> Add SIZE=nnn to the end of the line to create a partition of size nnn 
+	in MB.</TD>
+		</tr>
+	</TABLE>
+</blockquote>
+</li>
+		<ol start="9">
+			<li>SELECT PARTITION 2</li>
+			<li>FORMAT FS=NTFS QUICK</li>
+			<li>ASSIGN LETTER=F</li>
+			<li>EXIT</li>
+			</ol>
+			</ol>
+</ol>
+
+</body>
+</html>

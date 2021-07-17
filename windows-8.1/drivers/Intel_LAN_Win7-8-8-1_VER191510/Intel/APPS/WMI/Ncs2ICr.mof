@@ -1,0 +1,1532 @@
+/************************************************************************
+*                                                                       *
+*               INTEL CORPORATION PROPRIETARY INFORMATION               *
+*  This software is supplied under the terms of a license agreement or  *
+*  nondisclosure agreement with Intel Corporation and may not be copied *
+*  or disclosed except in accordance with the terms of that agreement.  *
+*  Copyright (c) 2008-2013 Intel Corporation. All Rights Reserved.      *
+*                                                                       *
+************************************************************************/
+/***********************************************************************\
+*
+* NAME:	Ncs2ICr.mof	
+* 
+* DESCRIPTION: Master MOF file with class definitions for the 
+*			   Intel PRO Network Adapters WMI Provider (802.3 schema).
+*
+* PREREQUISITE: Ncs2Cm.mof 
+*
+* NOTE:	This file generates language neutral MOF for IntelNCS2 namespace.
+*		This file also generates ENU language specific MFL. 
+*
+\***********************************************************************/
+
+#pragma namespace ("\\\\.\\Root\\IntelNCS2")
+
+instance of __Win32Provider as $P
+{
+    Name    = "Ncs2" ;
+    ClsId   = "{AF7799A5-A3E7-455C-92B5-8F9D7C127B15}" ;
+	Pure = FALSE;
+	ImpersonationLevel = 3;
+    PerUserInitialization = TRUE;
+    UnloadTimeout = "00000000000500.000000:000";
+};    
+
+instance of __MethodProviderRegistration
+{
+    Provider = $P;
+};
+
+instance of __InstanceProviderRegistration
+{
+    Provider = $P;
+    SupportsPut = TRUE;
+    SupportsGet = TRUE;
+    SupportsDelete = TRUE;
+    SupportsEnumeration = TRUE;
+	QuerySupportLevels = { "WQL:UnarySelect" };
+};
+
+
+// ============================================================================
+// Ethernet Adapter Base Class
+// ============================================================================
+[Abstract, Description("IANet_EthernetAdapter abstract base class objectifies "
+"the general network characteristics of the Intel NIC. In this class, "
+"the lower level networking properties are presented. Note that only the "
+"network relationships are in this class. The controller characteristics "
+"are presented separately."): Amended,  LOCALE(0x409)
+]
+class IANet_EthernetAdapter : CIM_EthernetAdapter
+{
+	[Override("NetworkAddresses"), MaxLen (64), 
+	Description (
+	"An array of strings indicating the network addresses for an adapter."):ToSubclass Amended,
+	ArrayType ("Indexed"),
+	MappingStrings {"MIF.DMTF|Network Adapter 802 Port|001.3"}:ToSubclass,
+	ModelCorrespondence {"IANet_EthernetAdapter.NetworkAddressDescription"}:ToSubclass
+	]
+    string NetworkAddresses[];
+    		
+
+	[ Description (
+	"MiniPortName represents the Win32 kernel mode service name of the adapter."):ToSubclass Amended
+	]
+	string MiniPortName;
+
+	[Description (
+	"MiniPortInstance distinguishes a network device from other devices of "
+	"the same type on a machine. It is a unique string without any "
+	"path-separator characters that contains serial-number information, "
+	"if supported by the underlying bus, or some kind of location "
+	"information. The format of the string is bus specific. "
+	"It is persistent across system boots."):ToSubclass Amended
+	]
+	string MiniPortInstance;	
+	 
+};
+
+
+
+
+
+
+// ============================================================================
+// Physical Ethernet Adapter Class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+Description("IANet_PhysicalEthernetAdapter concrete class objectifies "
+"the general network characteristics of the Intel NIC. In this class, "
+"the lower level networking properties are presented. Note that only the "
+"network relationships are in this class. The controller characteristics "
+"are presented separately."):Amended,  LOCALE(0x409)
+]
+class IANet_PhysicalEthernetAdapter : IANet_EthernetAdapter
+{
+
+[Description (
+		 "PartNumber is the NIC's PBA manufacturing part number"):Amended
+	]
+   string PartNumber;
+
+    [Description (
+		 "SanMacAddress is the MAC address assigned by the SAN server"):Amended
+	]
+    string SanMacAddress;
+    
+    [Description (
+		 "ETrackID is the EEPROM Version"):Amended
+	]
+    string ETrackID;
+
+    [Description (
+		 "The textual representation of the speed"):Amended
+	]
+    string SpeedString;
+
+    [Description (
+		"Indicates the current status for the adapter"):Amended,
+		ValueMap{"0", "1", "2", "3"}:Amended,
+		Values {"Disabled", "Link Up", "Link Down", "Not Present"} : Amended
+	]
+    uint16 DeviceStatus;
+
+    [Description("Specifies the current status of the adapter."):Amended] 	
+    string DeviceStatusString;
+
+	[Description ("This setting has been deprecated and is no longer supported"):Amended,
+		 ValueMap{"0" }:Amended,
+		 Values {"This setting has been deprecated and is no longer supported"}:Amended]
+    	uint16 PHYDevice;
+
+	[Description ("This setting has been deprecated and is no longer supported"):Amended]
+    	string OtherPhyDevice;
+	
+	[Description (
+	"Bus Type indicates the bus type"):Amended,
+	ValueMap{"0","1","2","3","4","5","6","7"}:Amended,
+	Values {"Unknown","ISA","EISA","PCMCIA","CardBus","PCI","PCI-X","PCI Express"}:Amended
+	]
+	uint16 BusType;
+
+	[Description (
+	"Negotiated Link Speed specifies the negotiated link speed of the bus"):Amended,
+	ValueMap{"0","1","2","3"}:Amended,
+	Values{"Not Supported","2.5 GT/s","5.0 GT/s","8.0 GT/s"}:Amended
+	]
+	uint16 NegotiatedLinkSpeed;
+	
+	[Description (
+	"Negotiated Link Width specifies the negotiated link width of the bus"):Amended,
+	ValueMap{"0","1","2","4","8","16"}:Amended,
+	Values{"Not Supported","x1","x2","x4","x8","x16"}:Amended
+	]
+	uint16 NegotiatedLinkWidth;
+	
+	[Description (
+	"PortNumber indicates the port number on PCIe Quad port adapters"):Amended,
+	ValueMap{"0","1","2","3"}:Amended,
+	Values{"A","B","C","D"}:Amended
+	]
+	uint16 PortNumber;
+
+	[Description ("PartitionNumber indicates the partition number of NPAR enabled adapters"):Amended 
+        ]
+	uint16 PartitionNumber;
+	
+	[Description (
+	"MediaType indicates the media which interfaces to this phy"):Amended,
+	ValueMap{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9","10","11","12"}:Amended,
+	Values {"Unknown", "Copper", "Fiber", "Phone Line", "CX4 Copper", "SFP+ Direct Attach", "SR Fiber", "LR Fiber", "KX/KX4 Backplane", "SerDes","Backplane","XAUI","SFP+ Active Direct Attach"} : Amended
+	]
+    	uint16 MediaType;
+
+	[Description (
+		 "ExtendedStatus contains additional status information for the adapter"):Amended
+	]
+    	uint64 ExtendedStatus;
+
+	[Description ("This setting has been deprecated and is no longer supported."):Amended]
+   	string OtherMediaType;
+
+		[ Description (
+		"The Controller ID identifies the Ethernet controller that the adapter uses. "
+		"Adapters with different DeviceIDs can have the same Controller ID"):Amended,
+		ValueMap{
+			"0", 
+			"1", "3", "6", "7", "8", "11", "13", "20", "30", "31", "40", "50", "51", "52", "60", "62", "63",
+			"65537", "65538", "65539", "65540", "65541", "65542", "65543", "65544", "65545", "65546", "65547", "65548", "65549", "65550", "65551", "65552", "65553", 
+			"131073",
+			"196609", "196610",
+			"327681"
+			}:Amended,
+			Values {"Unknown", 
+
+				/* 1 -> 63 */
+				"Intel 82542 Controller",
+				"Intel 82543 Controller",
+				"Intel 82544 Controller",
+				"Intel 82540 Controller",
+				"Intel 82545 Controller",
+				"Intel 82541 Controller",
+				"Intel 82547 Controller",
+				"Intel 82571 Controller",
+				"Intel 82573 Controller",
+				"Intel 82574 Controller",
+				"Intel ESB2LAN Controller",
+				"Intel ICH8 Controller",
+				"Intel ICH9 Controller",
+				"Intel ICH10 Controller",
+				"Intel 82575 Controller",
+				"Intel 82576 Controller",
+				"Intel ADORAM_VIRTUAL Controller",
+								
+				/* 65537 -> 65553 */
+				"Intel D100_A_STEP Controller",
+				"Intel D100_B_STEP Controller",
+				"Intel D100_C_STEP Controller",
+				"Intel D101_A_STEP Controller",
+				"Intel D101_B0_STEP Controller",
+				"Intel D101M_A_STEP Controller",
+				"Intel D101S_A_STEP Controller",
+				"Intel D102_A_STEP Controller",
+				"Intel D102_B_STEP Controller",
+				"Intel D102_C_STEP Controller",
+				"Intel D102_D_STEP Controller",
+				"Intel D102_E_STEP Controller",
+				"Intel D102_F_STEP Controller",
+				"Intel 82562_G Controller",
+				"Intel 82562_GZ Controller",
+				"Intel 82562_GX_GT Controller",
+				"Intel 82562 Controller",
+				
+				/* 131073 */			
+				"Intel 82597 EX Controller",
+								
+				/* 196609 -> 196610 */
+				"Intel 82598 Controller",
+				"Intel 82599 Controller",
+				"Intel XL710 Controller"
+				
+			}:Amended
+		]
+	uint32 ControllerID;
+
+
+
+[Description (
+ 	"Adapter status specifies the current status of the adapter."):Amended,
+	Bitmap{"1", "2", "4", "16", "32", "1024", "2048"}:Amended,
+	Bitvalues {"Installed", "DriverLoaded", "HardwareMissing", 
+    "HasDiag", "HasLink", "HasTCOEnabled", "DeviceError"}:Amended,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.AdapterStatus"}
+	]
+    uint32 AdapterStatus;
+    
+[Description (
+ 	"EEE Link Status specifies the current EEE status of the link."):Amended,
+	Bitmap{"0", "1", "2"}:Amended,
+	Bitvalues {"No EEE", "EEE Negotiated", "EEE Negotiated and running LPI"}:Amended,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.EEELinkStatus"}
+	]
+    uint64 EEELinkStatus;
+
+[Override ("Capabilities"), Description (
+	"Lists the capabilities of the device."):Amended, 
+	ArrayType ("Indexed"),
+	Values {
+	/* 0 */ "Unknown", "Other", "AlertOnLan", "WakeOnLan", 
+	/* 4 */ "Adapter Fault Tolerance", "Adaptive Load Balancing", 
+	/* 6 */ "IPSec Offload", "ASF",
+	/* 8 */  "Feature Not Supported", "Static Link Aggregation",
+	/* 10 */ "IEEE 802.3ad Dynamic Link Aggregation", "Checksum Offload",
+	/* 12 */ "Switch Fault Tolerance", "Feature Not Supported", "Feature Not Supported",
+	/* 15 */ "Feature Not Supported", "Feature Not Supported", "Feature Not Supported",
+	/* 18 */ "Feature Not Supported", "Feature Not Supported",
+	/* 20 */ "Feature Not Supported", "Feature Not Supported",
+	/* 22 */ "Feature Not Supported", "Feature Not Supported",	
+	/* 24 */ "Feature Not Supported",
+	/* 25 */ "Feature Not Supported", "Feature Not Supported",
+	/* 27 */ "Feature Not Supported", "Feature Not Supported",
+	/* 29 */ "TCO Capability", "Wake Up Capabilities", "IP Checksum Offload",
+	/* 32 */ "10 Mbps", "100 Mbps", "1000 Mbps", "10000 Mbps",
+	/* 36 */ "Teaming", "VLAN", "IEEE VLAN", "ISL VLAN", "Feature Not Supported",
+	/* 41 */ "Identify Adapter Support", "Cable Test Support", "Diagnostic Support",
+	/* 44 */ "Flash support", "ICH Support", "Usage Server", "Vendor Intel", "Feature Not Supported",
+	/* 49 */ "Feature Not Supported", "PowerManagement Support", "Feature Not Supported",
+	/* 52 */ "MFO", "Pass Through", "Quad-Port Support", "Dedicated MAC Address",
+	/* 56 */ "Jumbo Frame Support","Feature Not Supported","Signal Quality Test", 
+	/* 59 */ "Cable Offline Test", "Adapter is LOM", "Scalable Networking Pack Capability", 
+	/* 62 */ "CB Platform Capability",
+	/* 63 */ "iSCSI Capability",
+	/* 64 */ "LinkSec Capability",
+	/* 65 */ "DCB Capability",
+	/* 66 */ "FCoE Capability","KX Module Capability",
+	/* 68 */ "Virtual Machines Load Balancing",
+	/* 69 */ "Performance Profile Support",
+	/* 70 */ "OS2BMC",
+	/* 71 */ "AMT Capable",
+	/* 72 */ "2500 Mbps",
+	/* 73 */ "Basic Support",
+	/* 74 */ "Extended Support",
+	/* 75 */ "40000 Mbps",
+	/* 76 */ "NPAR Enabled"
+
+	} : Amended, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.CapabilityDescriptions"}
+	]
+    uint16 Capabilities[];
+
+[Override ("CapabilityDescriptions"), Description (
+	"An array of free-form strings providing more detailed "
+	"explanations for any of the Physical Ethernet Adapter features "
+	"indicated in the Capabilities array. Note, each entry of "
+	"this array is related to the entry in the Capabilities "
+	"array that is located at the same index."):Amended, 
+	ArrayType ("Indexed"), 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.Capabilities"}
+	]
+    string CapabilityDescriptions[];
+
+[ Description (
+	"Hardware status specifies the current status of the hardware"):Amended,
+	Values {"Unknown", "Ready", "Initializing", "Reset", 
+	"Closing", "Not Ready" }: Amended
+	]
+	uint32 HardwareStatus;
+
+[Description (
+	"This setting has been deprecated and is no longer supported."):Amended,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.OtherEnabledCapabilityIDs"}
+	]
+	uint16 OtherEnabledCapabilityIDs[];
+
+	[Description ("This setting has been deprecated and is no longer supported."):Amended,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.OtherEnabledCapabilities"}
+	]
+	string OtherEnabledCapabilities[];
+
+	[Description ("This setting has been deprecated and is no longer supported."):Amended,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.OtherEnabledCapabilities"}
+	]
+	string OtherCapabilityDescriptions[];
+
+	[Description ("SlotID field of the System Slot structure provides a mechanism to correlate the physical attributes of the slot to its logical access method."):Amended]
+   	string SlotID;
+
+	[Description ("The Location property displays the bus, device, function and segment PCI configuration space information for the adapter."):Amended]
+   	string Location;
+
+	[Description (
+	"EEPROMVersion contains the EEPROM version of the device."):Amended
+	]
+	string EEPROMVersion;
+
+	[Description (
+	"OTPVersion contains the OTP version of the device."):Amended
+	]
+	string OTPVersion;
+
+	[Description(
+	"Original display name of the adapter. "):Amended]
+	string OriginalDisplayName;
+
+	[Description (
+	"PCI device Id of the device."):Amended
+	]
+	string PCIDeviceID ;
+
+	[Description ("Displays the connection name of the device."):Amended]
+	string ConnectionName;
+
+	[Description (
+	"GetHbaPath will return the path to the corresponding HBA's instance "
+	"in Device Mananger."):Amended, implemented 
+	]
+	uint32 GetHbaPath( [out] string HbaPath);	
+
+	[Description (
+	"IsFcoePagingFileLocatedOnTarget will return whether or not the port "
+	"has an FCoE paging file on a remote target."):Amended, implemented 
+	]
+	uint32 IsFcoePagingFileLocatedOnTarget( [out] boolean bHasRemotePagingFile);	
+
+
+[Description (
+	"IdentifyAdapter will flash the light on the adapter for a few "
+	"seconds to enable the user to identify it.  This method will only "
+	"work for physical adapters."):Amended, implemented 
+	]
+	uint32 IdentifyAdapter( [in] uint16 nSeconds );	
+
+
+	[Description (
+	"GetPowerUsageOptions detects any optional power usage settings. "
+	"For example, power usage for standby, battery operation etc."  
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetPowerUsageOptions"}
+	]
+	uint32 GetPowerUsageOptions(
+	  	[OUT,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 AutoPowerSaveModeEnabled,
+		[OUT,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 ReduceSpeedOnPowerDown,
+		[OUT,
+        ValueMap {"0","1"} : Amended, 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 SmartPowerDown,
+		[OUT,
+        ValueMap {"1","2"}: Amended , 
+        Values {"Normal Power", "Low Power"}: Amended
+	]
+		 uint32 SavePowerNowEnabled,
+	[OUT,
+		 ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 EnhancedASPMPowerSaver,
+	[OUT,
+        ValueMap {"0","1"} : Amended, 
+        Values {"Disabled", "BatteryMode"}: Amended
+	] 
+		uint32 ACBSMode,
+	
+	[OUT,
+        ValueMap {"0","1"} : Amended, 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 LinkSpeedBatterySaver,
+	[OUT,
+        ValueMap {"0","1"} : Amended, 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 SystemIdlePowerSaver
+	);
+
+	[Description (
+	"This method can be used to makes changes to the power usage options. "
+	"For example, this method could be used to reduce power usage for "
+	"standby, battery operation etc. Note power usage settings are "
+	"stored and used for every boot."
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.SetPowerUsageOptions"} 
+	]
+	uint32 SetPowerUsageOptions(
+	 	[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 AutoPowerSaveModeEnabled,
+		[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 ReduceSpeedOnPowerDown,
+		[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 SmartPowerDown,
+		[IN,
+        ValueMap {"1","2"}: Amended , 
+        Values {"Normal Power", "Low Power"}: Amended
+	]
+		 uint32 SavePowerNowEnabled,
+		[IN,
+		 ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 EnhancedASPMPowerSaver,
+	[IN,
+		 ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "BatteryMode"}: Amended
+	]
+		 uint32 ACBSMode,		 
+	[IN,
+		 ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 LinkSpeedBatterySaver,
+
+	[IN,
+        ValueMap {"0","1"} : Amended, 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 SystemIdlePowerSaver
+
+	);	
+
+	[Description (
+	"GetWakeOnLanPowerOptions returns WakeOnLan power settings. "
+	"For example, information about wakeonlink, wakeonmagicpacket etc.."  
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetWakeOnLanPowerOptions"}
+	]
+	uint32 GetWakeOnLanPowerOptions(
+	  	[OUT,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 WakeFromPowerOff,
+		[OUT,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 WakeOnLink,
+		[OUT,
+        ValueMap {"0","1"} : Amended, 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 WakeOnMagicPacket,
+		[OUT,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 WakeOnDirectedPacket,
+		 [OUT,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 WakeOnPattern
+	);
+	[Description (
+	"This method can be used to makes changes to the WakeOnLan options. "
+	"For example, this method could be used to set options like "
+	"wakefromPoweroff, wakeOnlink, WakeOnMagicPacket, WakeOnDirectedPacket etc."
+	" Note WakeOnLan settings are stored and used for every boot."
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.SetWakeOnLanPowerOptions"} 
+	]
+	uint32 SetWakeOnLanPowerOptions(
+	 	[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 WakeFromPowerOff,
+		[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 WakeOnLink,
+		[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	] 
+		uint32 WakeOnMagicPacket,
+		[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 WakeOnDirectedPacket,
+		[IN,
+        ValueMap {"0","1"}: Amended , 
+        Values {"Disabled", "Enabled"}: Amended
+	]
+		 uint32 WakeOnPattern
+
+	);
+	[Description (
+	"This method is used to makes changes to the Power management"
+	"capabilities during DMIX install so that any upgrade scenarios from "
+	"earlier releases will have the right options for all the WakeOnLAN"
+	" options and DMIX will not have reinterpret them dynamically"
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.SetPowerMgmtCapabilities"} 
+	]
+	uint32 SetPowerMgmtCapabilities();
+	[Description (
+	"This method can be used to check if SetPowerMgmtCapabilities() needs to be called."
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.IsSetPowerMgmtCapabilitiesReq"} 
+	]
+	uint32 IsSetPowerMgmtCapabilitiesReq(
+	 	[OUT] 
+		boolean bIsSetRequired);
+	[Description (
+	"This method can be used to check if iSCSI is supported by the OS and iSCSI "
+	"patch and hotfix are installed."
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.IsiSCSISupported"} 
+	]
+	uint32 IsiSCSISupported(
+	 	[OUT] 
+		boolean bIsiSCSIOS,
+		[OUT]
+		boolean bIsiSCSIPatch,
+		[OUT]
+		boolean bIsiSCSIHotFix);		
+	
+	
+	
+	[Description 
+	(
+		"This method can be used to determine if the passed in setting will be changed when the new team is created."
+		"Depending on the adapters in the team and which features each supports, the setting may be disabled to "
+		"synchronize the setting accross all adapters in the team."
+		):Amended, implemented,
+		ModelCorrespondence {"IANet_PhysicalEthernetAdapter.ValidateSettingOnNewTeam"}
+	]
+	uint32 ValidateSettingOnNewTeam
+	(
+		[IN]    string Adapters[],
+		[IN]	string SettingName,
+		[OUT]   uint64 ValResult
+	);	
+	
+	[Description 
+	(
+		"This method can be used to determine the available team modes based on the current configuration."
+		):Amended, implemented,
+		ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetListOfAvailableTeamModes"}
+	]
+	uint32 GetListOfAvailableTeamModes
+	(
+		[IN]    string Adapters[],
+		[OUT]   uint32 TeamModes[]		
+	);
+
+
+
+	[Description 
+	(
+		"This method can be used to determine if any of the settings supported by the list of adapters passed in will be changed when the new team is created."
+		"Depending on the adapters in the team and the features each device supports, a setting's value may need to change in order to "
+		"synchronize the setting's value accross all devices in the team."
+		):Amended, implemented,
+		ModelCorrespondence {"IANet_PhysicalEthernetAdapter.ValidateSettingOnNewTeamEx"}
+	]
+	uint32 ValidateSettingOnNewTeamEx
+	(
+		[IN]    string Adapters[],
+		[IN]	uint32 PerformanceProfile,
+		[IN]	uint32 Reserved1,
+		[IN]	uint32 Reserved2,
+		[OUT]   uint64 ValResult
+	);	
+	
+	[Description 
+	(
+		"This method determines if there is a common performance profile that is supported "
+		"by all the devices passed in first parameter.  The method returns an array of the "
+		"performance profiles are the supported by the new team."
+		):Amended, implemented,
+		ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetListOfSupportedPerformanceProfilesOnNewTeam"}
+	]
+	uint32 GetListOfSupportedPerformanceProfilesOnNewTeam
+	(
+		[IN]    string Adapters[],
+		[OUT]	string PerformanceProfileNames[],
+		[OUT]   uint32 PerformanceProfileValues[]
+	);
+	
+	[Description 
+	(
+		"This method will be used during the installation of DMIX to setup the DCE service with the default DCB settings."
+		):Amended, implemented,
+		ModelCorrespondence {"IANet_PhysicalEthernetAdapter.SetupDCB_Defaults"}
+	]
+	uint32 SetupDCB_Defaults
+	(
+		[OUT]   uint32 ValResult
+	);	
+	
+	
+	[Description (
+	"This method can be used to check if iSCSI is enabled on that adapter."
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.IsiSCSIEnabled"} 
+	]
+	uint32 IsiSCSIEnabled(
+	 	[OUT,
+        	Values {"0", "1", "2", "3"}: Amended
+	]
+		
+	uint32 iSCSIStatus);
+
+
+	[Description (
+	"This method can be used to check if Macsec is enabled on that adapter."
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.IsMacsecEnabled"} 
+	]
+	uint32 IsMacsecEnabled(
+	 	[OUT,
+        	Values {"0", "1", "2"}: Amended
+	]
+		
+	uint32 iMacsecStatus);
+
+	[Description (
+	"This method can be used to check if Macsec driver is bound to that adapter."
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.IsMacsecEnabledOnDevice"} 
+	]
+	uint32 IsMacsecEnabledOnDevice(
+	 	[OUT] 
+		boolean bMacsecBound);
+	
+    [Description (
+	"This method can be used to check if AMT is enabled on adapter."
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.IsAmtEnabledOnDevice"} 
+	]
+	uint32 IsAmtEnabledOnDevice(
+	 	[OUT] 
+		boolean bAmtEnabled);
+
+	[Description (
+	"This method can be used to get the NDIS version"
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetNDISVersion"} 
+	]
+	uint32 GetNDISVersion(
+	 	[OUT] 
+		uint32 dwMajorVersion,
+		[OUT]
+		uint32 dwMinorVersion);
+		
+	[Description (
+	"This method can be used check if the fan is running on the adapter.  NOTE:  not all devices support this functionality"
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetAdapterFanStatus"} 
+	]
+	uint32 GetAdapterFanStatus(
+		[OUT,
+			ValueMap {"0", "1", "2"}: Amended , 
+			Values {"Not Supported", "Not Active", "Active"}: Amended
+		]
+		uint32 dwAdapterFanStatus);
+		
+	[Description (
+	"This method can be used to check if warnings exist on the adapter.  NOTE:  not all devices support this functionality"
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetAdapterWarnings"} 
+	]
+	uint32 GetAdapterWarnings([OUT] UINT64 dwAdapterWarnings);
+	
+		
+	[Description (
+	"This method should be called during the installation when the FCoE feature is installed.  FCoE enabled adapter perform better with Jumbo Frames enabled."
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.EnableJumboFramesOnFcoeDevices"} 
+	]
+	uint32 EnableJumboFramesOnFcoeDevices();
+	
+	
+	[Description (
+	"This method is only to be called by the DMIX installer during a clean installation of DMIX or with the add or removal of the FCoE feature."
+
+	):Amended, implemented, 
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.InitializePerformanceProfilesOnDevices"} 
+	]
+	uint32 InitializePerformanceProfilesOnDevices
+	(
+		[IN]    boolean bInitializeValues,
+		[OUT]   uint64 ValResult
+	);
+	
+	[Description ("This method validates settings the user has changed."):Amended, implemented,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.ValidateSettingsModification"}
+	]
+	
+	uint32 ValidateSettingsModification(
+        [IN] SettingObj settings[],
+	[IN] uint32 bSetValues,
+        [OUT]   WarningMessageObj WarningMessages[]	
+        );
+
+	[Description ("This method set settings."):Amended, implemented,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.SetSettings"}
+	]
+	
+	uint32 SetSettings(
+        [IN] SettingObj settings[]
+        );
+
+	[Description(
+		 "ValidateCreateVLAN is used to validate a new VLAN can be created for this adapter."):Amended,
+		 implemented
+		]
+	uint16 ValidateCreateVLAN([in] string VLANNumbers, [in] string Name,
+					   [OUT] WarningMessageObj WarningMessages[] );
+	
+
+	[Description ("This method gets the settings relevant to the indicated profile."):Amended, implemented,
+	ModelCorrespondence {"IANet_PhysicalEthernetAdapter.GetSettingsForProfile"}
+	]
+	
+	uint32 GetSettingsForProfile(
+	[IN]	uint32 PerformanceProfile,
+        [OUT]   string settings[],
+	[OUT]   string values[],
+        [OUT]   WarningMessageObj WarningMessages[]	
+        );       
+            
+};
+
+// ============================================================================
+// Intel IANetSetting Abstract Base Class
+// ============================================================================
+		[Abstract, 
+		 Description("IANet_Setting objectifies instance related "
+		 "driver and network device settings. IANet_Setting is an "
+		 "Abstract superclass for a set of concrete classes of different "
+		 "types.  This set of classes allows open ended usage of a variable "
+		 "number of settings.  These can be different for different adapters, "
+		 "teams or VLANs "
+		 "and it may not always be possible to predict what parameters will "
+		 "be required."):Amended,  LOCALE(0x409)
+		]
+class IANet_Setting : CIM_Setting
+{
+		[Key,Description(
+		 "ParentId identifies the object that this parameter is for. " 
+		 "This is used to ensure that the parameters have unique keys - applications "
+		 "should use associations to link settings with managed elements.") : ToSubclass Amended
+		]
+	string ParentId;
+
+	[Key,Description(
+		 "ParentType identifies the type of object that this parameter is for. " 
+		 "This can take one of the following values:\n"
+		 "		VLAN - for VLAN settings\n"
+		 "		NIC - for Adapter settings\n"
+		 "		Team - for Team settings\n") :ToSubclass Amended]
+
+	string ParentType;
+
+	[Key,Description("Specifies the name of the setting as it appears in the registry."):ToSubclass Amended]
+	string Caption;
+
+	[Description("Specifies the name of the device that is associated with the setting."):ToSubclass Amended]
+	string Name;
+
+	[Description("Specifies the name of the setting as it appears in the registry."):ToSubclass Amended]
+	string RegistryKeyword;
+
+	[Description("Specifies the description of the setting."):ToSubclass Amended]
+	string Description;
+
+	[Description("Specifies the description of the setting."):ToSubclass Amended]
+	string DisplayName;
+
+	[Description("This property has been deprecated."):ToSubclass Amended]
+	string MiniHelp;
+
+	[Description (
+    "Expose level of setting. For example, based on the expose level "
+	"management application could determine whether this setting could be "
+	"exposed to the user.") : Amended,
+		ValueMap{"0", "1"}:ToSubclass Amended,
+		Values {"Zero", "One"}:ToSubclass Amended
+	]	
+	uint32 ExposeLevel;
+
+		[Description(
+		 "Writable is true if the setting can be changed and false if the setting "
+		 "cannot be changed. If this attribute is NULL then the user needs to do a "
+		 "pre-check to see if the setting can be saved."):ToSubclass Amended
+		]
+	boolean Writable;
+	
+	[Description(
+		 "Some settings require a session to be set. If this is true then this "
+		 "setting requires a session. The setting will not be saved until the Apply "
+		 "method of IANet_NetService is called."):ToSubclass Amended
+		]
+	boolean RequiresSession;
+
+	[Description(
+		 "Some of the settings are grouped under specific categories."
+		 "Grouped is true if the setting is grouped."):ToSubclass Amended
+		]
+	boolean Grouped;
+	
+	
+	[Description(
+		 "Some of the settings are grouped under specific categories."
+		 "This attribute specifies the Id of the group under which this setting belongs."
+		):ToSubclass Amended
+		]
+	uint16 GroupId;		
+	
+	[Description(
+		 "This attribute specifies the Id of the setting detail under which this setting belongs."
+		):ToSubclass Amended
+		]
+	uint64 DetailId;
+	
+};
+
+
+// ============================================================================
+// Intel IANet_AdapterSetting Abstract Base Class
+// ============================================================================
+		[Abstract, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),
+		 Description("IANet_AdapterSetting objectifies Adapter instance related "
+		 "driver and network device settings. IANet_AdapterSetting is an "
+		 "Abstract superclass for a set of concrete classes of different "
+		 "types.  This set of classes allows open ended usage of a variable "
+		 "number of settings." 
+		):Amended,  LOCALE(0x409)
+		]
+class IANet_AdapterSetting : IANet_Setting
+{
+    
+
+};
+
+
+// ============================================================================
+// AdapterSetting Int Class
+// ============================================================================
+
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+		 Description("IANet_AdapterSettingInt objectifies Adapter related "
+		 "driver and network device settings. IANet_AdapterSettingInt " 
+		 "specifically handles Integer settings. The following "
+		 "constraints are placed on the CurrentValue and default value:\n"
+		 "	min <= CurrentValue <= max\n"
+		 "	( CurrentValue - base ) is a multiple of step\n"):Amended,  LOCALE(0x409)]
+class IANet_AdapterSettingInt : IANet_AdapterSetting
+{
+		[Description(
+		 "Min is the minimum value that the integer can take."):Amended]
+	sint64 min;
+
+		[Description(
+		 "Max is the maximum value that the integer can take."):Amended]
+	sint64 max;
+
+		[Description(
+		 "Step is the granularity of the integer value."):Amended]
+	sint64 step;
+
+		[Description(
+		 "Base is the root from which the integer value may take values. i.e. "
+		 " CurrentValue - base is a multiple of step."):Amended]
+	uint64 base;
+
+		[Description(
+		 "DefaultValue is the initial value of the parameter."):Amended]	
+	sint64 DefaultValue;
+
+	[Write, Description("Specifies the current value of the setting - this is the only attribute that the user can change."):Amended]	
+	sint64 CurrentValue;
+
+	[Write, Description("Specifies the value of the setting from the registry."):Amended]	
+	sint64 RegistryValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+		[Description(
+		 "Scale is unit of measurement to set or estimate series of marks "
+		 "or points at known intervals to measure value of the parameter."):Amended]	
+	sint64 Scale;
+	
+	[Description (
+	"This method is called to check if the change in the setting will have any impact on other settings or to the user's experience."
+	):Amended, implemented
+	]
+	uint32 ValidateSettingModification( [IN] sint64 CurrentValue, [OUT]   WarningMessageObj WarningMessages[]	);
+
+	[Description ("This method returns information related to changing the setting's value.  The DisplayValue parameter specifies the new value of the setting."
+				  "The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateSettingModificationEx
+	( 
+		[IN]	string				DisplayValue, 
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+
+
+	
+};
+
+// ============================================================================
+//  Adapter Setting Enum Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+		 Description("IANet_AdapterSettingEnum objectifies Adapter related "
+		 "driver and network device settings. IANet_AdapterSettingEnum " 
+		 "specifically handles Enumeration settings"):Amended,  LOCALE(0x409)
+		]
+class IANet_AdapterSettingEnum : IANet_AdapterSetting
+{
+		[Description(
+		 "PossibleValues is an array of the possible values allowed for the enum."):Amended
+		]	
+	sint64 PossibleValues[];
+		
+		[Description(
+		 "DescriptionMap describes what each value means."):Amended
+		]	
+	string DescriptionMap[];
+		
+	[write, Description("Specifies the current value of the setting - this is the only attribute that the user can change."):Amended]	 
+	sint64 CurrentValue;
+	
+	[write, Description("Specifies the value of the setting from the registry."):Amended]	 
+	sint64 RegistryValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+		
+		[Description(
+		 "DefaultValue is the initial setting for this value."):Amended
+		]
+	sint64 DefaultValue;
+	
+	[Description (
+	"This method is called to check if the change in the setting will have any impact on other settings or to the user's experience."
+	):Amended, implemented
+	]
+	uint32 ValidateSettingModification( [IN] sint64 CurrentValue, [OUT]   WarningMessageObj WarningMessages[]);
+
+	[Description ("This method returns information related to changing the setting's value.  The DisplayValue parameter specifies the new value of the setting."
+				  "The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateSettingModificationEx
+	( 
+		[IN]	string				DisplayValue, 
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Adapter Setting Slider Class
+// ============================================================================
+    [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+    Description("IANet_AdapterSettingSlider objectifies Adapter related "
+    "driver and network device settings. IANet_AdapterSettingSlider " 
+    "specifically handles Slider settings"):Amended,  LOCALE(0x409)
+    ]
+class IANet_AdapterSettingSlider : IANet_AdapterSetting
+{
+		[Description(
+		 "PossibleValues is an array of all the possible values.  The values "
+		 "should be arranged with the first value on the left of the slider and "
+		 "the last value on the right. "):Amended
+		]
+	sint64 PossibleValues[];
+		[write, Description(
+		 "CurrentValue is the current setting for this parameter."):Amended
+		] 
+	sint64 CurrentValue;
+
+	[write, Description(
+		 "Specifies the value of the setting from the registry."):Amended
+		] 
+	sint64 RegistryValue;
+
+		[Description(
+		 "DefaultValue is the initial setting for this parameter."):Amended
+		]
+	sint64 DefaultValue;
+		
+		[Description(
+		 "FirstLabel is the label that should be displayed on the left of the slider."):Amended
+		]
+	string FirstLabel;
+		[Description(
+		 "LastLabel is the label that should be displayed on the right of the slider."):Amended
+		]
+	string LastLabel;
+	
+	[Description (
+	"This method is called to check if the change in the setting will have any impact on other settings or to the user's experience."
+	):Amended, implemented
+	]
+	uint32 ValidateSettingModification( [IN] sint64 CurrentValue, [OUT]   WarningMessageObj WarningMessages[]	);
+
+	
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Adapter Setting Multi Selection Class
+// ============================================================================
+    [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+    Description("IANet_AdapterSettingMultiSelection objectifies Adapter related "
+    "driver and network device settings. IANet_AdapterSettingMultiSelection " 
+    "specifically handles Multi Selection settings."):Amended,  LOCALE(0x409)
+    ]
+
+class IANet_AdapterSettingMultiSelection : IANet_AdapterSetting
+{
+		[Description(
+		 "PossibleValues is an array of all the possible selections."):Amended
+		]
+	sint64 PossibleValues[];
+		[Description(
+		 "DescriptionMap is an array of descriptions of the possible selections."):Amended
+		]
+	string DescriptionMap[];
+		[write, Description(
+		 "Current value is a bit-wise OR of the currently chosen options from the "
+		 "possible values."):Amended
+		] 
+	sint64 CurrentValue;
+
+	[write, Description(
+		 "Registry value is a bit-wise OR of the currently chosen options from the "
+		 "possible values."):Amended
+		] 
+	sint64 RegistryValue;
+
+		[write, Description(
+		 "Default value is a bit-wise OR of the default options from the "
+		 "possible values."):Amended	
+		] 
+	sint64 DefaultValue;
+	
+	[Description (
+	"This method is called to check if the change in the setting will have any impact on other settings or to the user's experience."
+	):Amended, implemented
+	]
+	uint32 ValidateSettingModification( [IN] sint64 CurrentValue, [OUT]   WarningMessageObj WarningMessages[]	);
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Adapter Setting String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+		 Description("IANet_AdapterSettingString objectifies Adapter related "
+		 "driver and network device settings. IANet_AdapterSettingString " 
+		 "specifically handles String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_AdapterSettingString : IANet_AdapterSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+	[write, Description("Specifies the current value of the setting - this is the only attribute that the user can change."):Amended] 
+	string  CurrentValue;
+
+	[write, Description("Specifies the value of the setting from the registry ."):Amended] 
+	string  RegistryValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+	
+	[Description (
+	"This method is called to check if the change in the setting will have any impact on other settings or to the user's experience."
+	):Amended, implemented
+	]
+	uint32 ValidateSettingModification( [IN] string CurrentValue, [OUT]   WarningMessageObj WarningMessages[]	);
+
+	[Description ("This method returns information related to changing the setting's value.  The DisplayValue parameter specifies the new value of the setting."
+				  "The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateSettingModificationEx
+	( 
+		[IN]	string				DisplayValue, 
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+	
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] string CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Adapter Setting Multi String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"),  
+		 Description("IANet_AdapterSettingMultiString objectifies Adapter related "
+		 "driver and network device settings. IANet_AdapterSettingMultiString " 
+		 "specifically handles Multi String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_AdapterSettingMultiString : IANet_AdapterSetting
+{
+	[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+	[write, Description("Specifies the current value of the setting - this is the only attribute that the user can change."):Amended] 
+	string  CurrentValues[];
+
+	[write, Description("Specifies the current value of the setting from the registry - this is the only attribute that the user can change."):Amended] 
+	string  RegistryValue[];
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue[];
+
+	[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+	
+	[Description (
+	"This method is called to check if the change in the setting will have any impact on other settings or to the user's experience."
+	):Amended, implemented
+	]
+	uint32 ValidateSettingModification( [IN] string CurrentValues[], [OUT]   WarningMessageObj WarningMessages[]	);
+
+	[Description ("This method returns information related to changing the setting's value.  The DisplayValue parameter specifies the new value of the setting."
+				  "The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateSettingModificationEx
+	( 
+		[IN]	string				DisplayValue[], 
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+	
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] string CurrentValues [], 
+		[IN] string DisplayValues [], 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+	
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+
+// ============================================================================
+// IANet_AdapterToSettingAssoc class
+// ============================================================================
+[   Association, Description("This class associates Intel NICs with their respective settings.")
+                :Amended,  LOCALE(0x409),
+    Dynamic,
+    Provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll")
+]
+class IANet_AdapterToSettingAssoc  : CIM_ElementSetting
+{
+   [  Override("Element"),
+      Description ("The Adapter to which the Setting object belongs."):Amended
+   ]
+   IANet_PhysicalEthernetAdapter REF Element = NULL;
+   [  Override("Setting"),
+      Description ("The Setting belonging to the Adapter."):Amended
+   ]
+   IANet_AdapterSetting REF Setting = NULL;
+};
+
+
+// ============================================================================
+// NetService class
+// ============================================================================
+// TO BE DECIDED:: The Save Restore functionality, if not at Component Level,
+// then Save Restore functionality can be handled in this class. TBD
+//=============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Core.dll"), Description (
+"IANet_NetService is used to manage the interface supported by the provider.  "
+"All set operations require a unique Client handle in the context if they are to "
+"succeed."):Amended,  LOCALE(0x409)
+]
+class IANet_NetService: CIM_Service
+{
+	[Description ("Version of Intel NCS software stack."):Amended]
+	string Version;
+
+	[Description ("The BeginApply method creates a new Client handle that can be used for any set operations on the IANet classes."
+	   	      "Parameters:\n"
+		      "		ClientSetHandle - returns the new Set handle\n"	
+		      "Return code:\n"
+		      "		0 if operation was successful\n"
+		      "		non-zero if operation failed - check extended error status\n"
+	):Amended, implemented] 
+	uint32 BeginApply([OUT] uint32 ClientSetHandle);
+
+
+	[Description ("The GetPartitionsForPort method returns all partitions assocated with the same port as the indicated instance ID.\n"	   
+		"Return code:\n"
+	    	      "		0 if operation was successful\n"
+		      "		non-zero if operation failed or no partitions associated - check extended error status\n" 
+	):Amended, implemented] 
+		uint32 GetPartitionsForPort([IN] string szDeviceID, [OUT] PartitionObj partitions[]);
+
+	[Description ("The ValidateAndSetBandwidthsForPort method sets the bandwidth information for the indicated partitions."	   
+	):Amended, implemented] 
+	    uint32 ValidateAndSetBandwidthsForPort(
+        	[IN] PartitionObj partitions[],
+	        [IN] uint32 SetValuesOnNoError,
+	        [OUT]   WarningMessageObj WarningMessages[]	
+	        );
+
+
+	[Description ("The Apply method commits any changes that the user has made with a Client Set handle. "
+		      "After this method is invoked the Client Set Handle is invalidated and a new handle needs to be acquired before the next Set operation"
+	    	      "Parameters:\n" 
+	              "		ClientSetHandle - Handle with which the set operations were performed\n"
+		      "		FollowupAction - caller may be required to do something before changes will take effect.\n"
+	              "Return code:\n"
+	    	      "		0 if operation was successful\n"
+		      "		non-zero if operation failed - check extended error status\n"
+	):Amended, implemented]
+	uint32 Apply([IN] uint32 ClientSetHandle,
+		     [OUT,ValueMap {"0", "1"} :Amended, 
+		          Values {"No Action Required", "Reboot"}: Amended] 
+      		     uint32 FollowupAction);	
+
+	[Description ("The IsDeviceRLB_Enabled method is used to determine if the miniport passed is a team with RLB enabled or a VLAN on a RLB team."
+	):Amended, implemented] 
+	uint32 IsDeviceRLB_Enabled([IN] string szDeviceName, [OUT] boolean bRLB_Blocking_VNIC);	
+
+	[Description ("The GetPROSetWarnings method is used to determine if any warnings exist."
+	):Amended, implemented] 
+	uint32 GetPROSetWarnings([OUT] WarningMessageObj WarningMessages[]);	
+
+	[Description ("The GetUninstallBlockingErrors method is used to determine if an uninstall can occur."
+	):Amended, implemented, static] 
+	uint32 GetUninstallBlockingErrors([IN] uint32 Filter, [OUT]   WarningMessageObj WarningMessages[]);
+	
+	[Description ("The SynchronizeVmSwitchProtocolSetting method is used to synchronize the *RssOrVmqPreference setting across all base drivers in a team."
+	):Amended, implemented] 
+	uint32 SynchronizeVmSwitchProtocolSetting([IN] string szDeviceName, [IN] boolean bIsBinding);	
+	
+	[Description ("The ConfigureNewDevices method is used to configure recently installed devices with default settings."
+	):Amended, implemented] 
+	uint32 ConfigureNewDevices([IN] string szDevices[], [IN] UINT64 ConfigurationMask);
+
+	[Description ("The UninitializeDevices method is used to reset the list of devices back to the default state."
+	):Amended, implemented] 
+	uint32 UninitializeDevices([IN] string szDevices[], [IN] UINT64 ConfigurationMask);
+	
+	[ArrayType ("Indexed"),
+		Values {
+			/* 0 */ "Virtual NICs cannot be created on a team with Receive Load Balancing enabled.  Disable Receive Load Balancing before creating a virtual NIC on this team.", 
+			/* 1 */ "Reserved"
+		} : Amended]
+	uint16 VNIC_RLB_WarningMessage;
+
+    [ArrayType ("Indexed"),
+		Values {
+			/* 0 */ "Virtual NICs cannot be created on a team with Receive Load Balancing enabled.  Receive Load Balancing will be disabled if you create a virtual NIC on this team.\n\nDo you want to continue?",
+			/* 1 */ "Reserved"
+		} : Amended]
+	uint16 VNIC_DISABLE_RLB_WarningMessage;
+
+	[ArrayType ("Indexed"),
+		Values {
+			/* 0 */ "Virtual NICs cannot be created on a team with Receive Load Balancing enabled.  Receive Load Balancing will be disabled on the team.",
+			/* 1 */ "Reserved"
+		} : Amended]
+	uint16 VNIC_RLB_DIABLED_ON_TEAM_WarningMessage;
+    
+    
+};
+
+
+// ============================================================================
+// Extended Status class
+// ============================================================================
+[Description (
+"IANet_ExtendedStatus is used to return error information back to the "
+"caller if something went wrong with an operation."):Amended,  LOCALE(0x409)
+]
+class IANet_ExtendedStatus : __ExtendedStatus 
+{
+		[Description (
+		 "The code file name in the provider where the error occurred."
+		 ):Amended]
+	string File;
+
+		[Description (
+		 "The line number in the code file where the error occurred."
+		 ):Amended]
+	uint32 Line;
+		[Description (
+		 "The ClientSetHandle used in the call that caused the problem."
+		 ):Amended]
+	uint32 ClientSetHandle;
+
+		[Description (
+		 "If a technical rule has failed this array provides several strings "
+		 "explaining the reasons for the failure. "
+		 ):Amended]
+	string RuleFailureReasons[];
+
+};
+
+class SettingObj
+{
+    string SettingName;
+    string SettingValueList[];
+    uint32 SettingType;
+};
+
+
+class WarningMessageObj
+{
+	uint32 ErrorCode;
+    string MessageText;
+    uint32 MessageType;
+    uint32 MessageAction;
+    uint32 reserved;
+    string reserved2;
+};
+
+
+class PartitionObj
+{
+    string DeviceID;
+    string Caption;
+    
+    [Description (
+	"PortNumber indicates the port number on PCIe Quad port adapters"):Amended,
+	ValueMap{"0","1","2","3"}:Amended,
+	Values{"A","B","C","D"}:Amended
+	]
+    uint16 PortNumber;
+
+    uint32 PartitionNumber;
+    uint32 MaximumBandwidth;
+    uint32 MinimumBandwidth;    
+    string Reserved;
+    uint32 Reserved2;
+};
+
+class WarningMessagesText
+{
+	[Override ("Warning Messages"), Description (
+	"Lists all the possible warning messages."):Amended, 
+	ArrayType ("Indexed"),
+	Values {
+	/*  0 */ "Success." 
+
+
+	} : Amended]
+    uint16 WarningMessagesArray[];
+};
+
+

@@ -1,0 +1,621 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Linux Installation on iSCSI Disk</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Intel&reg; Ethernet iSCSI - Linux Installation and Configuration</h1>
+<p><a href="#iSCSI Initiator">Open-iSCSI Initiator Installation</a></p>
+<p><a href="#Initiator Config">Open-iSCSI Initiator Configuration</a></p>
+<p><a href="#DCBx">DCBx Software Configuration</a></p>
+<p><a href="#Install iSCSI Boot">Installation of Intel&reg; Ethernet iSCSI Boot</a></p>
+<hr>
+<h2><a name="iSCSI Initiator"></a>Open-iSCSI Initiator Installation</h2>
+<ol>
+	<li>Install the Open-iSCSI initiator utilities.&nbsp; 
+	<p>#yum -y install iscsi-inititator-utils </li>
+</ol>
+<hr>
+<h2><a name="Initiator Config"></a>Open-iSCSI Initiator Configuration</h2>
+<ol>
+	<li>Refer to <a href="http://www.open-iscsi.org/docs/README">
+	www.open-iscsi.org/docs/README</a> </li>
+	<li>Configure your iSCSI array to allow access 
+	<p>examine <i>/etc/iscsi/initiatorname.iscsi</i> for the Linux host 
+	initiator name</p>
+	<p>Update your volume manager with this host initiator name. </li>
+	<li>Set iscsi to start on boot 
+	<p>#chkconfig iscscd on</p>
+	<p>#chkconfig iscsi on </li>
+	<li>Start iSCSI service (192.168.x.x is the IP Address of your target) 
+	<p>#iscsiadm -n discovery -t s -p 192.168.x.x </p>
+	<p>Observe the target names returned by iscsi discovery </li>
+	<li>Log onto the target (-m XXX -T is XXX -l XXX -) 
+	<p>iscsiadm -m node -T iqn.2123-01.com:yada:yada: -p 192.168.2.124 -l </li>
+</ol>
+<hr>
+<h2><a name="DCBx"></a>DCBx Software Configuration</h2>
+<p>Data Center Bridging Exchange (DCBx) provides services to establish a 
+dropless Ethernet fabric to both FCoE and iSCSI.&nbsp; Most FCoE and many iSCSI 
+network configurations will require DCBx to be installed and configured.&nbsp; 
+Instructions for configuring DCBx are <a href="dcb.htm">
+here.</a></p>
+<hr>
+<h2><a name="Install iSCSI Boot"></a>Linux Installation of Intel<sup>&reg;</sup> Ethernet iSCSI Boot</h2>
+<p>This page describes how to install Linux onto a hard drive so that the disk 
+	is bootable using an Intel&reg; Ethernet iSCSI Boot-capable adapter. There are two methods 
+	to accomplish this: </p>
+<ul>
+	<li>Installing directly to a hard drive in an iSCSI storage array 
+			(Remote Install).</li>
+	<li>Installing to a local disk drive and then transferring this disk 
+			drive or OS image to an iSCSI Target (Local Install). </li>
+</ul>
+<p>For more information on SCSI device enumeration, refer 
+	to <a href="#Appendix A">Appendix A</a> at the end of this document.<p>The SUSE* 
+	Linux Enterprise Server 10 process can be found <a href="#SUSE10">here</a>. 
+</p>
+<p>The SUSE* Linux Enterprise Server 9-SP3 process can be found <a href="#SUSE9">
+here</a>.</p>
+<p>The Red Hat* Enterprise Linux 5.1 process 
+can be found <a href="#RHEL 5.1">here</a>.</p>
+<p>The Red Hat* Enterprise Linux 4 process 
+can be found <a href="#RHEL">here</a>.</p>
+<table class="note">
+	<tr>
+		<td width="21" valign="top" align="center">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td><STRONG>NOTE:</STRONG> Some newer network device drivers 
+		are not included in either SLES9 or RHEL4. To enable these devices, the 
+		user will need to get the correct driver and load the driver before 
+		discovery is attempted when following the preinstall instructions.</td>
+	</tr>
+</table>
+<h3><a name="SUSE10"></a>SUSE* Linux Enterprise Server 10</h3>
+<table class="note" >
+	<tr>
+		<td width="21" valign="top" align="center">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td><STRONG>NOTE:</STRONG> Users who wish to have the easiest 
+		experience when installing Linux onto an iSCSI target should use SLES10 
+		or greater. SLES10 provides native support for iSCSI Booting and 
+		installing. This means that there are no additional steps outside of the 
+		installer that are necessary to install to an iSCSI target using an 
+		Intel Gigabit PCI-Express Server Adapter. Please refer to the SLES10 documentation for 
+		instructions on how to install to an iSCSI LUN.</td>
+	</tr>
+</table>
+<h3><a name="SUSE9"></a>SUSE* Linux Enterprise Server 9-SP3</h3>
+<h4>Prerequisites:</h4>
+<ol>
+	<li>A host system to install Linux on.</li>
+	<li>A driver disk compatible with the host system and the diskless target 
+	(either USB key or floppy disk). </li>
+	<li>The SUSE Linux Enterprise Server 9-SP3 install CDs.</li>
+	<li>linux-iscsi files (this requirement will be satisfied by Section I)<ol type="a">
+		<li>iscsi.ko</li>
+		<li>iscsid</li>
+		<li>initiatorname.iscsi</li>
+		<li>iscsi.conf</li>
+	</ol>
+	</li>
+</ol>
+<h4>Section I : Creating the Linux-iSCSI driver</h4>
+<p>This is the recommended method for creating the driver disk.</p>
+<ol>
+	<li>On the system running SUSE Linux Enterprise Server 9-SP3, insert and mount 
+	the media to be used 
+	as the driver disk.</li>
+	<li>YaST -&gt; Add/Remove Software.</li>
+	<li>Search &quot;kernel&quot;</li>
+	<li>Select &quot;kernel-default&quot; and install the package.</li>
+	<li>Search &quot;iscsi&quot;</li>
+	<li>Select &quot;linux-iscsi&quot; and install the package.</li>
+	<li>Copy the following files to your mounted media<ol type="a">
+		<li>/lib/modules/2.6.5-7.244-default/extra/iscsi.ko</li>
+		<li>/sbin/iscsid</li>
+		<li>/etc/initiatorname.iscsi</li>
+		<li>/etc/iscsi.conf</li>
+	</ol>
+	</li>
+</ol>
+<table class="note">
+	<tr>
+		<td width="21" valign="top" align="center">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td><STRONG>NOTE:</STRONG> Configure the initiatorname.iscsi and 
+		iscsi.conf files according to your target configuration. To do so you 
+		should read the README provided by the linux-iscsi source code. 
+		You must at least configure the DiscoveryAddress in the iscsi.conf.
+		  <p>If 
+		your target supports advanced features such as CHAP, you will need to 
+		make sure that the iscsi.conf and initiatorname.iscsi match your target 
+		configuration at this point. These files will be used throughout the 
+		install and boot process.</p>
+		<p>Alternatively, you may create the driver disk using a different host 
+		machine other than SUSE Linux Enterprise Server 9-SP3. You will need to compile the iscsi.ko and 
+		iscsid using the 2.6.5-7.244-default kernel. You can learn to do this by 
+		reading the README provided with the linux-iscsi source code.</td>
+	</tr>
+</table>
+
+<h4>Section II : Installing to the iSCSI target system</h4>
+<table class="note">
+	<tr>
+		<td width="21" valign="top" align="center">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td><STRONG>NOTE:</STRONG> You need an Intel&reg Ethernet iSCSI Boot-capable 
+		adapter to connect to your target and
+boot the OS from the iSCSI Target Disk.</td>
+	</tr>
+</table>
+<h5>Requirements:</h5>
+<ol>
+	<li>Diskless host compatible with the driver disk.</li>
+	<li>The driver disk created in Section I.</li>
+	<li>The full set of CDs for both SUSE Linux Enterprise Server 9 and SUSE 
+	Linux Enterprise Server 9-SP3. </li>
+</ol>
+<h5>Procedure:</h5>
+<ol>
+	<li>Boot from SUSE Linux Enterprise Server 9-SP3 installation CD1.<ol type="a">
+		<li>
+		Select &quot;installation&quot;, but before pressing &quot;enter&quot;, please enter the 
+		following boot option.
+		<br>&nbsp;&nbsp;&nbsp; DiscoveryAddress=&lt;IP of target&gt; InitiatorName=&lt;initiator iqn&gt; 
+		netsetup=1</li><br>
+		<br>
+	</ol>
+	</li>
+	<li>When you are prompted for CD1 insert SUSE Linux Enterprise Server 9 CD1.</li>
+	<li>When you are prompted to accept the license agreement, press 
+	Ctrl-Alt-F2 to switch to the console<ol type="a">
+		<li>mount the driver disk</li>
+		<li>copy the following files to /etc<ol type="i">
+			<li>initiatorname.iscsi</li>
+			<li>iscsi.conf</li>
+		</ol></li>
+		<li>copy the following files to /tmp<ol type="i">
+			<li>iscsi.ko</li>
+			<li>iscsid</li>
+		</ol></li>
+		<li>unmount your driver disk and remove the driver disk</li>
+		<li>cd /tmp</li>
+		<li>insmod iscsi.ko</li>
+		<li>./ iscsid</li>
+	</ol></li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 0px">Verify that you are connected to the target</li>
+</ol>
+<blockquote>
+	<p style="margin-top: 0; margin-bottom: 0px">&nbsp;&nbsp;&nbsp; Ctrl-Alt-F4 will display something such as:</p>
+	<blockquote>
+		<p style="margin-top: -5px; margin-bottom: 0px">&quot;iSCSI target bus 0 target 0 = iqn.XYZ&quot;</p>
+		<p style="margin-top: 0; margin-bottom: 0px">&quot;Attached scsi disk ...&quot;
+		</p>
+	</blockquote>
+</blockquote>
+<ol start="5">
+	<li>Press Alt-F7 or Ctrl+Alt+F7 to go back and continue installation. Accept 
+	the license agreement and continue until you reach the &quot;Installation 
+	Settings&quot; Dialog.</li></ol>
+	
+	<table class="note">
+		<tr>
+			<td width="21" valign="top" align="center">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td><STRONG>NOTE:</STRONG> When partitioning the iSCSI LUs, 
+			ensure that your boot partition is not distributed across physical 
+			partitions on different iSCSI LUs. The Intel iSCSI Option ROM will 
+			only expose one iSCSI LUN and if /boot is distributed across multiple 
+			LUs it will not be visible during the boot process.</td>
+		</tr>
+	</table>
+	
+<ol start="6">
+	<li>Select the Software packages to install<ol type="a">
+		<li>Click &quot;Software&quot;.</li>
+		<li>Choose the software you wish to install.</li>
+		<li>Select &quot;Detailed selection&quot;. Change the value of the &quot;Filter&quot; 
+		drop-down box to &quot;search&quot;.</li>
+		<li>Search for &quot;iSCSI&quot;.</li>
+		<li>Make sure the &quot;linux-iscsi&quot; checkbox is selected.</li>
+		<li>Make sure the &quot;Autocheck&quot; checkbox is selected.</li>
+		<li>Click &quot;accept&quot; and &quot;continue&quot; if prompted.</li>
+	</ol></li>
+	<li>Change some of the Booting options<ol type="a">
+		<li>Click &quot;Booting&quot;.</li>
+		<li>Double-click &quot;Disk Order&quot;.</li>
+		<li>Ensure that the disk that you are installing the OS on is the top 
+		disk in the list.</li>
+	</ol></li>
+	<li>When the installation completes, the user is warned that a reboot will 
+	occur, accompanied by a 10 second countdown. Press &quot;Stop&quot; to stop the 
+	system reboot.</li>
+	<li>Press Ctrl-Alt-F2 to go to console<ol type="a">
+		<li>Run &quot;chroot /mnt&quot;</li>
+		<li>
+		<p style="margin-top: 0; margin-bottom: 2px">Edit line 10 of the file /etc/sysconfig/kernel. Append &quot;e1000&quot; &amp; &quot;iscsi&quot; 
+		driver to INITRD_MODULES variable.</p>
+		<p style="margin-top: 0; margin-bottom: 2px">Example: INITRD_MODULES=&quot;... e1000 
+		iscsi&quot;.</li>
+		<li>
+		<p style="margin-top: 0; margin-bottom: 2px">If your target requires CHAP authentication add the following to /etc/iscsi.conf 
+		at line 1901</p>
+		<p style="margin-top: 0; margin-bottom: 2px">echo Username=&lt;CHAP username&gt; &gt;&gt; /etc/iscsi.conf</p>
+		<p style="margin-top: 0; margin-bottom: 2px">echo Password=&lt;CHAP password&gt; &gt;&gt; /etc/iscsi.conf</li>
+		<li>mkinitrd -D ethX</li>
+		<li>Press Ctrl-D</li>
+	</ol></li>
+	<li>Modify three configuration files so that they have the correct device 
+	node listed. Refer to Appendix A for more information on SCSI device 
+	enumeration.<ol type="a">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 2px">Edit /mnt/boot/grub/menu.1st so that root= points to the correct root 
+	partition. </li>
+</ol>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	For example:</p>
+	<font SIZE="2">
+	<p style="margin-top: 0; margin-bottom: 2px"></p>
+	</font>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; root=/dev/sda3<ol start="2" type="a">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 2px">Edit /mnt/boot/grub/device.map so that grub knows which hard drive it 
+	should use.</li>
+</ol>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	For example:</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (hd0) 
+	&lt;SCSI device node for Boot LUN&gt;<ol start="3" type="a">
+	<li>Edit /mnt/etc/fstab so that the partitions of your iSCSI LUN are mounted 
+	to the correct mount points. Only change the device nodes, not the FS type, 
+	attributes or major/minor numbers. For example,</li>
+</ol>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sda2&nbsp;&nbsp;&nbsp;&nbsp; /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	reiserfs&nbsp;&nbsp;&nbsp;&nbsp; ac1,user_xattr&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp; 
+	1</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sda1&nbsp;&nbsp;&nbsp;&nbsp; /boot&nbsp; ext2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	ac1,user_xattr&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp; 2</li>
+	<li>Press Alt-F7 (Alt-F1 if using text mode installation) to return to 
+	installation screen.<ol type="a">
+		<li>Select &quot;OK&quot; to reboot.</li>
+		<li>Remove the install CD.</li>
+	</ol></li>
+	<li>After the reboot, YaST will step you through various configurations.</li>
+</ol>
+
+	<table class="note">
+	  <tr>
+			<td width="21" valign="top" align="center">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td><STRONG>NOTE:</STRONG> After this first 
+			reboot, YaST may ask you to configure your network devices. Skip 
+			this step as it will reset the network interface that the iSCSI 
+			traffic is on.</td>
+		</tr>
+	</table>
+
+<ol start="13">
+	<li>
+	<p style="margin-top: 0; margin-bottom: 2px">When you have booted to your iSCSI LUN, edit /etc/rc.d/network. Add the 
+	following line to the script to prevent it from trying to reset the iscsi-ethernet interface. Please add carefully
+	</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; test &quot;$a&quot; = ethX &amp;&amp; continue;</p>
+	<p style="margin-top: 0; margin-bottom: 2px">immediately after line number 169 where ethX is the ethernet interface 
+	used for iSCSI communication.</p></ol>
+
+	<table class="note">
+		<tr>
+			<td width="21" valign="top" align="center">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td><STRONG>NOTE:</STRONG> After the system has booted, iscsid 
+			will be running. The user may want to add something like &quot;kill `pidof 
+			iscsid`&quot; to an init script. iscsid is only needed for discovery and 
+			can be killed in this way without problems. </td>
+		</tr>
+	</table>
+
+	<p>See <a href="#Appendix A">Appendix A</a></li>
+
+<h3>
+<a name="RHEL 5.1"></a>Red Hat Enterprise Linux 5.1 Installation:</h3>
+
+<table class="note">
+	<tr>
+		<td width="21" valign="top" align="center">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td><STRONG>NOTE:</STRONG> Users who wish to have the easiest 
+		experience when installing Linux onto an iSCSI target should use Red Hat 
+		5.1 
+		or greater. Red Hat 5.1 provides native support for iSCSI Booting and 
+		installing. This means that there are no additional steps outside of the 
+		installer that are necessary to install to an iSCSI target using an 
+		Intel Gigabit PCI-Express Server Adapter. Please refer to the Red Hat 
+		5.1 documentation for 
+		instructions on how to install to an iSCSI LUN.
+		  <p>RHEL5.2 has iBFT 
+		support.</td>
+	</tr>
+</table>
+
+<h3><a name="RHEL"></a>Red Hat Enterprise Linux 4 Installation:</h3>
+<p>This process has two phases. </p>
+<ol>
+	<li>Creating the Driver Update Media (DUM). This involves copying the iSCSI 
+	module, its dependencies and the utilities needed for installation onto an 
+	update disk. The disk can be an IDE floppy, USB floppy or USB flash drive.</li>
+	<li>Install to the iSCSI target LUN. This consists of two parts; pre-install 
+	and post-install.</li>
+</ol>
+<h4>Prerequisites</h4>
+<ol>
+	<li>A Red Hat Enterprise Linux 4-U3 or U4 build machine. To ensure module compatibility the 
+	architecture of the build machine should match both the install media and 
+	the diskless system with which you intend to connect to the iSCSI target LUN. 
+	This means that if you will be doing a diskless boot on an x86_86 system 
+	your build machine will need be have an x86_64 architecture. The install CDs 
+	will also need to be for the x86_64 architecture.</li>
+	<li>iSCSIBoot.tar.gz. Provided by Intel.</li>
+	<li>Install Media. A blank 3.5' floppy disk, or a USB flash drive.</li>
+	<li>The iSCSI Target LUN (Boot LUN). This information is important to know 
+	in advance so that grub can be configured correctly.</li>
+</ol>
+<h4>Phase I - Creating Driver and Utilities Media (DUM) </h4>
+<ol>
+	<li>Copy and untar iSCSIBoot.tar.gz on the build machine.<ol type="a">
+	<li>cp iSCSIBoot.tar.gz /home</li>
+	<li>cd /home</li>
+	<li>tar -zxvf iSCSIBoot.tar.gz</li>
+</ol>
+	<li>Compile iscsiboot/iscsi_boot_util.c statically.<ol type="a">
+	<li>cd iSCSIBoot</li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 2px">gcc 
+	-static -Wall iscsi_boot_util.c -o iscsi_boot_util<font SIZE="2"></li>
+	
+</ol>
+	<li>Install the following RPM and copy modules to preinstall directory.<ol type="a">
+		<li>rpm -ivh kernel-2.6.9-34.EL.i686.rpm, from the RHEL4-U3 or U4 CD2</li>
+		<li>cp -f \</li>
+	</ol>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /lib/modules/2.6.9-34.EL/kernel/drivers/scsi/scsi_transport_iscsi.ko \</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /lib/modules/2.6.9-34.EL/kernel/drivers/scsi/iscsi_sfnet/iscsi_sfnet.ko 
+	\</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /lib/modules/2.6.9-34.EL/kernel/crypto/crc32c.ko \</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /lib/modules/2.6.9-34.EL/kernel/crypto/md5.ko \</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /lib/modules/2.6.9-34.EL/kernel/lib/libcrc32c.ko \</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /home/iSCSIBoot/preinstall/</li>
+</ol>
+<ol start="4">
+	<li>Copy media onto the DUM<ol type="a">
+		<li>Attach the DUM and mount it if necessary.</li>
+		<li>cp -fr /home/iSCSIBoot/iscsi_boot_util /home/iSCSIBoot/preinstall \<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp; 
+		/home/iSCSIBoot/postinstall &lt;DUM mount point&gt;</li>
+	</ol></li>
+</ol>
+<blockquote>
+	<ol type="a" start="3">
+		<li>Unmount if necessary and remove the DUM</li>
+	</ol>
+</blockquote>
+<h4>Phase II - Installation to iSCSI disk</h4>
+<table class="note">
+	<tr>
+		<td width="21" valign="top" align="center">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td><STRONG>NOTE:</STRONG> This assumes you have flashed and configured 
+		your iSCSI firmware to connect to your target and iscsi firmware was 
+		able to connect to the iscsi target.<p>If you are using USB flash 
+		drive/USB floppy as DUM, it must be attached prior to this step. If 
+		you're performing a Local Install, make sure the local disk is 
+		connected. </td>
+	</tr>
+</table>
+<ol>
+	<li>Begin installation with the option &quot;linux updates&quot;.</li>
+	<li>Continue until the &quot;Update Disk Source&quot; screen.<ol type="a">
+		<li>Press Ctrl+Alt+f2 to switch to command line mode. </li>
+		<li>
+		<p style="margin-top: 0; margin-bottom: 2px">Make a mount point directory and mount the DUM. (The mount 
+		point can be anything but /mnt). Depending on the DUM media type, these 
+		are the instructions:</li>
+	</ol></li>
+</ol>
+<blockquote>
+	<blockquote>
+		<p style="margin-top: 0; margin-bottom: 2px">IDE Floppy</p>
+		<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mkdir /mnt/floppy /tmp/iscsi</p>
+		<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mount /dev/fd0 /mnt/floppy</p>
+		<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cp -fr /mnt/floppy/* /tmp/iscsi</p>
+		<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; umount /dev/fd0</p>
+		<p>USB Floppy Drive</p>
+		<blockquote>
+			<p>To mount a USB device you must understand which /dev node the kernel 
+		will use to represent the DUM. To do this run &quot;dmesg&quot; and examine the 
+		output. Look for the text which shows your USB device's registration 
+		with the system. Determine which sdX device is associated with your 
+		device.</p>
+			<p>Next run &quot;cat /proc/partitions&quot;, the output should look similar to 
+		this,</p>
+			<p style="margin-top: 0; margin-bottom: 2px">Major&nbsp;&nbsp;&nbsp;&nbsp; Minor&nbsp;&nbsp;&nbsp;&nbsp; #blocks&nbsp;&nbsp;&nbsp;&nbsp; 
+		Name</p>
+			<p style="margin-top: 0; margin-bottom: 2px">7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		&lt;x&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; loop0</p>
+			<p style="margin-top: 0; margin-bottom: 2px">8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		&lt;x&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sda</p>
+			<p>Using the /dev node determine the minor number for your USB device.</p>
+			<p>Mount the USB device.</p>
+			<p style="margin-top: 0; margin-bottom: 2px">mkdir /mnt/usb /tmp/iscsi</p>
+			<p style="margin-top: 0; margin-bottom: 2px">mknod /dev/sdX b 8 &lt;minor#&gt;</p>
+			<p style="margin-top: 0; margin-bottom: 2px">mount /dev/sdX /mnt/usb</p>
+			<p style="margin-top: 0; margin-bottom: 2px">cp -fr /mnt/usb/* /tmp/iscsi</p>
+			<p style="margin-top: 0; margin-bottom: 2px">DO NOT unmout/remove USB floppy/USB flash drive at 
+		this point.</p>
+		</blockquote>
+	</blockquote>
+	<ol type="a" start="3">
+		<li>
+		<p style="margin-top: 0; margin-bottom: 2px">Run the &quot;preinstall/iscsipreinstall&quot; script from the mount point.</li>
+	</ol>
+	<blockquote>
+		<blockquote>
+			<p style="margin-top: 0; margin-bottom: 2px">/tmp/iscsi/preinstall/iscsipreinstall</p>
+		</blockquote>
+	</blockquote>
+	<ol type="a" start="4">
+		<li>Run &quot;dmesg&quot; again to verify that discovery occurred correctly. It should 
+		show that drives were recently discovered. Note the LUNs and discovered 
+		SCSI device nodes. This information needed to set grub configuration 
+		files.</li>
+		<li>Press Ctrl+Alt+F1 and select &quot;Back&quot;. </li>
+		<li>Continue with the installation.</li></ol>
+		
+	<table class="note">
+		<tr>
+			<td width="21" valign="top" align="center">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td><STRONG>NOTE:</STRONG>  When partitioning the iSCSI LUs, ensure that your 
+		boot partition is not distributed across physical partitions on 
+		different iSCSI LUs. The Intel iSCSI Option ROM will only expose one iSCSI LUN and if /boot is distributed across multiple LUNs it will not be 
+		visible during the boot process.</td>
+		</tr>
+	</table>
+
+<ol start="3">
+	<li>Configure the boot order<ol type="a">
+		<li>On the &quot;Boot Loader Configuration&quot; select &quot;Configure advanced boot 
+		loader options&quot; and click Next.</li>
+		<li>Change the drive order so that your target disk is on the top of the 
+		list.</li>
+		<li>Continue with remainder of installation.</li>
+		<li>When the install is complete <b>DO NOT</b> press &quot;Reboot&quot;.</li>
+	</ol>
+	</li>
+</ol>
+<ol start="4">
+	<li>Make some final post install changes:<ol type="a">
+	<li>Press Ctrl-Alt-F2 to switch back to the console.</li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 2px">Alter the grub settings:</p>
+	<p style="margin-top: 0; margin-bottom: 2px">Modify the device.map and grub.conf files so 
+	that they have the correct device node listed. Refer to Appendix A for more 
+	information on SCSI device enumeration. </p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp; /mnt/sysimage/boot/grub/device.map</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (hd0) &lt;SCSI device node for Boot LUN&gt;</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp; /mnt/sysimage/boot/grub/grub.conf</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #boot=&lt;SCSI device node for Boot LUN&gt;</li>
+	<li>
+	<p style="margin-top: 0; margin-bottom: 2px">Run the post install script and unmount the DUM.</p>
+	<p style="margin-top: 0; margin-bottom: 2px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/tmp/iscsi/postinstall/iscsipostinstall</li>
+</ol>
+	</li>
+	<li>Ensure the network is not shutdown during halt<ol type="a">
+	<li>Edit the /mnt/sysimage/etc/init.d/halt and scroll to the bottom.</li>
+	<li>Change the line stating HALTARGS=&quot;-i -d&quot; to HALTARGS=&quot;-d&quot;</li>
+</ol>
+
+	<li>Return to the GUI and reboot
+	<table class="note">
+		<tr>
+			<td width="28" valign="top" align="center">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td><STRONG>NOTE:</STRONG>  If you are using a bootable USB or Flash 
+			drive, remove it, otherwise the system will try to 
+			boot off that 
+			drive.</td>
+		</tr>
+	</table>
+	<ol type="a">
+		<li>Press Ctrl+Alt+F7 and then select &quot;Reboot&quot;.</li>
+		<li>Remove the installation media and DUM.</li>
+	</ol></li>
+	<li>On your first boot, if Kudzu asks you if you'd like to configure your 
+	adapters, please select to &quot;ignore&quot; the device.
+	
+<h4><a name="Appendix A"></a>Appendix A</h4>
+	<p>The iSCSI LUs are discovered as SCSI device nodes. The enumeration of 
+	SCSI devices is dynamic. The SCSI subsystem creates device nodes in the 
+	order that they are discovered, starting with /dev/sda and incrementing 
+	alphabetically. In the case of iSCSI LUN enumeration, local SCSI devices such 
+	as disks or USB devices affect this process. If a device node is created for 
+	a USB device before iSCSI discovery occurs the USB device will be 
+	represented by /dev/sda and the iSCSI LUs will begin with /dev/sdb. However, 
+	if you were to reboot this system without the USB device the iSCSI LUs will 
+	begin with /dev/sda. It is important to configure grub correctly to point to 
+	the correct device node in order to boot from an iSCSI hard drive. </p>
+	<p>It is often the case when installing to an iSCSI LUN that a device driven 
+	by the SCSI subsystem is used for the install media. For example, using a 
+	USB flash drive for the DUM. As stated above this will affect how grub 
+	should be configured when installing.</p>
+	<p>Here is an example of how iSCSI device node mappings might differ between 
+	installation and booting. In this example the user is using a USB flash 
+	drive as a DUM. Since this device is being used to copy files onto the system 
+	it is present before iSCSI discovery occurs. However, when booting from the 
+	iSCSI Boot Disk no USB flash drive is necessary and therefore it isn't 
+	attached.</p>
+	<p>Remote Installation:</p>
+	<p>USB flash drive or USB floppy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sda</p>
+	<p>LUN 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sdb</p>
+	<p>LUN 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sdc</p>
+	<p>Booting:</p>
+	<p>LUN 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sda</p>
+	<p>LUN 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	/dev/sdb</p>
+	<p>If the USB device is attached after booting, it will be enumerated as 
+	such, </p>
+	<p>USB flash drive or USB floppy &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/dev/sdc</p>
+	<p>It is also possible that there are other USB devices on the system, it is 
+	the users responsibility to find out if these will interfere with the device 
+	node mapping during boot.</p>
+	<h4>Appendix B</h4>
+	<p>After performing a Local Install on an IDE device the user will need to 
+	modify grub so that when booting the root partition is identified as a SCSI 
+	device. When installing to a local IDE disk drive the device node used will 
+	be of the form /dev/hdX, but when this volume is exposed by the iSCSI target 
+	the initiator will see the hard drive as a SCSI device and it will be 
+	represented as /dev/sdX. This change must be made in the grub configuration 
+	file. This type of problem exposes the necessity that the user fully 
+	understand the concepts described in this document as specifics may vary 
+	greatly.</p>
+</ol>
+<blockquote>
+	<h4>Appendix C</h4>
+	<p>In some cases, if booting the system takes an unusually long time, you 
+	may try commenting the following line in the file /etc/init.d/iptables:</p>
+	<blockquote>
+		<p>$IPTABLES-restore $OPT $IPTABLES_DATA</p>
+		<p>if [ $? -eq 0 ]; then</p>
+		<p>&nbsp;&nbsp;&nbsp; success; echo</p>
+		<p>else</p>
+		<p>&nbsp;&nbsp;&nbsp; failure; echo; return 1</p>
+		<p>fi</p>
+	</blockquote>
+	<p>This may be required as the command may be resetting the connection.</p>
+</blockquote>
+	<blockquote>
+		<h4>Appendix D</h4>
+		<p>Crash Dump for Linux:</p>
+		<p>Red Hat Enterprise Linux 4, 5.x: Netdump utility can be used to dump the 
+		disk image when the system crashes.</p>
+		<p>SUSE Linux Enterprise Server: Netdump utility can be used to dump 
+		the disk image when the system crashes. </p>
+	</blockquote>
+
+</body>
+
+</html>

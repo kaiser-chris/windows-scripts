@@ -1,0 +1,234 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+
+<meta name="keywords" contents="Boot Agent, install, installing, WfM, IBAUtil, ">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Installing the Boot Agent Software Image</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>Installing the Intel&reg; Boot Agent Software Image</h1>
+<P class="contents"><a href="#overview">Overview</a></P>
+<P class="contents"><a href="#install_windows">Installing/Updating in Microsoft Windows</a>*</P>
+<P class="contents"><a href="#install_dos">Installing/Updating in MS-DOS Environments</a></P>
+<br>
+
+<hr>
+
+<h2><a name="overview"></a>Overview</h2>
+
+<P>Intel&reg; desktop adapters have a factory-installed, integrated flash ROM device 
+that has been pre-programmed with an Intel&reg; Boot Agent software image.&nbsp;</P>
+<TABLE class="note">
+  <tr>
+    <TD valign="top"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong>  Use <a href="boot_util.htm">BootUtil</a> 
+    to enable the flash ROM on Intel server adapters.&nbsp;
+    </TD>
+  </tr>
+  </TABLE>
+
+<hr>
+
+<h2><a name="install_windows"></a>Installing/Updating in Microsoft Windows* </h2>
+<TABLE class="note">
+  <tr>
+    <TD valign="top"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTES:</strong> 
+      <ul>
+		<li>
+		<p class="numlst">Intel&reg; PROSet for 
+	Windows* Device Manager can flash the Boot ROM.
+      However, if you need to enable or disable the Boot ROM use
+		<a href="boot_util.htm">BootUtil</a>
+      from an MS-DOS environment.
+      </li>
+		<li>
+		<p class="numlst">The Flash Update operation involves writing an 
+		image into the flash ROM, which may temporarily disable the operation of 
+		the Windows network device driver. Depending on what software is 
+		installed in your system, you may need to reboot the computer following 
+		this operation. </p></li>
+		<li>
+		<p style="margin-top: 6" class="numlst">If MS-DOS installation is required, refer to 
+		<a href="#install_dos">Installing/Updating
+      in MS-DOS Environments</a>.</p></li>
+		<li>Intel PROSet
+      for Windows Device Manager also allows you to change configuration settings for PXE environments. To do so, refer to <a href="ba_configuration.htm#windows">Configuring the Intel Boot Agent in a Microsoft Windows Environment</a>. Not all
+      configuration settings are available for some flash ROMs. </li>
+	  </ul>
+    </TD>
+  </tr>
+</TABLE>
+
+<P CLASS="Body-Text">You can use Intel PROSet for Windows Device Manager to install or update the 
+Intel Boot Agent
+software in Microsoft Windows  as follows:</P>
+<ol>
+<LI>
+<p class="numlst">
+When downloading a flash ROM image file from Intel's website, be sure to save it to a temporary directory or a location where you can easily locate it for this procedure.</LI>
+<LI>
+<p class="numlst">
+Install the Intel PROSet for Windows Device Manager software onto the system.</LI>
+<LI>
+<p class="numlst">
+Starting <b>Device Manager.</b></LI>
+<LI>
+<p class="numlst">Double click (or open) the appropriate adapter and click the <b> Boot Options</b> tab. If the tab does not appear, update your network driver.</LI>
+  <li>
+    <p CLASS="numlst">Click the <strong>Flash Information</strong> button.</li>
+  <li>
+    <p CLASS="numlst">Click the <b> Update Flash </b> button and follow the directions.    
+  </li>
+</ol>
+    <p class="numlst">The flash ROM update process can take up to 90 seconds on 
+    some systems. </p>
+<hr>
+
+<h2>
+<a name="install_dos"></a>Installing/Updating in MS-DOS Environments</h2>
+<P>In this procedure, you will use an executable flash tool called BootUtil that
+has the necessary Intel Boot Agent images stored within the executable. You will
+select the adapter you want to flash, and indicate whether or not you want 
+BootUtil to create a backup image of the old flash before flashing a new Intel 
+Boot Agent
+image. BootUtil then erases the flash before writing the new Intel Boot Agent image onto
+the <a href="ba_glossary.htm#Flash">flash</a>.</P>
+<P>To use BootUtil to install or update the Intel Boot Agent software in an MS-DOS environment:</P>
+<ol>
+<LI>
+<p class="numlst">
+Obtain an MS-DOS-bootable floppy disk containing an executable image of the 
+BootUtil utility. If you do not have BootUtil on your 
+MS-DOS bootable disk, copy it to your system disk from the CD ROM that came with your product under the &#92;BOOTAGNT  directory, or acquire the most up-to-date version from Intel's website
+at <a href="http://www.intel.com/support/">www.intel.com/support/</a></LI>
+<LI>
+<p class="numlst">
+Using your MS-DOS bootable floppy disk, boot your computer to an MS-DOS prompt.<br>
+</p>
+<TABLE class="note">
+  <TR>
+    <TD valign="top"><img border="0" src="caution.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>CAUTION:</strong> The next several steps require that 
+    your computer be booted only to MS-DOS. These steps cannot be performed from 
+	an MS-DOS Command Prompt window or using an MS-DOS task within Windows.</TD>
+  </TR>
+  </TABLE>
+  </LI><br>
+  <li>Type <code>BOOTUTIL -nic=x -upgrade </code>(where x is the number of the 
+	adapter you wish to update) and press <b>Enter</b>. Refer to the help 
+	document for <a href="boot_util.htm">BootUtil</a>.<p><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --or--</b></p>
+	<p>Type <code>BOOTUTIL -all -upgrade (</code><font face="Times New Roman"><code>to 
+	update all the adapters).</code></font></p>
+	<p>A message similar to the one below appears showing a list of all 
+	compatible network adapters found in your system, assuming both the adapter 
+	and the <a href="ba_glossary.htm#Flash">flash</a> <a href="ba_glossary.htm#ROM">
+	ROM</a> device are properly installed. </p>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><strong>NOTE:</strong> Actual adapter-related data may 
+			vary depending upon the adapters installed. </td>
+		</tr>
+	</table>
+</li>
+<blockquote>
+	<table class="note" cellspacing="0" width="442">
+		<tr>
+			<td colspan="6" align="center"><code>Adapter Choices</code></td>
+		</tr>
+		<tr>
+			<td align="center"><code>===</code></td>
+			<td align="center"><code>================</code></td>
+			<td align="center"><code>=======</code></td>
+			<td align="center"><code>====</code></td>
+			<td align="center"><code>==============</code></td>
+			<td align="center"><code>=======</code></td>
+		</tr>
+		<tr>
+			<td align="center"><code>NIC</code></td>
+			<td align="center"><code>Network Address</code></td>
+			<td align="center"><code>Series</code></td>
+			<td align="center"><code>WOL</code></td>
+			<td align="center"><code>Boot ROM Type</code></td>
+			<td align="center"><code>Version</code></td>
+		</tr>
+		<tr>
+			<td align="center"><code>===</code></td>
+			<td align="center"><code>================</code></td>
+			<td align="center"><code>=======</code></td>
+			<td align="center"><code>====</code></td>
+			<td align="center"><code>==============</code></td>
+			<td align="center"><code>=======</code></td>
+		</tr>
+		<tr>
+			<td align="center"><code>1</code></td>
+			<td align="center"><code>00D0B7D36018</code></td>
+			<td align="center"><code>Gigabit</code></td>
+			<td align="center"><code>No</code></td>
+			<td align="center"><code>PXE</code></td>
+			<td align="center"><code>4.1.17</code></td>
+		</tr>
+		<tr>
+			<td align="center"><code>2</code></td>
+			<td align="center"><code>000347003E35</code></td>
+			<td align="center"><code>Gigabit</code></td>
+			<td align="center"><code>No</code></td>
+			<td align="center"><code>PXE</code></td>
+			<td align="center"><code>4.1.17</code></td>
+		</tr>
+		<tr>
+			<td align="center"><code>&nbsp;</code></td>
+			<td align="center"><code>&nbsp;</code></td>
+			<td align="center"><code>&nbsp;</code></td>
+			<td align="center">&nbsp;</td>
+			<td align="center"><code>&nbsp;</code></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		</table>
+</blockquote>
+<li>
+<p class="numlst" style="margin-top: 0; margin-bottom: 0">Type <code>Y</code> 
+(yes) to create a backup of the current contents of the
+<a href="ba_glossary.htm#Flash">flash</a> <a href="ba_glossary.htm#ROM">ROM</a> device 
+(not yet updated) onto a file. If such a file already exists, you'll be asked if 
+you want to overwrite the file. If you type <code>Y</code> (yes), the flash 
+image file is overwritten with the current contents of the flash ROM. The new 
+Intel Boot Agent image is then written into the flash ROM device used by the adapter. 
+The process takes approximately one minute.&nbsp; </p>
+<p class="numlst" style="margin-top: 0; margin-bottom: 0">&nbsp; </p>
+<table class="note">
+	<tr>
+		<td valign="top">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td valign="top"><strong>NOTE:</strong> The BootUtil utility automatically 
+		names the flash image file (backup file) with a .IBA extension. </td>
+	</tr>
+</table>
+<p class="numlst" style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+<p class="numlst" style="margin-top: 0; margin-bottom: 0"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --or--</b></li>
+<blockquote>
+	<p class="numlst" style="margin-top: 0; margin-bottom: 0">Type <code>N</code> 
+	(no) to cause BootUtil to proceed without first saving a copy of the current 
+	contents of the <a href="ba_glossary.htm#Flash">flash</a>
+	<a href="ba_glossary.htm#ROM">ROM</a> device onto a file. BootUtil asks you to 
+	confirm your choice as follows: </p>
+	<blockquote>
+		<pre>Continue Update without Restore Image? (Y)es or (N)o:</pre>
+	</blockquote>
+	<p class="numlst" style="margin-top: 0; margin-bottom: 0">If you type <code>
+	N</code> (no), BootUtil cancels the update, leaving the flash contents 
+	unchanged, and returns to the DOS prompt. If you type <code>Y</code> (yes), 
+	a new Intel Boot Agent image is written into the <a href="ba_glossary.htm#Flash">
+	flash</a> <a href="ba_glossary.htm#ROM">ROM</a> device used by the adapter. </p>
+</blockquote>
+<li>You may need to go into the BIOS to change the boot order.</li>
+</ol>
+
+</body>
+</html>

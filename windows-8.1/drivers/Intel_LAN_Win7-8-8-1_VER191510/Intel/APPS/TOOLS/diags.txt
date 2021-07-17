@@ -1,0 +1,190 @@
+Intel(R) DIAGS Release Notes
+============================
+
+April 24, 2013
+
+
+DISCLAIMER
+==========
+
+This software is furnished under license and may only be used or copied
+in accordance with the terms of the license.  The information in this
+manual is furnished for informational use only, is subject to change
+without notice, and should not be construed as a commitment by Intel
+Corporation.  Intel Corporation assumes no responsibility or liability
+for any errors or inaccuracies that may appear in this document or any
+software that may be provided in association with this document.  Except
+as permitted by such license, no part of this document may be reproduced,
+stored in a retrieval system, or transmitted in any form or by any means
+without the express written consent of Intel Corporation.
+
+
+Contents
+========
+
+- OVERVIEW
+- COMMAND LINE PARAMETERS
+- NOTES
+- INSTALLATION
+- CUSTOMER SUPPORT
+- LEGAL
+
+OVERVIEW
+========
+
+Intel's diagnostic software lets you test the adapter to see if there are
+any problems with the adapter hardware, the cabling, or the network
+connection. You can also use diagnostics to isolate problems during
+troubleshooting.  DIAGS is a single program that operates identically
+under multiple operating systems.
+
+These utilities are designed to test hardware operation and confirm the
+adapter's ability to communicate with another adapter in the same network,
+primarily confirming cabling. They should not be used to judge performance.
+
+They can test the adapter whether or not there is a responder on the network.
+In order to do a thorough test, however, you should set-up a second system on
+the network as a responder prior to starting a test.
+
+COMMAND LINE PARAMETERS
+=======================
+
+  -VERSION        Print Diags version information.
+
+  -?              Print command line usage instructions.
+
+NOTES
+=====
+
+- In general for any OS this utility may unload (or set to idle) the drivers 
+  for the adapters selected through this utility, if they were loaded.
+
+Installation
+=============
+
+INSTALLING THE TOOLS ON MICROSOFT WINDOWS*
+==========================================
+
+The tools driver can be installed on all versions of Microsoft Windows* since 
+Windows 7. To install the tools' drivers on Windows, run install.bat from the 
+appropriatedirectory on the CD.   
+
+Although the tools are not installed with install.bat, the driver that the tools 
+require is copied into the local machine Windows driver directory. To run the 
+tools, launch a Command Prompt window from the Windows Start Menu. Go to the 
+media and directory where the tools are located and run the tools. The readme 
+files for each tool are found in the same directory as the tools. These tools 
+can be manually installed on the local hard drive in any directory.
+
+The tool uses its own driver file (not the same as the system network driver).
+If the driver sys file already exists in the drivers directory, install.bat may
+fail to copy. Using the /y switch with install.bat will override and copy the 
+driver file regardless. However, this can be dangerous if an older version of 
+the driver is being used by another application such as Intel(R) PROset for Windows
+Device Manager. If a driver is already present in the drivers directory, try 
+running the tool from the command prompt. If it runs, then the driver is fine. 
+The tool will not run if the driver version present does not match the driver 
+version expected.
+
+Note that for Windows 7 (and later), the user must have access to the 
+%systemroot%\system32\drivers directory. Only the administrator account has these
+privileges. The user must be logged in as administrator or the tools must be 
+"run as" administrator.
+
+Note that on Windows, any device that is disabled in device manager will not be
+accessible by tools due to no memory resources. You would get an error code 0xC86A800E.
+To solve this problem, you can do one of the following:
+1) Re-enable the device in device manager. Never disable this device when using tools.
+2) Install an NDIS device driver for the device and make sure that it does not have
+   a yellow or red bang by it in device manager.
+3) Delete the device from device manager and restart the system. The install new 
+   hardware wizard should appear on next reboot. Do not cancel this. Just move the
+   window aside and run the tool(s). Generally, you can click "cancel" on the wizard
+   but there are some cases where Windows will disable the memory resources causing
+   you to get back into the same state.
+
+
+INSTALLING THE TOOLS ON EFI
+==============================
+
+The tools support Intel(R) EFI v1.10. There is no installation required for EFI tools.  
+The tools can simply be copied to the drive that they will run from. 
+
+Note that while EFI supports USB drives, there may be issues running tools from the USB
+drive. Whether or not there are issues are BIOS specific. If issues are experienced,
+the tool should be run from hard disk instead.
+
+
+INSTALLING THE TOOLS ON DOS
+===========================
+
+The tools support various DOS versions.  There is no installation required for 
+DOS tools. The tools can simply be copied from the DOS directory on the CD to the drive
+that they will run from.  It is expected that the tools have a clean boot environment. 
+The tools will not run with memory managers and/or DOS networking drivers loaded. 
+The tools expect that they have full, unlimited control of the hardware. The tools 
+*WILL NOT* run properly if EMM386 is present.  The tools run in protected mode, 32-bit
+DOS. Therefore, they will not be compatible with any TSR programs.
+
+
+INSTALLING THE TOOLS ON LINUX*
+==============================
+
+In order to run tools on Linux*, a driver stub must be built and installed on 
+the system. This driver is not related to the network device driver that is 
+used to run the network during live traffic. It is a separate driver used 
+explicitly for tools. Due to the nature of Linux with the number of kernels 
+that can exist, we provide source for the driver module and an install script 
+to build/install it.
+
+The tools support Linux distributions based on kernels 2.6.x. Validation is done 
+randomly on popular distributions such as Red Hat* or Suse*. Configured 
+kernel source that matches the currently installed kernel is required. A working 
+GCC is also required. There are some versions of GCC that had a bug which did not 
+support unnamed structures. These versions of GCC are not supported. If you have 
+compilation errors, try updating your version of GCC.  If you have linker errors 
+when installing the driver, you should update your kernel - download the latest 
+stable off www.kernel.org and build/install it.
+
+Note that some distributions such as recent Fedora core versions do not ship with Kernel 
+source. You must download, install, and configure the source in order to get the tools' 
+driver built on this OS. Installing the kernel source RPM does not solve the problem.
+
+This is the installation procedure:
+
+    1. Log in as root and create a temporary directory to build the Intel(R)
+       Network Connection Tools driver.
+
+    2. Copy ‘install’ and ‘iqvlinux.tar.gz’ to the temporary directory.
+       There are 3 versions of Linux supported: Linux32 (x86), Linux64e (x64),
+       and Linux64 (Itanium). Copies of the above files exist in the appropriate
+       directory for your platform.
+
+    3. CD to the temporary directory and run ‘./install.’  The driver has been
+       installed now, so the files in the temporary directory can be removed. 
+
+    4. Copy the tools that you want to use from the appropriate directory of the CD.
+
+
+CUSTOMER SUPPORT
+================
+
+- Main Intel web support site: http://www.intel.com/support
+
+- Network products information: http://www.intel.com/products/ethernet/overview.htm
+
+
+Legal / Disclaimers
+===================
+
+Copyright (C) 2002-2011, Intel Corporation.  All rights reserved.
+
+Intel Corporation assumes no responsibility for errors or omissions in this
+document.  Nor does Intel make any commitment to update the information
+contained herein.
+
+Intel is a trademark of Intel Corporation in the U.S. and/or other countries.
+
+* Other product and corporate names may be trademarks of other companies and
+are used only for explanation and to the owners' benefit, without intent to
+infringe.

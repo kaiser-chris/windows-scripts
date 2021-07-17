@@ -1,0 +1,326 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>Intel&reg; Ethernet FCoE Boot</h1>
+<p>Intel&reg; Ethernet FCoE 
+Boot allows the user to install FCoE to boot an operating system from a remote 
+target. The following information refers specifically to Intel&reg; Ethernet FCoE Boot. To then 
+configure the OS go to: <a href="fcoe_windows_installation.htm">Windows</a> or
+<a href="fcoe_linux_installation.htm">Linux</a>.</p>
+<hr>
+<p><a href="#2TB LUN">Booting from Targets Larger than 2TB</a></p>
+<p><a href="#Upgrading">Upgrading Windows Drivers on an Intel&reg; Ethernet FCoE-Booted System</a></p>
+<p><a href="#Option ROM">Intel&reg; Ethernet FCoE Boot Option ROM Setup</a></p>
+<p><a href="#Windows FCoE Boot">Microsoft* Windows* Setup for Intel&reg; FCoE Boot</a></p>
+<p><a href="#diskless_install">Installing Windows Server from a Remote Disk (&quot;Diskless Install&quot;)</a></p>
+<p><a href="#With_local">Installing Windows Server With Local Disk</a></p>
+<div class="tvl9"><p><a href="#uefi_fcoe">UEFI Setup for Intel&reg; FCoE Boot</a></p></div>
+<p><a href="boot_util.htm">BootUtility</a></p><br />
+
+<hr>
+<h2><a name="2TB LUN">Booting from Targets Larger than 2TB</a></h2>
+<p>You can connect and boot from a target LUN that is larger than 2 Terabytes with the following restrictions:</p>
+<ul>
+  <li>The block size on the target must be 512 bytes</li>
+  <li> The following operating systems are supported:
+    <ul>
+      <li>VMware* ESX 5.0, or later</li>
+      <li>Red Hat* Enterprise Linux* 6.3, or later</li>
+      <li>SUSE* Enterprise Linux 11SP2, or later</li>
+      <li>Microsoft* Windows Server* 2012, or later</li>
+    </ul>
+  </li>
+  <li>You may be able to access data only within the first 2 TB.</li>
+</ul>
+<table class="note">
+  <tr>
+    <td valign="top"><img src="note.gif" alt="" width="28" height="21" border="0" /></td>
+    <td><STRONG>NOTE:</STRONG><a name="crash"/>The  Crash Dump driver does not support target LUNs larger than 2TB.</td>
+  </tr>
+</table>
+<hr />
+<h3 style><a name="Upgrading">Upgrading Windows Drivers on an Intel&reg; Ethernet FCoE-Booted System</a></h3>
+<p> Upgrading an FCoE-booted system can only be done via the Intel&reg; PROSet for Windows* Device Manager installer. A reboot is required to complete the upgrade. You cannot upgrade a port's  Windows driver and software package if the port is in the  path to the virtual memory paging file and is also part of a Microsoft Server 2012 NIC Team (LBFO Team). To complete the upgrade, remove the port from the LBFO team and restart the upgrade.</p>
+<table class="note" >
+  <tr>
+    <td width="21" valign="top" align="center"><img src="warning.gif" alt="" width="28" height="21" border="0"></td>
+    <td><strong>WARNING:</strong> <b>Do not update the  base driver via the 
+	Windows Update method</b>
+      <p style="text-align:left"> Doing so may render the 
+	system inoperable, generating a blue screen. The FCoE Stack and base driver 
+	need to be matched. The FCoE stack may get out of sync with the base driver if the 
+    base driver is updated via Windows Update.&nbsp; </td>
+  </tr>
+</table>
+<hr>
+<h3><a name="Option ROM">Intel&reg; Ethernet FCoE Boot</a> Option ROM Setup</h3>
+<h4><a name="Boot Port Menu"></a>FCoE Port Selection Menu</h4>
+<p>To configure Intel&reg; Ethernet FCoE Boot, power-on or reset the system and 
+input the Ctrl-D key combination when the message &quot;<code>Press &lt;Ctrl-D&gt; to run setup...</code>&quot; 
+is displayed. After inputting the Ctrl-D key combination, you will be taken to the Intel&reg; 
+Ethernet FCoE Boot Port Selection Setup Menu.</p>
+<p align="center"><img alt="" src="DSC_0004.jpg" width="500" height="304">&nbsp;</p>
+<p>The first screen of the Intel&reg; Ethernet FCoE Boot Setup Menu displays a list of Intel&reg; FCoE Boot-capable adapters. For each adapter port, the associated SAN MAC 
+address, PCI device ID, PCI bus/device/function location, and a field indicating FCoE Boot status is displayed. Up to 10 FCoE Boot-capable ports can be displayed within the 
+Port Selection Menu. If there are more Intel&reg; FCoE Boot-capable adapters, these are not listed in the setup menu. </p>
+<p>Highlight the desired port and press 
+<strong>Enter</strong>.</p>
+<h4><a name="Boot Targets Config"></a>FCoE Boot Targets Configuration Menu</h4>
+<p align="center"><img alt="" src="DSC_0007.jpg" width="500" height="467">&nbsp;</p>
+<p align="left"><b>FCoE Boot Targets Configuration: </b> <strong>Discover Targets</strong> 
+is highlighted by default. If the <strong>Discover VLAN </strong>value displayed is not what you want, enter the correct value. Highlight <strong>Discover Targets</strong> and then 
+press <strong>Enter</strong> to show targets associated with the <strong>Discover VLAN </strong> value.
+Under <strong>Target WWPN</strong>, if you know the desired WWPN you can manually enter it or 
+press <strong>Enter</strong> to display a list of previously discovered targets. </p>
+<p align="center"><img src="DSC_0000.jpg" width="580" height="310"></p>
+<h4><a name="Target Selection"></a>FCoE Target Selection Menu</h4>
+<p align="center"><img alt="" src="DSC_0011.jpg" width="500" height="438"></p>
+<p>Highlight the desired <strong>Target</strong> from the list and press
+<strong>Enter</strong>.</p>
+<p align="center"><img alt="" src="DSC_0012.jpg" width="500" height="507"></p>
+<p>Manually fill in the <strong>LUN</strong> and <strong>Boot Order</strong> values. </p>
+<blockquote>
+	<p><b>Boot Order</b> valid values are 0-4, where 0 means no boot order or 
+	ignore the target. A 0 value also indicates that this port should not be 
+  used to connect to the target. Boot order values of 1-4 can only be assigned once to target(s) across all FCoE boot-enabled ports.</p>
+	<p><b>VLAN</b> value is 0 by default. You may do a <b>Discover Targets</b> which 
+	will display a VLAN. If the VLAN displayed is not the one you require, enter 
+	the VLAN manually and then perform <b>Discover Targets </b>on that VLAN.</p>
+</blockquote>
+<p>Hit 
+<strong>Save</strong>.</p>
+<table class="note"  >
+  <tr>
+	<td valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></td>
+	<td valign="top"><strong>NOTE:</strong> After the <b>Discover Targets</b> function is 
+	executed, the Option ROM will attempt to remain logged into the fabric until the
+	<b>FCoE Boot Targets Configuration Menu</b> is exited.&nbsp; 
+	</td>
+  </tr>
+</table>
+
+<ul>
+<li> Keyboard Shortcuts: Up/Down, TAB and SHIFT-TAB to move 
+	between the controls.&nbsp; Left/Right/Home/End/Del/Backspace in the edit 
+  boxes. </li>
+<li> Press the Esc key to leave the screen.</li>
+</ul>
+<TABLE class="note">
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> <b>For more detailed instructions and description of a typical installation 
+and setup go <a href="installation_details.htm">here</a>.</b></TD>
+</tr>
+</TABLE>
+
+<hr>
+<h3><a name="DMIX"></a>Intel&reg; PROSet for Windows* Device Manager</h3>
+<p>Many of the functions of the Intel&reg; Ethernet FCoE Boot Port Selection Setup Menu can 
+also be configured or revised using Intel&reg; PROSet for Windows Device Manager. 
+Click <a href="windows_command_line_install.htm">here</a> for instructions on 
+installing and using Intel&reg; PROSet for Windows Device Manager.</p>
+<ul>
+	<li>Intel&reg; Ethernet FCoE Boot version is displayed on the <b>Boot Options</b> tab if the 
+	combo image supports FCoE Boot.</li>
+	<li>Intel&reg; Ethernet FCoE Boot is an <b>Active Image </b>option if FCoE Boot is supported by 
+	the combo image.</li>
+	<li>The <b>Active Image</b> setting enables/disables Intel&reg; Ethernet FCoE Boot in the EEPROM.</li>
+	<li>Intel&reg; Ethernet FCoE Boot settings are displayed if <b>FCoE Boot </b>is the active 
+	image.</li>
+</ul>
+
+<h2><a name="Windows FCoE Boot"></a>Microsoft* Windows* Setup for Intel&reg; Ethernet FCoE Boot</h2>
+  <h3>Requirements</h3>
+<ol>
+  <li>
+	<p style="MARGIN-TOP: 5px">Follow installation steps to install 
+	the Intel&reg; Ethernet FCoE Boot-capable adapters with Intel&reg; Ethernet FCoE Boot firmware support. </p></li>
+				<li>
+				<p style="MARGIN-TOP: 5px">Create a disk target (LUN) on an 
+				available Fibre Channel target. Configure this LUN to be 
+				accessible to the WWPN address of the initiator of the host being 
+				booted. </p></li>
+				<li><p style="MARGIN-TOP: 5px">Make sure  the 
+				host system starts the Intel&reg; Ethernet FCoE Boot firmware. 
+                The firmware should be configured properly, be able to connect 
+                to Fibre Channel target, and detect the boot disk.</p></li>
+    <li>To setup a system to boot 
+  directly to an FCoE disk (aka &quot;Diskless Install&quot;), follow the 	steps in <a href="#diskless_install">Installing Windows Server from a Remote Disk (&quot;Diskless Install&quot;)</a>. </li>
+  	<li>To set up a Windows Server* boot 
+    system when a local disk is available, follow the steps in <a href="#With_local">Installing Windows Server with Local Disk</a>.</li>
+</ol>
+
+<hr>
+<h2><a name="diskless_install"></a>Installing Windows Server from a Remote Disk (&quot;Diskless Install&quot;)</h2>
+
+<TABLE class="note">
+  <tr>
+    <TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong> This section only applies to Microsoft Windows Server 2008 R2 and later.</TD>
+  </tr>
+</TABLE>
+<p>After the Option ROM is installed, if you wish to install the Windows Server operating system directly to the FCoE disk, do the following:</p>
+
+<ol>
+  <li><a name="Step 1">Locate the FCoE drivers in \APPS\FCOEBOOT\Winx64\Setup</a>. Extract all zipped files and copy  to a  CD/DVD or USB media.</li>
+  <li>Boot the install media.</li>
+  <li>Perform a Custom install and proceed to the 
+  “Where do you want to install Windows?” screen.</li>   
+  <li>Use <b>Load Driver</b> to load the FCoE drivers.  Browse to the 
+   location you chose in <a href="#Step 1">Step 1 in this section</a> and load the following two drivers 
+  in the specified order:</li>
+  <ol type="a">
+   <li>Intel(R) Ethernet Setup Driver for FCoE.</li>
+  <li>Intel(R) Ethernet Virtual Storage Miniport Driver for FCoE.</li></ol>
+  <p><strong>Note:</strong> the FCoE drivers will block any other network 
+   traffic from the FCoE-supported  ports until after <a href="#Step 7">Step 7 in this section</a>. 
+   Do not attempt  to install an NDIS miniport for any FCoE-supported ports 
+<a href="#Step 7">Step 7 in this section</a>.</p>
+     
+     <li>You should now see the FCoE disk or disks appear  in the list of available install targets.&nbsp;  All disks accessible by this initiator through the boot port should  appear.</li>
+     <li>Select the FCoE disk configured for boot in the  Option ROM and continue the install until Windows is installed and you are at  the desktop.</li>
+     <li><a name="Step 7"></a>Follow the instructions for installing Windows 
+     Server and the <a href="fcoe_windows_installation.htm#Installation">FCoE stack</a>. This will install the networking drivers and  configure the FCoE drivers to work with the networking drivers. Note that you cannot deselect the FCoE  feature.&nbsp; You will be prompted to reboot  at the end of the installation process.</li>
+     <li>Windows may prompt you to reboot once again  after it returns to the desktop.</li>
+</ol>
+<hr>
+
+
+
+<h2><a name="With_local"></a>Installing Windows Server with Local Disk</h2>
+<p>After the Option ROM is installed, if you wish to install Windows Server with local disk, do the following:</p>
+<ol>
+				<li>
+				<p>Follow the  
+				instructions for installing Windows Server and the 
+				<a href="fcoe_windows_installation.htm#Installation">FCoE 
+				stack</a>.</p>
+				</li>
+				<li>Verify that the FCoE Boot disk is available 
+				in the <b>Fabric View</b> tab of Intel&reg; PROSet for Windows Device 
+				Manager<b>, </b>and verify that you are 
+  online using Windows Disk Manager.</li>
+				<li>Open a command prompt, run the fcoeprep.bat 
+				batch file.&nbsp; To find the batch file, navigate to your architecture's directory within 
+  the \APPS\FCOEBOOT directory.</li>
+				<li>Shut Windows down and capture the OS image 
+  to a local disk partition.</li>
+				<li>Transfer the image from the local hard 
+				drive to the FCoE target.&nbsp; This may be done from within the 
+  local Windows installation.</li>
+				<li>For Windows 2008 R2 SP1 only: Run bcdboot.exe from the local Windows 
+				installation to make the FCoE disk bootable.
+				<ul>
+					<li>
+					If a System Reserved partition exists on the FCoE disk, type:
+					<code>bcdboot F:\Windows /s E: </code><br>where E: is the FCoE System Reserved partition and F: is the FCoE partition with the Windows directory.
+					</li>
+					<li>
+					If a System Reserved partition does not exist, type: 
+								<code>bcdboot E:\Windows /s E: </code><br>where E: is the FCoE partition with the Windows directory.
+					</li>
+				</ul></li>
+				<li>Shut down and remove the local 
+  disk.</li>
+				<li>Configure the system BIOS to boot from the 
+				FCoE disk and boot.</li>
+</ol>
+<TABLE class="note">
+  <tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> For more detailed instructions and description of a typical installation 
+and setup go <a href="installation_details.htm">here</a>.</TD>
+</tr>
+</TABLE>
+<div class="tvl9">
+<hr>
+<h2><a name="uefi_fcoe"></a>UEFI Setup for Intel&reg; FCoE Boot</h2>
+<p>In order to perform an UEFI FCoE Boot using early build binaries, boot the platform into the UEFI shell and proceed as follows:</p>
+<ol>
+  <li>Make sure the 10Gig UEFI  UNDI driver is loaded. 
+  Check this using <code>Drivers</code> command. If the driver isn't loaded - 		      	  softload the driver with<code> load E#####x4.efi</code> command. </li>
+        
+  <li>Load the UEFI FCoE Boot  driver: <code>fs0:\&gt; load  FcoeDxe.efi</code></li>
+      
+  <li>Launch FcoeConfig.efi application: 
+    <code>fs0:\&gt; FcoeConfig.efi</code>
+    <p> <Strong>Note:</Strong>  On UEFI 2.3.1 platforms it should be possible to configure FCoE 
+      Driver using firmware setup menu.</p>
+    <Strong>Note:</Strong> Once you complete the configuration it will be stored in systems 
+        firmware memory. Configuration will survive reboot.    
+    <p>The following screen will appear, allowing per port configuration:
+      <br>
+      <img width="430" height="319" src="firmware_clip_image002.jpg">        
+  </li>
+      
+  <li>
+    After selecting a specific port, select Discover  Targets and hit ENTER:
+    <br><br><img width="428" height="269" src="firmware_clip_image004.jpg">
+  </li><br>
+      
+  <li>
+    If targets got discovered they can be configured by selecting a row in targets list
+    and hitting ENTER:
+    <p>
+      <img width="428" height="268" src="firmware_clip_image006.jpg"> <br><br>
+      <img width="429" height="268" src="firmware_clip_image008.jpg"></p>
+  </li>
+
+  <li>
+    You can now either configure the values  manually or select 
+    [Select from Discovered Targets] and hit ENTER:
+    <p><img width="434" height="272" src="firmware_clip_image010.jpg"></p>
+  </li>
+      
+  <li>Select target from the list and hit ENTER:
+    <p><img width="435" height="271" src="firmware_clip_image012.jpg"></p>
+  </li>
+      
+  <li>Appropriate values will be populated into  target configuration fields. 
+      	Set correct LUN number and Boot Order (1-4), select Save and hit  ENTER:<br><br>
+    <img width="499" height="313" src="firmware_clip_image014.jpg">
+  </li>
+
+  <li>When targets are configured, hit [Save  Targets] to save all targets configuration:<br><br>
+    <p><img width="495" height="309" src="firmware_clip_image016.jpg"></p>
+  </li>
+
+  <li>When ports are configured, hit [Exit] to quit  FcoeConfig application: 
+    <p><img width="495" height="367" src="firmware_clip_image018.jpg" 
+        	alt="Description: Machine generated alternative text: FCoE Port Selection"></p>
+  </li>
+        
+  <li>Reboot the  machine to UEFI &ndash;Shell</li>
+      
+  <li>Perform  steps <strong>1.</strong> and <strong>2. </strong></li>
+      
+  <li>FCoE  Driver will print information about remote disk that is attempting to 
+      	connect to: <br><br><img width="499" height="225" src="firmware_clip_image020.jpg">
+  </li><br>
+
+  <li>Execute command: <code>fs0:\&gt; connect &ndash;r</code> </li>
+  
+  <li>Refresh the device mapping table: <code>fs0:\&gt; map &ndash;r</code>
+  	<p><img width="512" height="307" src="firmware_clip_image022.jpg"></p>
+	 <Strong>Note:</Strong>  If FCoE Driver has connected to LUN successfully, relevant 
+    	remote disk should be now mapped (blk0  device in above example).
+    <br><br>
+     <Strong>Note:</Strong>  If remote disk has FAT16/FAT32 formatted partition fsX entry will 
+    	be also visible in device mapping table.</p> 
+  </li>
+  <br>
+  <li>If the OS was deployed on UEFI enabled system a FAT32 UEFI GPT partition should be available.     Change directory to <code>EFI\BOOT</code> and run bootx64.efi: 
+    <code>fsX:\&gt; EFI\BOOT\bootx64.efi</code>, where X is the GPT partition file system mapping number.&nbsp;
+  </li>
+</ol>
+<p>The system will start  booting.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>
+<!--
+div.Section1
+	{page:Section1;}
+ li.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+.style1 {
+				margin-left: 40px;
+}
+.style3 {
+				margin-left: 40px;
+				font-family: "Courier New";
+				font-size: 10pt;
+}
+-->
+</style>
+</head>
+
+<body>
+
+<h1>Switch Configuration fo<strong>r </strong>
+Intel&reg; Ethernet FCoE Protocol Driver</h1>
+<p><a href="#Nexus">Cisco Nexus* Switch Platform</a></p>
+<p><a href="#Brocade">Brocade* Switch Platform</a></p>
+<hr>
+<table class="note">
+				<tr>
+								<td vAlign="top" width="28">
+								<img height="21" src="note.gif" width="28" border="0"></td>
+								<td vAlign="top">
+								<p style="MARGIN-TOP: 5px"><strong>NOTES:</strong></p>
+								<ul>
+									<li>
+									<p style="MARGIN-TOP: 5px">In the following examples, the assumption is 
+								made that the VLAN and VSAN configurations have 
+								already been performed.</p></li>
+									<li>
+									<p style="MARGIN-TOP: 5px">For more 
+									installation details 
+									check with your switch vendor's 
+									documentation:</p>
+									<p class="MsoNormal"><b>
+									<a href="http://www.cisco.com/en/US/docs/switches/datacenter/nexus5000/sw/configuration/guide/cli/ov.html">Cisco Nexus</a></b></p>
+									<p class="MsoNormal"><b>
+									<a href="http://www.brocade.com/products-solutions/products/switches/index.page">Brocade</a></b></p>
+									</li>
+								</ul>
+								</td>
+				</tr>
+</table>
+<h2><a name="Nexus"></a>Cisco Nexus* 5000 Series Switch Platform</h2>
+<p>For the Cisco/Nexus/switch platform, a virtual interface is needed 
+to bind the Ethernet port to the FC forwarder or FCF.&nbsp; Assume port 1/3 in 
+the following example.</p>
+<p>Commands to enable trunk mode for a Ether port</p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">Configure<o:p></o:p></span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">Interface 
+Ethernet 1/3</span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: Courier New">switchport mode trunk</span></p>
+<p class="style1"><span style="font-size: 10.0pt; font-family: Courier New">
+spanning-tree port type edge trunk</span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">exit</span></p>
+<p>
+Commands to create a VFC: </p>
+<p class="style1"><span style="font-size: 10.0pt; font-family: Courier New">
+configure </span></p>
+<p class="style1"><span style="font-size: 10.0pt; font-family: Courier New">
+interface vfc 3</span></p>
+<p class="style1"><span style="font-size: 10.0pt; font-family: Courier New">bind 
+interface Ethernet 1/3</span></p>
+<p class="style1"><span style="font-size: 10.0pt; font-family: Courier New">no 
+shutdown</span></p>
+<p class="style1"><span style="font-size: 10.0pt; font-family: Courier New">exit</span></p>
+<h2><a name="Brocade"></a>Brocade* 8000 Series FCoE Switch</h2>
+<p>For the 
+Brocade 8000 series FCoE switch, assuming port 1/3, vlan 101 for FCoE, use:<o:p></o:p></p>
+<p class="style3">
+configure terminal</p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">interface 
+TenGigabitEthernet 1/3<o:p></o:p></span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">
+switchport<o:p></o:p></span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">
+switchport mode converged<o:p></o:p></span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">vlan 
+classifier activate group 1 vlan 101<o:p></o:p></span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">no 
+shutdown<o:p></o:p></span></p>
+<p class="style1">
+<span style="font-size: 10.0pt; font-family: &quot;Courier New&quot;;">cee 
+default<o:p></o:p></span></p>
+<p class="style3">
+<o:p>exit</o:p></p>
+
+<table class="note">
+	<tr><td style="width: 73px" valign="top">
+			<p><img src="note.gif" align="middle"></p></td>
+		<td valign="top"><p><strong>NOTE:</strong> The &quot;cmsh&quot; command must be issued before the &quot;configure terminal&quot; command will function properly.</p></td>
+	</tr>
+</table>
+
+</body>
+</html>

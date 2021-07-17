@@ -1,0 +1,168 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Known Issues</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Known Issues</h1>
+<h2>Intel&reg; Ethernet FCoE Windows Issues</h2>
+
+<ul>
+  <li><strong>Intel&reg; Ethernet Virtual Storage Miniport Driver for FCoE may disappear from Device Manager</strong>
+    <p>The Intel&reg; Ethernet Virtual Storage Miniport Driver for FCoE may disappear from the Device Manager after either:
+       <ul><li>A virtual network is removed.</li>
+           <li>The underlying Intel NIC adapter settings are modified.</li>
+       </ul>
+    <p>This can occur when the corresponding Intel adapter is virtualized to create a new virtual network or delete or modify an existing Virtual Network. 
+       It can also happen when the underlying Intel NIC adapter settings are modified, including disabling or re-enabling the adapter.
+    </p>
+    <p>As a workaround, the user should remove all 
+	the resource dependency of the Intel&reg; Ethernet Virtual Storage Miniport Driver for FCoE that are currently being used by the system before making any changes to the Intel adapter for virtualization. 
+       For example, in one use case scenario, the user may have assigned the FCoE disk(s) from the FCoE storage driver to run one of its Virtual Machines, and at the same time the user wants to alter the configuration of the same Intel adapter for virtualization. 
+       In this scenario the user must remove the FCoE disks(s) from the Virtual Machine before altering the Intel adapter configuration.
+    </p>
+  </li>
+
+  <li><b>Virtual Port may disappear from Virtual Machine</b>
+    <p>When the Virtual Machine starts, it asks the Intel&reg; Ethernet Virtual Storage Miniport Driver for FCoE ("the driver") to create a Virtual Port. 
+       If the driver is subsequently disabled, the Virtual Port may disappear. 
+       The only way to get the Virtual Port back is to enable the driver and reboot the Virtual Machine.
+    </p>
+  </li>
+
+  <li><b>When installing FCoE after installing ANS and creating AFT Team, Storports are not installed</b>
+	<p>If the user installs ANS and creates an AFT team and then installs FCoE/DCB, the result is that DCB is off by default. 
+       If the user then enables DCB on one port, the OS detects Storports and the user must manually click on the new hardware wizard prompts for each of them to install. 
+       If the user does not do that, DCB status is non-operational and the reason given is no peer.
+    </p>
+  </li>
+
+  <li><b>Link Aggregation teams are not supported with existing FCoE Switches</b></li>
+
+  <li><b>Intel&reg; PROSet for Windows Device Manager (DMiX) is not synched with FCoE CTRL-D Utility</b>
+    <p>When the user disables FCoE via the Control-D menu, the Intel PROSet for Windows Device Manager User Interface states that the flash contains an FCoE image, but that the flash needs to be updated. 
+       Updating the flash with the FCoE image again, re-enables FCoE and returns the user to the state where all the FCoE settings are available.
+    </p>
+	<p>If the user uses the control-D menu to disable FCoE, then they should use the control-D menu to enable it because Intel PROSet for Windows Device Manager does not support enabling or disabling FCoE.</p>
+  </li>
+
+  <li><b>82599 and X540-based adapters don't display as SPC-3 compliant in Windows MPIO configuration</b>
+	<p>Because the FCoE initiator is a virtualized device it does not have its own unique hardware ID and thus is not displayed as a SPC-3 compliant device in Windows MPIO configuration.</p>
+  </li>
+  
+  <li><b>When removing ALB teaming, all FCOE functions fail, all DMIX tabs are grayed out, and both adapter ports fail</b>
+    <p>For ANS teaming to work with Microsoft Network Load Balancer (NLB) in unicast mode, the team's LAA must be set to cluster node IP. 
+       For ALB mode, Receive Load Balancing must be disabled. 
+       For further configuration details, refer to http://support.microsoft.com/?id=278431
+    </p>
+    <p>ANS teaming will work when NLB is in multicast mode, as well. 
+       For proper configuration of the adapter in this mode, refer to 
+       <a href="http://technet.microsoft.com/en-ca/library/cc726473(WS.10).aspx">http://technet.microsoft.com/en-ca/library/cc726473(WS.10).aspx</a></p>
+  </li>
+  
+  <li><b>FCoE and TCP/IP traffic on the same VLAN may not work on some switches</b>
+    <p>This is a known switch design and configuration issue.</p>
+  </li>
+</ul>
+
+<h2>Intel&reg; Ethernet FCoE Boot Issues</h2>
+<h4><b>Option ROM Known Issues</b></h4>
+<ul>
+  <li><b>Discovery problems with multiple FCoE VLANs</b></li>
+</ul>
+<blockquote>
+  <p>The FCoE Option ROM may not discover the desired VLAN when performing VLAN 
+discovery from the Discover Targets function.&nbsp; If the Discover VLAN box is 
+populated with the wrong VLAN, then enter the desired VLAN before executing 
+Discover Targets.</p>
+</blockquote>
+<h4><b>Windows Known Issues</b></h4>
+<ul>
+	<li><b>Brocade switch support in Release 16.4</b>
+<p>Intel&reg; Ethernet FCoE Boot does not support Brocade switches in 
+	Release 16.4. If necessary, please use Release 16.2.</p>
+<li><b>Windows uses a paging file on the local disk</b></li>
+</ul>
+<blockquote>
+  <p>After imaging, if the local disk is not removed before booting from the FCoE 
+disk then Windows may use the paging file from the local disk.</p>
+</blockquote>
+<ul>
+  <li><b>Crash dump to FCoE disks is only supported to the FCoE Boot LUN</b></li>
+</ul>
+<blockquote>
+  <p>The following scenarios are not supported:</p>
+  <span style="font-size: 10.0pt; font-family: Courier New">o<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+  </span></span>Crash dump to an FCoE disk if the Windows directory is not on the FCoE Boot LUN.<p><span style="font-size: 10.0pt; font-family: Courier New">o<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+	</span></span>Use of the DedicatedDumpFile registry value to direct crash dump 
+to another FCoE LUN.</p>
+</blockquote>
+<ul>
+  <li><b>Stopping the IntelDCB service may cause the OS to hang or crash</b></li>
+</ul>
+<ul><li><b>FCoE uninstall from a local disk may be blocked because installer 
+  inaccurately reports system is booted from FCoE</b></ul>
+<blockquote>
+	<p>When the FCoE Option ROM connects to an FCoE disk during boot, the Windows 
+installer may be unable to determine if the system was booted from FCoE or not 
+and will block the FCoE uninstall.&nbsp; To uninstall, configure the Option ROM so 
+that it does not connect to an FCoE disk.</p>
+</blockquote>
+<ul>
+  <li><b>Unable to create VLAN interfaces with Intel&reg; Ethernet FCoE Boot enabled</b></li><p>When 
+	booted with FCoE, a user cannot create VLANs and/or Teams for other traffic 
+  types. &nbsp;This prevents converged functionality for non-FCoE traffic.
+  </p>
+  <li><b>Server adapter configured for FCoE Boot available as External-Shared vnic via Hyper-V</b></li>
+    <p class="MsoNormal">If a port is set as a boot port, when 
+	the user installs the Hyper V role in the system and then goes into the 
+	Hyper V Network Manager to select which port to externally virtualize, the 
+	boot port displays, which it should not. </p>
+	<p class="MsoNormal">When setting the port to a boot port in Intel PROSet 
+	for Windows Device Manager (DMIX), a message shows that the user should restart the 
+	system for the changes to be effective but does not force a restart. As a 
+	result the user level applications are in boot mode (i.e., Data Center Tab is grayed out) but kernel level drivers haven’t been restarted to indicate to 
+	the OS that the port is a boot port. When the user then adds the Hyper V service to the 
+	system, the OS takes a snap shot of the ports available and this is the snap 
+	shot that it uses after the Hyper V role is added, system restarted and the user 
+	goes into the Hyper V Virtual Network Manager to virtualize the ports. As a 
+	result, the boot port also shows up.</p>
+	<p class="MsoNormal">Solutions:</p>
+	<p class="MsoNormal">Restart the system after setting a port to a boot port and 
+	before adding the Hyper V role. The port does not 
+	appear in the list of virtualizable ports in the Hyper V Virtual network 
+	manager.</p>
+	<p class="MsoNormal">Disable/enable the port in Device Manager after setting it to 
+	boot and before adding the Hyper V role. The port does 
+	not appear in the list of virtualizable ports in the Hyper V Virtual network 
+  manager.</p>
+	<li>
+	<p class="MsoNormal"><b>FCoE Linkdown Timeout fails prematurely when Remote 
+	Booted</b></p>
+	<p class="MsoNormal">If an FCoE-booted port loses link for longer than the 
+	time specified in the <b>Linkdown Timeout</b> advanced setting in the 
+	Intel&reg; Ethernet Virtual Storage Miniport Driver for FCoE, the system will crash.&nbsp;<b>Linkdown 
+	Timeout </b>values greater than 30 seconds may not provide extra time before 
+	a system crash.</p>
+	</li>
+    <li>
+      <p class="MsoNormal"><strong>Windows  fails to boot properly after using the image install method</strong><br>
+        &nbsp;<br>
+        The following situation may arise when installing Windows  for FCoE Boot using the imaging method:&nbsp;  Windows boots successfully from the FCoE LUN when the local drive is  installed, but when the local drive is removed, Windows seems to boot, but  fails before reaching the desktop.<br>
+        &nbsp;<br>
+        In this case it is likely that the Windows installation  resides on both the FCoE LUN and local drive.&nbsp;  This can be verified by booting from the FCoE LUN with the local drive  installed, then comparing the drive letter in the path of files on the desktop  with the drive letter for the boot partition in Windows' Disk Management  tool.&nbsp; If the drive letters are  different, then the Windows installation is split between the two disks.<br>
+        &nbsp;<br>
+      If this situation is occurring, please ensure that  <strong>fcoeprep</strong> is run prior to capturing the image, and that&nbsp; the system is not allowed to local boot  between running <strong>fcoeprep</strong> and capturing the image.&nbsp; In addition, the local drive could be removed  from the system prior to the first boot from the FCoE LUN.</p>
+      <p class="MsoNormal">For detailed instructions for installing using the imaging method, see&nbsp;
+      <a href= installation.htm#With_local>Installing Windows Server with Local Disk</a>. </p>
+    </li>
+	</ul>
+
+</body>
+</html>

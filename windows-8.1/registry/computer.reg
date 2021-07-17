@@ -1,0 +1,60 @@
+Windows Registry Editor Version 5.00
+
+; Rename My Computer to Computer
+;=================================================================================
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}]
+@="Computer"
+
+; Show Computer on Desktop
+;=================================================================================
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu]
+"{20D04FE0-3AEA-1069-A2D8-08002B30309D}"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel]
+"{20D04FE0-3AEA-1069-A2D8-08002B30309D}"=dword:00000000
+
+; Add Registry editor on the right click for My Computer
+;=================================================================================
+[HKEY_CLASSES_ROOT\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\shell]
+@="none"
+
+[HKEY_CLASSES_ROOT\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\shell\regedit]
+@="Registry editor"
+"Icon"="regedit.exe"
+"Position"="Bottom"
+
+[HKEY_CLASSES_ROOT\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\shell\regedit\command]
+@="regedit.exe"
+
+; Use Sublime when Edit 
+;=================================================================================
+[HKEY_CLASSES_ROOT\regfile\shell\edit\command]
+@=hex(2):22,00,44,00,3a,00,5c,00,50,00,72,00,6f,00,67,00,72,00,61,00,6d,00,73,\
+  00,5c,00,53,00,75,00,62,00,6c,00,69,00,6d,00,65,00,20,00,54,00,65,00,78,00,\
+  74,00,20,00,32,00,5c,00,73,00,75,00,62,00,6c,00,69,00,6d,00,65,00,5f,00,74,\
+  00,65,00,78,00,74,00,2e,00,65,00,78,00,65,00,22,00,20,00,22,00,25,00,31,00,\
+  22,00,00,00
+
+[HKEY_CLASSES_ROOT\cmdfile\shell\edit\command]
+@=hex(2):22,00,44,00,3a,00,5c,00,50,00,72,00,6f,00,67,00,72,00,61,00,6d,00,73,\
+  00,5c,00,53,00,75,00,62,00,6c,00,69,00,6d,00,65,00,20,00,54,00,65,00,78,00,\
+  74,00,20,00,32,00,5c,00,73,00,75,00,62,00,6c,00,69,00,6d,00,65,00,5f,00,74,\
+  00,65,00,78,00,74,00,2e,00,65,00,78,00,65,00,22,00,20,00,22,00,25,00,31,00,\
+  22,00,00,00
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\text\shell\edit\command]
+@=hex(2):22,00,44,00,3a,00,5c,00,50,00,72,00,6f,00,67,00,72,00,61,00,6d,00,73,\
+  00,5c,00,53,00,75,00,62,00,6c,00,69,00,6d,00,65,00,20,00,54,00,65,00,78,00,\
+  74,00,20,00,32,00,5c,00,73,00,75,00,62,00,6c,00,69,00,6d,00,65,00,5f,00,74,\
+  00,65,00,78,00,74,00,2e,00,65,00,78,00,65,00,22,00,20,00,22,00,25,00,31,00,\
+  22,00,00,00
+
+[HKEY_CLASSES_ROOT\batfile\shell\edit\command]
+@=hex(2):22,00,44,00,3a,00,5c,00,50,00,72,00,6f,00,67,00,72,00,61,00,6d,00,73,\
+  00,5c,00,53,00,75,00,62,00,6c,00,69,00,6d,00,65,00,20,00,54,00,65,00,78,00,\
+  74,00,20,00,32,00,5c,00,73,00,75,00,62,00,6c,00,69,00,6d,00,65,00,5f,00,74,\
+  00,65,00,78,00,74,00,2e,00,65,00,78,00,65,00,22,00,20,00,22,00,25,00,31,00,\
+  22,00,00,00
+
+[HKEY_CLASSES_ROOT\JSFile\Shell\Edit\Command]
+@="\"D:\\Programs\\Sublime Text 2\\sublime_text.exe\" \"%1\""

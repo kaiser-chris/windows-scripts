@@ -1,0 +1,317 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css">
+
+a.linenr {
+	color: #999999;
+	text-decoration: none
+}
+
+a {
+	color: #0000cc;
+}
+
+.style1 {
+	font-family: serif;
+}
+.style3 {
+	font-family: serif;
+	font-size: small;
+}
+.style4 {
+	font-family: serif;
+	font-size: medium;
+}
+.style5 {
+	font-size: small;
+}
+.style6 {
+	margin-left: 40px;
+}
+.style7 {
+	font-family: "Courier New", Courier, monospace;
+}
+.style8 {
+	font-family: "Courier New", Courier, monospace;
+	font-size: small;
+}
+.style9 {
+				font-family: serif;
+				font-size: small;
+				margin-left: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Intel&reg; Ethernet FCoE  Linux Management  Tools  Installation  Guide</h1>
+<p>The  Intel&reg; Ethernet FCoE  Linux Management  Tools  included  in  this  package  are:</p>
+<blockquote>
+	<p><strong>fcoeadm</strong>  - 
+	program  to  create,  reset,  destroy,  and  display  FCoE  interfaces</p>
+	<strong>fcoemon  </strong>-  program  to  monitor  the  events  from  the  DCB  daemon</blockquote>
+
+<h3>Requirements:</h3>
+
+  The user is not  required to download and build from source if you're using  a distribution (RHEL,  SLES).</li>
+
+<p><strong>If building from source:</strong> The  HBAAPI  library  and  the  HBAAPI  vendor  library  source  must  be  built 
+	and  installed  before  you  can  build  the  management  tools.  The  HBAAPI 
+vendor library and libhbalinux  may  be  downloaded  from <a href="http://www.Open-FCoE.org">www.Open-FCoE.org</a>.  The  instructions 
+	in  the  package  describes  how  to  download  and  build  the  libraries.    See  the  man 
+	pages  for  other  requirements.</p><hr>
+<h3>fcoeadm</h3>
+<p>The fcoeadm  command  is  intended  to  be  the  FCoE  management  tool  for  the  Linux  systems.
+		The  -c,  -d,  and  -r  options  are  used  to  create,  destroy,  and  reset an  FCoE  instance  on  a  given   network  interface.    The  other  options  are  used  to  query  the 
+		information  of  the  FCoE  instance  which  includes  the  interface  information,  target  information, 
+		LUN information, and port statistics. The fcoeadm command invokes the HBAAPI 
+library routines to obtain this information. The HBAAPI library routines invoke 
+the vendor\-specific library and libhbalinux to grab the information from the /sys 
+file system. In other words, the fcoeadm command requires the user to have libHBAAPI and libhbalinux  installed  on  the  system  to  work.
+<br><br>The libhbalinux  is  maintained  at <a href="http://www.Open-FCoE.org">
+http://www.Open-FCoE.org</a>. 
+The installation instructions of libhbalinux also instruct the user in how to download the HBAAPI 
+source code, build and install with the libhbalinux.    The  last  option  -h  is  used  to  show  a  brief  usage  message  of  the  supported 
+		command  syntax.</p>
+<h4>Options:</h4>
+	<blockquote>-c,  -create &lt;ethX&gt;</blockquote>
+	<blockquote><blockquote>
+		Creates  an  FCoE instance based on the given &lt;ethX&gt;.
+	</blockquote></blockquote>
+
+<blockquote>-d,  -destroy &lt;ethX&gt;</blockquote>
+
+<blockquote><blockquote>
+		Destroys  an  FCoE  instance  based  on  the  given  &lt;ethX&gt;.
+</blockquote></blockquote>
+
+<blockquote>-r,  -reset &lt;ethX&gt;</blockquote>
+
+<blockquote><blockquote>
+		Resets  the  fc_host  associated  with  the  FCoE  interface  given  by  
+		&lt;ethX&gt;.
+</blockquote></blockquote>
+
+<blockquote>-i,  -interface &lt;ethX&gt;</blockquote>
+<blockquote><blockquote>
+		Shows  the  information  of  the FCoE  instances  created  at  &lt;ethX&gt;.
+		If  &lt;ethX&gt;  is  not  specified  the  command  will  show  the  information  of  all  the 
+		FCoE  instances  created  on  the  system.
+</blockquote></blockquote>
+
+<blockquote>-t,  -target &lt;ethX&gt;</blockquote>
+<blockquote><blockquote>
+		<p>Shows  the  information  of  all  the  discovered  targets  from  the FCoE 
+		instances created at &lt;ethX&gt;.    If  &lt;ethX&gt;  is  not  specified  the  command  will 
+		show  the  information  of  all  the  discovered  targets  from  all  the   FCoE  instances  created.</p>
+</blockquote></blockquote>
+
+<blockquote>-l, -lun &lt;target_port_id&gt; &lt;lun_id&gt;</blockquote>
+<blockquote><blockquote>
+		<p>Shows  the  detailed  information  of  a  specific LUN with &lt;lun_id&gt; 
+		at the target with port id &lt;target_port_id&gt;.  Port  id  is  also  known  as  FC\-ID.  If  
+		&lt;lun_id&gt; 
+		is  not  specified,  all  the  LUNs  associated  with the  target  will  be  shown.</p>
+</blockquote></blockquote>
+
+<blockquote>-s,  -stats &lt;ethX&gt; &lt;interval&gt;</blockquote>
+<blockquote><blockquote>
+		<p>Show  the  statistics  (including  FC4  statistics)  of  the FCoE  instances  created  at  &lt;ethX&gt;. 
+		The  information  will  be  displayed  in  one  line  on  the  screen  per  given  time  interval.  
+		&lt;interval&gt;  should 
+		be  specified  in  whole   integers  greater  than  0.  It  specifies  the  time  interval  in  the  unit  of  second. 
+		If  &lt;interval&gt;  is  not  specified,  the  default  interval  is  one  second.</p>
+</blockquote></blockquote>
+
+<blockquote>-v,  -version</blockquote>
+<blockquote><blockquote>
+		<p>Displays the version of the fcoeadm  command.</p>
+</blockquote></blockquote>
+
+<blockquote>-h,  -help</blockquote>
+<blockquote><blockquote>
+		<p>Displays the usage message of the fcoeadm command where &lt;ethX&gt;  is  the  network  interface  name,  such  as  eth0,  eth1,  etc.</p>
+</blockquote></blockquote>
+
+<h4>Examples:</h4>
+<p>Creates  an  FCoE  instance  on  eth2:</p>
+<blockquote>$ fcoeadm -c  eth2</blockquote>
+
+<p>Destroys  the  FCoE  instance  on  eth2:</p>
+<blockquote>$ fcoeadm -d  eth2</blockquote>
+
+<p>Resets  the  FCoE  instance  on  eth2:</p>
+<blockquote>$ fcoeadm -r  eth2</blockquote>
+
+<p>Shows  the  information  of  all  the  adapters  and  their  ports  having FCoE  instances created:</p>
+<blockquote>$ fcoeadm -i</blockquote>
+
+<p>Shows  the  information  of  a  specific  interface  eth3.    If  eth3  has  no FCoE  instances  created, 
+		the  command  will  show  the  error  &quot;No fc_host  found  for  eth3&quot;:
+<blockquote>$ fcoeadm -i  eth3</blockquote>
+
+<p>
+Shows  the  information  of  all  the  discovered  targets  from  all  the  ports  having FCoE  instances 
+created  (they  may  be  on  different  adapter  cards).  A  brief  listing  of  discovered LUNs  are 
+listed  after  the  target  they  are  associated  with,  if  any:
+<blockquote>$ fcoeadm -t</blockquote>
+
+<p>Shows  the  information  of  all  the  discovered  targets  from  a  given  port  (eth3)  having FCoE  instance created.  A  brief  listing  of  discovered LUNs  are  listed  after  each  target  they  are  associated  with,  if  any:
+<blockquote>$ fcoeadm -t  eth3</blockquote>
+<p>Shows  the  detailed  information  of  all  the LUNs  associated  with  a  specific  target. 
+		The  target  is  identified  by  its  port  id  (aka -FC-ID)  0xD700EF:</p>
+
+<blockquote>$ fcoeadm -l  D700EF</blockquote><blockquote>$ fcoeadm -l  0xd700ef</blockquote><blockquote>$ fcoeadm -l  d700ef</blockquote>
+
+<p>Show  the  detailed  information  of  a  LUN  associated  with  a  specific  target. 
+		The  target  is  identified  by  its  port  id  (aka  FC-ID)  0xD700EF  and  the  LUN 
+		is  identified  by  its  LUN  id:
+<blockquote>$ fcoeadm -l  0xD700EF  1</blockquote>
+<p>Show  the  statistical  information  of  a  specific  port  eth3  having FCoE  instances  created. 
+		The  statistics  are  displayed  one  line  per  time  interval.  The  default  interval  is  one 
+		second  if  -n  option  is  not  specified: </p>
+<blockquote>$ fcoeadm -s  eth3</blockquote>
+<blockquote>$ fcoeadm -s  eth3  \3</blockquote>
+<h4>Reporting Bugs:</h4>
+If you have identified a defect please either file a bug or engage the 
+development mailing list at <a href="http://www.Open-FCoE.org">http://www.Open-FCoE.org</a>.<h4>Support:</h4>
+Open-FCoE  is  maintained  at  <a href="http://www.Open-FCoE.org">http://www.Open-FCoE.org</a>.  There  are  resources 
+		available  for  both  developers  and  users  at  that  site.<h3>fcoemon</h3>
+The fcoemon  command  is  a  FCoE  management  tool  provided  by  the  Open-FCoE  package.<p>fcoemon  is  the  daemon  of  the  fcoe 
+system service. When fcoemon starts, it establishes a socket connection with the DCB 
+daemon. It then sends commands to, and receives responses and events from the DCB 
+daemon. </p>
+<p>Since fcoemon depends on the existence of DCB  service, there are settings 
+required for DCB before fcoemon can be started. See the DCB Settings  section  below.</p>
+<p>Notice  that  the  fcoe  system  service  does  not  depend  on  the lldpad  service.  However,  the  fcoemon  daemon  will  be 
+		started  by  the  fcoe  service  only  if  any  one  of  the  Ethernet  ports  requires DCB  service.  In  this  case,  the fcoe 
+		service  depends  on  the lldpad  service.    If  none  of  the  Ethernet  ports  requires  DCB  service,  the  fcoemon  will  not 
+		be  started  and,  in  this  case,  the  fcoe  service  does  not  depend  on  
+the lldpad  service.</p>
+<h4><strong>Options:</strong></h4>
+<blockquote>-h | -v | --version</blockquote>
+<blockquote><blockquote>Shows the version of the fcoemon command. </blockquote></blockquote>
+<blockquote>-f | --foreground</blockquote>
+<blockquote><blockquote>Runs fcoemon  in  the  foreground.</blockquote></blockquote>
+<blockquote>-d  |  --debug</blockquote>
+<blockquote><blockquote>PFC - The DCB  Priority  Flow  Control  feature.</blockquote></blockquote>
+<blockquote><blockquote>App:FCoE -  The DCB  Fibre  Channel  over  Ethernet  feature.</blockquote></blockquote>
+<blockquote><blockquote>LLINK -  The DCB  Logical  Link  TLV  (or  Logical  Link)  feature. Applicable to DCBX version 1.</blockquote></blockquote>
+<blockquote><blockquote>multiq - See  Documentation/networking/multiqueue.txt  of  linux  kernel  2.6.28  or  higher.</blockquote></blockquote>
+<blockquote><blockquote>skbedit -  See  Documentation/networking/multiqueue.txt  of  linux  kernel  2.6.28  or  higher.</blockquote></blockquote>
+<h4>Installation Requirements:</h4>
+The  DCB  and  FCoE  kernel  configuration  options  must  be  enabled,  these  were  introduced  in  v2.6.29.  Both  the  Linux  kernel  and  iproute2  must  support  multiq  and  skbedit.    The  DCB  must  be  installed  with  version  0.9.4  and  higher.
+<h4>Supported DCB Events:</h4>
+In  response  to  each  supported  event  from  the  DCB  daemon,  the  fcoemon  collects  the  current 
+		settings  from  the  DCB  daemon  and  decides  whether  to  delete  and  re-add  the  multiq  queue  discipline 
+		and  skbedit filter. The fcoemon  does  not  destroy,  reset,  or  create FCoE  interfaces  during 
+		the  DCB  event  processing.
+<p>FEATURE_APP:</p>
+<blockquote>If  an  event  message  is  received  from  lldpad  and  if  the  feature  code  in  the  event  message 
+		is  FEATURE_APP  (5),  and  if  the  subtype  field  is  APP_FCOE_STYPE  (0),  then this indicates a  mode  or 
+		configuration  change  event  of  the FCoE  application.    The  fcoemon  will  then  issue  queries 
+		to  the  DCB  daemon  to  collect  the  current  mode  and  configuration  information.
+</blockquote>
+
+<p>FEATURE_PFC:</p>
+<blockquote>
+If  an  event  message  is  received  from  lldpad  and  if  the  feature  code in  the  event  message is  FEATURE_PFC  (3), then this indicates  a  mode  or  configuration  change  event  of  the  Priority  Flow Control  (PFC)  feature.  The  fcoemon  will  then  issue  queries  to  the DCB  daemon  to  collect 		the  current  mode  and  configuration  information.
+</blockquote>
+
+<p>FEATURE_LLINK:</p>
+<blockquote>
+If  an  event  message  is  received  from  lldpad  and  if  the  feature  code in  the  event  message is  FEATURE_LLINK  (6),  and  if  the  subtype  field  is  LLINK_FCOE_STYPE  (0),    then this indicates  a  mode or  configuration  change  event  of  the  Logical  Link TLV  feature.    The  fcoemon  will  then 
+issue  queries  to  the  DCB  daemon  to  collect  the  current  mode  and  configuration  information.
+</blockquote>
+
+<h4>Criteria for Creating, Resetting and Destroying FCoE Interface</h4>
+In this section the dcbtool  is  used  to  describe  the  conditions  of  the  DCB  feature  status 
+		because  the  meaning  is  more  understandable  and  precise.  Although  you  may  also  issue  the commands  at  run-time,  the  commands  are  intended  only  to  be  used  for  description  purpose.<p><b>PFC  and  App:FCoE</b></p>
+<p>DCB  is  configured  correctly  if:</p>
+<ol>
+    <li>The command dcbtool  gc  ethX  dcb  shows  DCB  State: &quot;on&quot;</li>
+    <li>The command dcbtool  gc  ethX app:0  shows  
+        &quot;Enable:true, Advertise:true,  Willing:true.&quot;</li>
+    <li>The command dcbtool  go  ethX app:0  shows  
+        &quot;OperMode:true.&quot;</div>
+    <li>The command dcbtool  go  ethX  pfc  shows  
+        &quot;OperMode:true&quot;  and the  values  of  pfcup.</li>
+    <li>The command dcbtool  go  ethX app:0  shows  appcfg.  The  bits set  to  1  
+        are also  set  to  1  in  pfcup  found  in (4).</li>
+</ol>
+<b>Logical  Link  TLV (applicable in DCBX version 1)</b>
+<p>The  Logical  Link  TLV  feature  is  configured  correctly  if:</p>
+<ol>
+    <li>The command dcbtool  gc  ethX ll:0  shows &quot;Enable:true,  Advertise:true,  Willing:true.&quot;</li>
+    <li>The command dcbtool  go  ethX ll:0  shows  &quot;OperMode:true.&quot;</li>
+    <li>The command dcbtool gp  ethX ll:0  shows  &quot;Link Status:up.&quot;</li>
+</ol>  
+<p><b>Criteria  to  create  FCoE interface</b></p>
+<p>If  DCB  is  required  at  the  Ethernet  port,  a  FCoE  interface  may  be  created  only  if the DCB  and  the  Logical  Link  TLV  feature  are  configured  correctly.  If  DCB  is  not required  at  the  Ethernet  port,  the  FCoE  interface  may  be  created.  FCoE  interfaces are  normally  created  by  the  fcoe  system  service.</p>
+
+<p><b>Criteria  to  Destroy  FCoE Interface</b></p>
+<p>An  FCoE  interface  will  only  be  destroyed  when  the  fcoe  system  service  is  stopped.</p>
+
+<p><b>Criteria  to  reset  a  FCoE interface</b></p>
+<p>The  fcoe  system  service  does  not  reset  any  FCoE  interfaces.</p>
+
+<p><b>Changing  DCB  Configuration,  Qdisc and Filters</b></p>
+<p>Changing  the  DCB  configuration,  qdisc,  and  filter  are  considered  to  be  administrative  actions.
+When  the  fcoe  system  service  starts  up,  it  sets  up  the  default  DCB  configuration,  qdisc,  and  filter 
+		for  reliable  FCoE  operations.  Administrators  may  alter  the  configuration  while  the  service  is  running.</p>
+<p>Changing  the  DCB  parameters  may  cause  the  fcoemon  daemon  to  delete  the  existing  multiq  queue  discipline,
+		skbedit  filter  and  re-add,  but  the  fcoe  service  will  not  touch  (e.g.  destroy  or  reset)  the  FCoE  interface.
+Changing  the  DCB  configuration,  qdisc,  and  filter  should  be  avoided  while  I/O  traffic  are  in  progress.</p><h4>Files:</h4>
+<p>The  Installation  of  the  Open-FCoE  management  tools  include  the  following  files:</p>
+<p>RHEL6.0/6.1</p>
+<p>/usr/sbin/fcoemon<br>
+  /usr/sbin/fcoeadm<br>
+  /usr/sbin/lldpad<br>
+  /usr/sbin/dcbtool</p>
+<p>SLES11  SP1</p>
+<p>/usr/sbin/fcoemon<br>
+  /usr/sbin/fcoeadm<br>
+  /sbin/lldpad<br>
+  /sbin/dcbtool</p>
+
+<p>/etc/fcoe/config</p>
+
+<blockquote>This  is  the  common  configuration  file  for  the  fcoe  system  service.    The  default  options  in  this  file  are:</blockquote>
+
+<blockquote><blockquote>
+<p>DEBUG=&quot;yes&quot; and USE_SYSLOG=&quot;yes&quot;.</p>
+<p>The  former  is  used  to  enable  (select  yes)  or  disable  (select  no) 		debugging  messages  from fcoemon,  and the  fcoe  service  script.  The  latter  is 		to indicate  if  the  log  messages  of  fcoemon, and the fcoe  service  script  are 
+to  be  output  to  the  system  log.    Use  editor  to  set  the  desired  yes/no  values.</p>
+</blockquote></blockquote>
+
+<p>/etc/fcoe/cfg-ethX</font></p>
+<blockquote>There is one of these file for each Ethernet interface ethX  found  in  the  output of cat /proc/net/dev  at  the  time  of  installation.  This  file  will  be  read  
+by  the /etc/init.d/fcoe script and the fcoemon  daemon. The  default  options 
+in  this  file  are:<blockquote>
+<p>FCOE_ENABLE=&quot;no&quot; 
+and DCB_REQUIRED=&quot;yes&quot;.    The  former  is  used  to  enable  (select  yes)  or 
+disable  (select  no)  the  FCoE  service  at  the ethX  port.  The  latter  is  to  indicate  if  the  DCB  service is  required  (select  yes)  or  not  required  (select  no)  at  the  ethX  port.  If  the  former  is  set  to  no,  the latter  is  ignored.  
+The  selection  of  the  settings  should  match  the  settings  of  the  FCoE  switch  port  connected to  the  local  Ethernet  ethX  port.  Use  editor  to  set  the  desired  yes/no values for the ethX  interfaces.</p>
+</blockquote></blockquote>
+
+<p>/etc/init.d/fcoe</p>
+<blockquote>This is the fcoe  system  service  shell  script.  This  script  is  invoked  by  the  init  process or  by  the  service  command.</blockquote>
+
+<p>/sbin/fcoemon</font></p>
+<blockquote>This is the fcoemon  daemon  only  invoked  by  the  fcoe  system  service  script.</blockquote>
+
+<p>/sbin/fcoeadm</font></p>
+<blockquote>This  is  the  program  used  by  the  fcoe  system  service  to  create  or  destroy  FCoE  interfaces.</blockquote>
+
+<h4>Reporting Bugs:  </h4>
+If you have identified a defect please either file a bug or engage the 
+development mailing list at <a href="http://www.Open-FCoE.org">http://www.Open-FCoE.org</a>.<h4>Support</h4>
+Open-FCoE is maintained at <a href="http://www.Open-FCoE.org">http://www.Open-FCoE.org</a>.  There  are  resources 
+		available  for  both  developers  and  users  at  that  site.
+
+</body>
+</html>

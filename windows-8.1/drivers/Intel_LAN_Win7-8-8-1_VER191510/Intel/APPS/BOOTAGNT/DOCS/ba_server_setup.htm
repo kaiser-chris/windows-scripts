@@ -1,0 +1,77 @@
+<html>
+
+<head>
+
+<meta name="keywords" contents="Boot Agent, RIS, Linux, PCX, BOOTP">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Server System Setup</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>Server System Setup</h1>
+
+<p class="contents"><a href="#overview">Overview</a></p>
+
+<p class="contents"><a href="#linux">Linux* Server Setup</a></p>
+<p class="contents"><a href="#other">Other Server Setup Information</a><br>
+
+</p>
+
+<hr>
+
+<h2><a name="overview"></a>Overview</h2>
+<P>
+For the Intel&reg; Boot Agent software to perform its intended job, there must be a server set up on 
+the same network as the client computer. That server must recognize and respond to the
+<a href="ba_glossary.htm#PXE">PXE</a>
+or <a href="ba_glossary.htm#BOOTP">BOOTP</a> boot protocols that are used by the 
+Intel Boot Agent software.</P>
+<P>
+The following topics describe the actions you should take to set up various 
+types of servers to work with the Intel Boot Agent. If you have questions concerning 
+the setup of your server system, contact the manufacturer of your server 
+hardware or your server operating system vendor for assistance.</P>
+
+<TABLE class="note">
+  <tr>
+    <TD valign="top"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong>    
+	When the Intel Boot Agent software is installed as an upgrade for an
+	earlier version boot ROM, the associated server-side software may not be compatible with the 
+	updated Intel Boot Agent. Contact your system administrator to determine if any server updates are 
+	necessary.
+    </TD>
+  </tr>
+</TABLE>
+<br>
+
+<hr>
+
+<h2>
+<a name="linux"></a>Linux* Server Setup</h2>
+<P>
+Consult your Linux* vendor for information about setting up the Linux Server.</P>
+
+<hr>
+
+<h2>
+<a name="other"></a>Other Server Setup Information</h2>
+<P>
+An extensive list of hardware and software manufacturers provide products that 
+support remote boot technology, conforming to the <a href="ba_glossary.htm#PXE">PXE</a> /<a href="ba_glossary.htm#BOOTP">BOOTP</a>/
+<a href="ba_glossary.htm#DHCP">DHCP</a> protocols. For information
+about setting up servers, as well as about other remote boot-related products
+provided by these manufacturers, select <a href="ba_overview.htm#resources">Boot-Related
+Resources</a>.</P>
+<h3>
+Windows* Deployment Services </h3>
+<P>
+Nothing is needed beyond the standard driver files supplied on the media. 
+Microsoft* owns the process and associated instructions for Windows Deployment 
+Services. For more information on Windows Deployment Services perform a search 
+of Microsoft articles at: http://technet.microsoft.com/en-us/library/default.aspx</P>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+The Intel Proprietary License applies to all files on this product unless there is another license in the same folder as a file or files. If another license is present, then that license shall take precedence and apply to all files in the same folder. 
+
+In the event that the English language version of the Intel Proprietary license is accompanied by any other version translated into any other language, such translated version is provided for convenience purposes only and the English language version shall control. 

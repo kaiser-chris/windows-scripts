@@ -1,0 +1,24 @@
+#!/bin/sh
+
+LINUX_DRIVER_FILE_NAME=iqvlinux.tar.gz
+if [ "$1" != "" ]
+then
+    LINUX_DRIVER_FILE_NAME=$1
+fi
+if [ -d iqvlinux ]
+then
+	rm -fr iqvlinux
+fi
+mkdir iqvlinux
+
+cp $LINUX_DRIVER_FILE_NAME ./iqvlinux
+cd ./iqvlinux
+LINUX_DRIVER_NAL_DIR=$PWD
+LINUX_DRIVER_BUILD_DIR=$PWD/src/linux/driver
+
+tar xvzf $LINUX_DRIVER_FILE_NAME
+# V=1 if you want verbose output
+make -f Makefile -C $LINUX_DRIVER_BUILD_DIR NALDIR=$LINUX_DRIVER_NAL_DIR
+
+chmod +x $LINUX_DRIVER_BUILD_DIR/nalinstall
+$LINUX_DRIVER_BUILD_DIR/nalinstall $LINUX_DRIVER_BUILD_DIR

@@ -1,0 +1,316 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Intel&reg; Ethernet iSCSI - Microsoft* Windows* Installation and Configuration</h1>
+
+<p><a href="#DCB">iSCSI Over DCB</a></p>
+<p><a href="#Config iSCSI Boot">Configuration for Intel&reg; Ethernet iSCSI Boot</a></p>
+<blockquote>
+	<p><a href="#2008">Installation of Windows Server from Media</a></p>
+	<p><a href="#WDS">WDS Installation of Windows Server</a></p>
+	<p><a href="#Crash">Crash Dump Support</a></p>
+</blockquote>
+<hr>
+
+<h2><a name="DCB"></a>iSCSI Over DCB (Data Center Bridging)</h2>
+iSCSI installation will include the installation of the iSCSI DCB Agent (iscsidcb.exe), 
+which is a user mode service. </p>
+<p>Hardware 
+Support: iSCSI Over DCB is supported by all FCoE-capable adapters.</p>
+<p>Software 
+Support: Windows Server 2008 R2 and beyond (with or without Hyper-V 
+Role).</p>
+<table class="note">
+	<tr>
+		<td valign="top" width="28">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td valign="top"><b>NOTE: 
+				</b>DCB does not install in a VM. iSCSI over DCB is only 
+		supported in the base OS. An iscsi initiator running in a VM will not 
+		benefit from DCB ethernet enhancements.</td>
+	</tr>
+</table>
+
+<h3>Configuration</h3>
+<p>Enable DCB on the adapter by the following:</p>
+<ol>
+  <li> From <b>Windows Device Manager</b>, expand <b> Networking Adapters</b> and highlight the appropriate adapter (such as 
+    Intel&reg; Ethernet Server Adapter X520). Right click on the <b>Intel adapter</b> and select <b>Properties</b>. </li>
+  <li> In the <b>Property Page</b>, select the <b>Data 
+    Center Tab</b>. </li>
+</ol>
+<p>Data Center Bridging is most often configured at the switch. If the switch is not DCB capable, 
+  the DCB handshake will fail but the iSCSI connection will not be lost. The <b>Data Center Tab</b> provides feedback as 
+  to the DCB state, operational or non- operational, as well as providing 
+  additional details should it be non-operational.</p>
+<h3>Using iSCSI over DCB with ANS  Teaming</h3>
+<p>The Intel&reg; iSCSI Agent is  responsible for maintaining all packet filters for the purpose of  priority tagging iSCSI traffic flowing over DCB-enabled adapters. The iSCSI  Agent will create and maintain a traffic filter for an ANS Team if at least one  member of the 
+  team has an &quot;Operational&quot; DCB status. However, if any  adapter on the team does not have an &quot;Operational&quot;
+  DCB status, the iSCSI Agent  will log an error in the Windows Event Log for that adapter. These error  messages are to notify the administrator of configuration issues that need to  be addressed, but do not affect the tagging or flow of iSCSI traffic for that  
+team, unless it explicitly states that the TC Filter has been removed.</p>
+<p>Go here 
+  for more information about <a href="dcb.htm">DCB</a>.</p>
+
+
+<hr>
+<h2><a name="Config iSCSI Boot"></a>Microsoft* Windows* Configuration for Intel<sup>&reg;</sup> Ethernet iSCSI  Boot<br>
+</h2>
+
+<h3>Requirements</h3>
+<ol>
+	<li>
+	Follow installation steps to install the Intel&reg; Ethernet
+  iSCSI  Boot-capable adapters with Intel iSCSI  Boot firmware support.</li>
+	<li>
+	Create a disk target (LUN) on an available iSCSI target system. 
+    Configure this LUN to be accessible to the MAC address of the 
+	adapter of the host being booted.</li>
+	<li>
+	Make sure the iSCSI initiator system starts the 
+  iSCSI Boot firmware. The firmware should be configured properly, be able to connect to iSCSI target, and detect the boot disk. </li>
+	<li>
+	You will need Microsoft* iSCSI Software Initiator 
+	with integrated software boot support. This boot version of the initiator is 
+	available
+	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=12cb3c1a-15d6-4585-b385-befd1319f825&displaylang=en">
+	here</a>.</li>
+	<li>
+	To setup Windows Server  boot system, 
+		following the steps in <a href="#2008">Installing Windows from 
+Microsoft Media</a>. </li>
+	<li>
+	To perform a diskless install directly to an 
+	iSCSI target using WDS, follow the steps in <a href="#WDS">WDS Installation 
+of Windows Server</a>.</li>
+	<li>
+	To enable crash dump support, follow the steps in 
+	<a href="#Crash">Crash Dump Support</a>. </li>
+	<li>
+	For information on iSCSI Over DCB (Data Center Bridging), 
+	read <a href="#DCB">iSCSI Over DCB</a>.</li>
+</ol>
+<hr>
+
+
+<h2><a name="2008"></a>Installing Windows Server* from Microsoft Media</h2>
+<table class="note">
+    <tr>
+        <td valign="top" width="28"><img border="0" src="note.gif" width="28" height="21"></td>
+        <td valign="top">
+          <b>NOTE:</b> Windows Server*  natively supports OS installation to an iSCSI target								
+          without a local disk and also natively supports OS iSCSI boot</span>.
+        </td>
+    </tr>
+</table>
+
+<ol type="1">
+    <li>Start installing Windows Server*.</li>
+    
+    <li>Select an iSCSI LUN on the &quot;Where do you want to install Windows?&quot; 
+      screen. Windows Server* installation media 
+      supports the network controller by default.&nbsp; Continue to 
+    complete the OS Installation. </li>
+    
+    <li>If no iSCSI LUN is listed on the &quot;Where do you want to install Windows?&quot; screen, click 
+      “Load Driver” to install the network drivers for the network 
+      controllers. The network drivers are located on the Intel Network 
+      Driver CD or can be downloaded at 
+      <a href="http://www.intel.com/support/network/sb/CS-006120.htm">http://www.intel.com/support/network/sb/CS-006120.htm</a> 
+      to USB media. If an iSCSI LUN is listed, continue to complete the OS Installation.</li>
+    
+    <li>For 10 gigabit network controllers only: If after performing step 3 above you don’t see the iSCSI LUN, then 
+        proceed with the following from the driver selection window:
+        
+        <ol>
+          <li type="a">Create the WINPE INF driver directory.
+              <ol>
+                  <li>Create a temporary directory (for example, F:\temp\winpe on the USB media).</li>                          
+                  <li>Copy all files from the PROXGB\Win32\NDISxx (or PROXGB\Winx64\NDISxx) directory to the temporary directory. 
+                      NDISxx indicates the NDIS version. Do NOT copy the 
+                  INF files from NDISxx directory to the temporary directory.</li>
+                  <li>Extract the .INF files from PROXGB\Win32\NDISxx\WinPE\*.zip to the temporary directory.</li>
+              </ol></li>
+          <li type="a">Press shift+F10 to bring up the Windows PE command line.</p></li>
+          <li type="a">Enter “drvload &lt;path&gt;” where &lt;path&gt; is the path to the WinPE inf.</p></li>
+          <li type="a">Close the driver selection window by clicking x mark on the upper right side of the window. 
+              It automatically restarts from the initial installation screen with the network driver installed. 
+              Continue to complete the OS Installation.
+          </li>
+       </ol>                
+</ol>
+<hr>
+<h2><a name="WDS"></a>WDS Installation of Windows Server*</h2>
+
+<h3>Overview:</h3>
+  Microsoft provides WDS, Windows Deployment Services, for acquiring installation image remotely. One network adapter is assigned for PXE Option ROM 
+  in order to pull the install image, and another adapter to iSCSI Option ROM for Windows Server* installation destination. 
+  The user may need to prepare a custom boot image based on the MS TechNet article 
+  <a class="style5" href="http://technet.microsoft.com/en-us/library/cc772106(WS.10).aspx">Windows Deployment Services</a>. 
+  Windows PE is used for the Windows Server* installation process.
+  
+  <h3>Setting up WDS:</h3>
+  <ol>
+      <li>Prepare the WDS environment and the custom boot image based on the MS TechNet article.</li>
+      <li>For 1 gigabit network adapters and 10 gigabit retail adapters, inject the network driver and INF from PROXGB\Win32\NDISxx (or 
+          PROXGB\Winx64\NDISxx) directory to the custom boot image.</li>
+  </ol>
+  
+  <table class="note">
+      <tr>
+          <td valign="top" width="28">
+          <img border="0" src="note.gif" width="28" height="21"></td>
+          <td valign="top">
+          <b>NOTE: </b>For other 10 gigabit adapters, follow the instruction in the readme.txt file at the 
+              PROXGB\Win32\NDISxx\WinPE (or PROXGB\Winx64\NDISxx\WinPE) directory for injecting the network driver 
+              and INF to the custom boot image.</td>
+      </tr>
+  </table>
+  
+  <table class="note">
+      <tr>
+          <td valign="top" width="28">
+          <img border="0" src="note.gif" width="28" height="21"></td>
+          <td valign="top">
+          <b>NOTE: </b>NDISxx indicates the NDIS version.</td>
+      </tr>
+  </table>
+<h3>Setting Up the System:</h3>
+
+<ol>
+    <li>Install an adapter flashed with Intel&reg; Boot Agent, or configure the LOM in your system to enable PXE.</li>
+    <li>Install an adapter flashed with the iSCSI Option ROM.</li>
+    <li>Boot the system.</li>
+    <li>Enter the BIOS setup menu and set the PXE adapter as the primary boot device.</li>
+    <li>Reboot the system.</li>
+    <li>Enter the iSCSI Setup screen via CTRL-D, and enable the primary port. 
+    	Enable the Secondary port if required by your configuration. 
+        Enter any static settings if you are not using DHCP. 
+        For more information on options in the iSCSI Setup screen click
+      <a href="iscsi_firmware_setup.htm#Boot Port Menu">here</a>.
+</ol>
+
+<table class="note">
+    <tr>
+        <td valign="top" width="28"><img border="0" src="note.gif" width="28" height="21"></td>
+        <td valign="top"><b>NOTE:</b> If the user wants to strictly use DHCP, you will need to enable Option 60 for PXE, 
+        	as well as options 12 and option 17 for iSCSI in the DHCP server.</td>
+    </tr>
+</table>
+
+<ol start="7">
+    <li>Reboot the machine.</li>
+    <li>Ensure that the iSCSI Option ROM connects to the iSCSI LUN, and the PXE Option ROM connects to the WDS server.</p></li>
+</ol>
+
+<h3>Performing an Installation:</h3>
+
+<ol>
+    <li>Boot the system via PXE to your WDS 
+        Server, ensuring that the iSCSI Option ROM has made a 
+        connection to your target.</li>
+    <li>
+        Choose the Windows Server boot image you modified with the network 
+        drivers.</li>
+    <li>
+        Select an iSCSI LUN on the “Where do you want to install 
+        Windows?” screen. &nbsp;Continue to complete the OS Installation.</li>
+    <li>
+        If no iSCSI LUN is listed on the “Where do you want to 
+        install Windows?” screen, follow procedure (A) or (B):</li>
+</ol>
+
+<blockquote>
+	<b>PROCEDURE A:</b> 
+    Inject the other INF discussed in Step 2 of the Setting UP WDS section above 
+    into your custom boot image on your WDS server. &nbsp;Reboot, and attempt the install again.
+</blockquote>
+
+<blockquote>
+	<b>PROCEDURE B:</b> Manually load the network drivers:  
+    <ol>
+        <li>
+            Click &quot;Load Driver&quot;
+to install the network drivers for the network controllers. 
+            The network drivers are located on the Intel Network Driver CD or can be downloaded at <a href="http://www.intel.com/support/network/sb/CS-006120.htm" >
+            http://www.intel.com/support/network/sb/CS-006120.htm</a> 
+      to USB media. If an iSCSI LUN is listed, continue to complete the OS Installation.</li>
+        
+        <li>For 10 gigabit network controllers only: If after performing step 1 above you don’t see the iSCSI LUN, 
+        	then proceed with the following:</li>
+            
+        <ol type ="a">
+            <li>On another system, create the WINPE INF driver directory on a removable media.</li>
+                <ol>
+                    <li>Create a temporary directory (for example, F:\temp\winpe on the USB media).</li>
+                    <li>Copy all files from the PROXGB\Win32\NDISxx (or PROXGB\Winx64\NDISxx) directory to 
+                        the temporary directory. NDISxx indicates the NDIS version.  Do NOT copy the INF files from NDISxx directory 
+                      to the temporary directory.</li>
+                    <li>Extract the .INF files from PROXGB\Win32\NDISxx\WinPE\*.zip to the temporary directory.</li>
+                </ol>                    
+            <li>Reboot, and follow the above instructions until you get to the &quot;Where do you want 
+            to install Windows?&quot;</li>
+            <li>Press Shift+F10 to bring up the Windows PE command line and connect the removal media to the system.</li>
+            <li>Enter &quot;drvload &lt;path&gt;&quot; where &lt;path&gt; is the location of the temporary directory you created 
+              in Step A, above.</li>
+            <li>Press &quot;Refresh&quot; on the &quot;Where do you want to install Windows?&quot; screen.</li>
+            <li>The iSCSI LUN will be listed after the refresh completes. Continue to complete the install.</li>
+        </ol>
+    </ol>
+</blockquote>
+
+<hr>
+<h2><a name="Crash"></a>Crash Dump Support</h2>
+<p>To ensure a full memory dump is created, </p>
+<ul>
+    <li>Set the page file size equal to or greather than the amount of RAM installed on your system is necessary for a full memory dump. </li>
+    <li>Ensure that the amount of free space on your hard disk is able to handle the  amount of RAM installed on your system. </li></ul>
+<p>A full memory dump may not be created if these requirements are not met.</p>
+<h3>Windows Server:</h3>
+<p>Crash dump file generation 
+			is supported for iSCSI-booted Windows Server x64 by the Intel 
+			iSCSI Crash Dump Driver. A hotfix is available for crash dump file 
+			generation using Intel 10 gigabit Ethernet at:</p>
+<p>
+<a href="http://support.microsoft.com/kb/970312">http://support.microsoft.com/kb/970312</a></p>
+<table class="note">
+	<tr>
+		<td valign="top" width="28">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td valign="top">
+		<b>NOTE:</b> This hot fix is not necessary for 
+				Intel 1 gigabit Ethernet.</td>
+	</tr>
+</table>
+<p>To setup crash dump 
+			support follow these steps:</p>
+<ol>
+	<li>Setup Windows 
+				iSCSI Boot as described in earlier documentation. </li>
+	<li>If you have not already done so, 
+				install Intel PROSet for Windows Device Manager by Autorun from 
+				the Intel Network Driver CD.</li>
+	<li>Open 
+				Intel PROSet for Windows 
+				Device Manager and select the Boot Options Tab.</li>
+	<li>From 
+				Settings select iSCSI Boot Crash Dump and the Value Enabled and 
+				click OK.</p></li>
+</ol>
+<h3>Support for Platforms Booted by UEFI iSCSI Native Initiator:</h3>
+<p>Starting with  version 2.2.0.0, the iSCSI crash dump driver gained the ability to support platforms  booted using the native UEFI iSCSI initiator over supported Intel Network Adapters.  This support is available on Windows Server or newer and only on x64 architecture. Any hotfixes listed above must also be applied.
+</p>
+<p>Since network  adapters on UEFI platforms may not provide legacy iSCSI option rom, the boot  options tab in DMIX may not provide the setting to enable the iSCSI crash dump  driver. If this is the case, the following registry entry has to be created:</p>
+<blockquote>
+  <p>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4D36E97B-E325-11CE-BFC1-08002BE10318}\&lt;InstanceID&gt;\Parameters</p>
+    <p>DumpMiniport&nbsp;&nbsp;&nbsp; REG_SZ&nbsp;&nbsp;&nbsp; iscsdump.sys&nbsp;</p>
+</blockquote>
+
+</body>
+</html>

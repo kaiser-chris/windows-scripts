@@ -1,0 +1,188 @@
+<html>
+
+<head>
+
+<meta name="keywords" contents="Boot Agent, troubleshooting, BIOS, IBAUtil">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Troubleshooting Procedures</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>
+<!--
+ li.MsoNormal
+	{mso-style-parent:"";
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	margin-left:0in; margin-right:0in; margin-top:0in}
+-->
+</style>
+</head>
+
+<body>
+
+<h1>Troubleshooting Procedures</h1>
+<P class="contents"><a href="#issues">Common Issues</a></P>
+<P class="contents"><a href="#diag_pxe">Diagnostics Information for Pre-boot PXE Environments</a></P>
+<br>
+
+<hr>
+
+<h2><a name="issues"></a>Common Issues</h2>
+<P>
+The following list of problems and associated solutions covers a representative 
+set of problems that you might encounter while using the Intel Boot Agent. </P>
+
+<h4><i>After booting, my computer experiences problems</i></h4>
+<P>
+After the Intel&reg; Boot Agent product has finished its sole task (remote booting), it no longer 
+has any effect on the client computer operation.
+Thus, any issues that arise after the boot process is complete are most likely
+not related to the Intel Boot Agent product.</P>
+<P>
+If you are having problems with the local (client) or network operating system, contact 
+the operating system manufacturer for assistance. If you are having problems with some 
+application program, contact the application manufacturer for assistance. If you are 
+having problems with any of your computer's hardware or with the
+<a href="ba_glossary.htm#BIOS">BIOS</a>, contact your computer system manufacturer for
+assistance.</P>
+
+<h4><i>Cannot change boot order</i></h4>
+<P>
+If you are accustomed to redefining your computer's boot order using the 
+motherboard BIOS setup program, the default settings of the Intel Boot Agent setup 
+program can override that setup. To change the boot sequence, you must first 
+override the Intel Boot Agent setup program defaults. A configuration setup menu 
+appears allowing you to set configuration values for the Intel Boot Agent. To change your computer's boot order setting, see
+<a href="ba_configuration.htm#pxe">Configuring the Boot Agent in a Pre-boot PXE Environment</a>.
+</P>
+
+<h4><i>My computer does not complete POST</i></h4>
+<P>
+If your computer fails to boot with an adapter installed, but <i>does</i> boot
+when you remove the adapter, try moving the adapter to another computer and using
+<a href="boot_util.htm">BootUtil</a> to disable the Flash ROM.</P>
+<P>If this does not work, the problem may be occurring before the Intel Boot 
+Agent
+software even begins operating. In this case, there may be a BIOS problem with
+your computer. Contact your computer manufacturer's customer support group for
+help in correcting your problem.</P>
+
+<h4><i>There are configuration/operation problems with the boot process</i></h4>
+<P>
+  If your PXE client receives a DHCP address, but then fails to boot, you know the
+  PXE client is working correctly. Check your network or PXE server configuration
+  to troubleshoot the problem. Contact
+  <a target="_blank" class="NoIndex" href="http://www.intel.com/support/">Intel Customer Support</a> 
+  if you need further assistance.
+</P>
+
+<h4><i>POST hang may occur if two or more ports on Quad Port Server Adapters are 
+	configured for PXE </i></h4>
+
+<p>
+	If you have an Intel&reg; Gigabit VT Quad Port 
+	Server Adapter, </span></font>Intel&reg; PRO/1000 PT Quad Port LP Server 
+	Adapter, or an Intel&reg; PRO/1000 PF Quad Port Server Adapter with two or more 
+	ports configured for PXE, you may experience POST hangs on some server 
+	systems. If this occurs the suggested workaround is move the adapter to 
+	another system and disable PXE on all but one port of the Adapter. You may 
+	also be able to prevent this problem by disabling any on-board SCSI or SAS 
+	controllers in your system BIOS.
+</p>
+<hr>
+
+<h2><a name="diag_pxe"></a>Diagnostics Information for Pre-boot PXE Environments</h2>
+<p>Anytime the configuration setup menu is displayed (see
+<a href="ba_configuration.htm#pxe">Configuring
+the Boot Agent in a Pre-boot PXE Environment</a>), diagnostics information is 
+also displayed on the lower portion of the screen. The information
+displayed appears similar to that shown in the lower half of the screen image
+below. This information can be helpful during interaction with
+<a target="_blank" class="NoIndex" href="http://www.intel.com/support/">Intel Customer Support</a> 
+personnel or your IT team members. </p>
+
+<TABLE class="note">
+  <tr>
+    <TD valign="top" width="28"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong> 
+       
+      Actual diagnostics information may vary, depending upon the adapter(s)
+      installed in your computer.
+    </TD>
+  </tr>
+</TABLE>
+
+<p align="center"><img border="0" src="ba_diagnostics.gif" width="434" height="300"></p>
+<p>
+Diagnostics information may include the following items:</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+  <tr>
+    <td width="20%" align="center">
+      <h4>Item</h4>
+    </td>
+    <td align="center">
+      <h4>Description</h4>
+    </td>
+  </tr>
+  <tr>
+    <td width="20%">PWA Number</td>
+    <td>The Printed Wire Assembly number identifies the adapter's model and 
+	version.</td>
+  </tr>
+  <tr>
+    <td width="20%">MAC Address</td>
+    <td>The unique Ethernet address assigned to the device.</td>
+  </tr>
+  <tr>
+    <td width="20%">Memory</td>
+    <td>The memory address assigned by the BIOS for memory-mapped adapter 
+	access.</td>
+  </tr>
+  <tr>
+    <td width="20%">I/O</td>
+    <td>The I/O port address assigned by the BIOS for I/O-mapped adapter access.</td>
+  </tr>
+  <tr>
+    <td width="20%">IRQ</td>
+    <td>The hardware interrupt assigned by the system BIOS.</td>
+  </tr>
+  <tr>
+    <td width="20%">UNB</td>
+    <td>The address in upper memory where the Boot Agent is installed by the 
+	BIOS.</td>
+  </tr>
+	<tr>
+    <td width="20%">PCI ID</td>
+    <td>The set of PCI identification values from the adapter in the form:<p>&nbsp;&nbsp;&nbsp;&nbsp; 
+	VendorID/DeviceID/SubvendorID/SubdeviceID/Revision</td>
+  </tr>
+  <tr>
+    <td width="20%">Slot</td>
+    <td>The&nbsp;<span class="944335223-14062005">PCI bus address (</span>slot number<span class="944335223-14062005">)</span> 
+	reported by the
+	<a title="ba_glossary.htm#BIOS" style="color: blue; text-decoration: underline" href="ba_glossary.htm#BIOS">
+	<font title="ba_glossary.htm#BIOS" color="#800080">
+	BIOS</font></a>.
+	<p><b><i>NOTE</i>:</b> The number displayed is the BIOS version of the PCI 
+	slot number. Therefore, actual positions of
+	<a title="ba_glossary.htm#NIC" style="color: blue; text-decoration: underline" href="ba_glossary.htm#NIC">
+	<font title="ba_glossary.htm#NIC" color="#800080">
+	NICs</font></a> within&nbsp;<span class="944335223-14062005">physical </span>
+	slots may not be displayed as expected. Slots are not always enumerated in 
+	an obvious manner, and this will only report what is indicated by the
+	<a title="ba_glossary.htm#BIOS" style="color: blue; text-decoration: underline" href="ba_glossary.htm#BIOS">
+	<font title="ba_glossary.htm#BIOS" color="#800080">
+	BIOS</font></a>.</td>
+  </tr>
+  <tr>
+    <td width="20%">Flags</td>
+    <td>A set of miscellaneous data either read from the adapter EEPROM or 
+	calculated by the Boot Agent initialization code. This information varies 
+	from one adapter to the next and is only intended for use by Intel customer 
+	support.</td>
+  </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,759 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Intel<sup>&reg;</sup> Ethernet FLASH Firmware Utility</h1>
+<h2>Introduction</h2>
+<P>The Intel&reg; Ethernet Flash Firmware Utility (BootUtil) is a utility that
+can be used to program the PCI option ROM on the flash memory of supported
+Intel PCI and PCI-Express-based network adapters, and to update configurations.
+BootUtil replaces existing utilities and provides the functionality of the
+older IBAUTIL, ISCSIUTL, LANUTIL, and FLAUTIL. BootUtil supports all the
+adapters supported by the previous utilities.</P>
+
+<table class="note">
+<tr>
+<td valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></td>
+<td valign="top"><strong>NOTE:</strong>  Updating the adapter's flash memory using 
+BootUtil will erase any existing firmware image from the flash memory.</td>
+</tr>
+</table>
+
+<P>Intel provides the following flash firmware in FLB file format for 
+programming to the flash memory:</P>
+<blockquote>
+	<P>Intel&reg; Boot Agent as PXE Option ROM for legacy BIOS<br>
+	<a href="http://www.intel.com/support/network/adapter/pro100/bootagent/">http://www.intel.com/support/network/adapter/pro100/bootagent/</a><br>
+	<br>
+	Intel&reg; iSCSI Remote Boot as iSCSI Option ROM for legacy BIOS<br>
+	<a href="http://www.intel.com/support/network/iscsi/remoteboot/">http://www.intel.com/support/network/iscsi/remoteboot/</a><br>
+	<br>
+	Network Connectivity, UEFI network driver<br>
+	<a href="http://www.intel.com/support/network/sb/cs-006120.htm">http://www.intel.com/support/network/sb/cs-006120.htm</a></P>
+</blockquote>
+<p>OEMs may provide custom flash firmware images for OEM network adapters. 
+Please refer to the instructions given by OEMs.</p>
+<p>BootUtil allows the user to flash supported firmware to the adapter from the 
+included master FLB file. This option ROM includes PXE, iSCSI, FCoE and UEFI 
+drivers, and the image is programmed to the flash memory at once. BootUtil will 
+also build the required combo images for supported adapters and program those 
+images to the flash, as well. Since both discrete and combo images are 
+supported, the -BOOTENABLE command ONLY works on combo images. </p>
+<p>PXE+EFI and iSCSI+EFI image combinations are supported for all OEM generic 
+adapters, however support is limited to devices which support both technologies 
+as discrete images. However, flash size is a limiting factor, as the image size 
+can change without notice.</p>
+<p>The Master FLB file (BOOTIMG.FLB) is the new container for all the Intel&reg; Boot Option ROMs. This file replaces the existing FLB files for FCoE, iSCSI, PXE, and EFI. </p>
+
+<table class="note">
+<tr>
+<td valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></td>
+<td valign="top"><strong>NOTE:</strong>  BootUtil supports older flb files to 
+maintain backwards compatibility with the previous utilities.</td>
+</tr>
+</table>
+
+<P>BootUtil without command-line options will display a list of all supported 
+Intel network ports in the system. BootUtil will also allow the user to enable 
+or disable the flash memory on specific ports by using -FLASHENABLE or
+-FLASHDISABLE options in order to control access to the firmware from the 
+system.<br>
+<br>
+BootUtil allows the user to individually set iSCSI, FCoE, UEFI and PXE boot configurations 
+by -NIC=xx -[OPTION]=[VALUE] options. The -I option is iSCSI specific and will 
+not work for PXE configurations.</P>
+
+<table class="note">
+<tr>
+<td valign="top"><img border="0" src="note.gif" ></td>
+<td valign="top"><strong>NOTES:</strong>  
+<ul>
+	<li>BootUtil displays up to 128 adapter ports.</li>
+	<li>No configuration settings are supported for the UEFI driver.</li>
+	<li>Functionality from the previous utility, IBAutil, 
+is preserved in BootUtil.</li>
+</ul>
+</td>
+</tr>
+</table>
+
+<P>BootUtil is located on the software installation CD in the \APPS\BootUtil\ 
+directory. Check the Intel Customer Support (http://support.intel.com) website 
+for the latest information and component updates.<br></P>
+<hr>
+<h2>Running BootUtil</h2>
+<P>The syntax for issuing BootUtil command-line options is:<br>
+</P>
+<blockquote>
+    <code>BOOTUTIL -[OPTION] or -[OPTION]=[VALUE]</code></blockquote>
+<p>
+
+</p>
+<hr>
+<h2>Command-line Options</h2>
+<p>BootUtil accepts one executable option and its associated non-executable 
+options in an execution. If conflicting executable options (such as -FLASHENABLE 
+and -UPDATE used together) are supplied, BOOTUTIL exits with an error.</p>
+<p>The options, where applicable, are listed in logical groups.<br>
+</p>
+<table class="note">
+  <tr>
+    <td valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></td>
+    <td valign="top"><strong>NOTE:</strong> 
+    If you run BootUtil without any command-line options, the utility displays a 
+	list of all supported Intel network ports found in the system.</td>
+  </tr>
+</table>
+
+<br />
+
+<table border="1" cellpadding="4">
+  <tr>
+    <th><p align="center">General Options</th>
+    <th></th>
+  </tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-HELP or -?</code></td>
+    <td valign="top" align="left">Displays a list of command-line options.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" height="31"><code>-EXITCODES</code></td>
+    <td valign="top" align="left" height="31">Displays exit codes returned to the OS 
+    by BootUtil.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-IMAGEVERSION or -IV</code></td>
+    <td valign="top" align="left">Displays firmware types and version numbers from a 
+    resource image.<br>
+    If used with the -FILE option, the resource image is in the FLB file.<br>
+    If used with the -NIC option, the resource image is in the adapter flash.<br>
+    If used with the -ALL option, each resource image is continuously displayed for 
+    all adapters.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" height="31"><code>-E</code></td>
+    <td valign="top" align="left" height="31">Enumerates all supported network 
+    ports in the system.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" height="31"><code>-O=[FILENAME]</code></td>
+    <td valign="top" align="left" height="31">Must be used with –E or –NIC.<br>If used with     the -E option, saves a list of all NICs and their MAC addresses to 
+    the specified file.
+      <br>
+      If used with the -NIC option, saves all iSCSI Remote Boot configuration options 
+    for the specified NIC to the specified file.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" height="31"><code>-I=[FILENAME]</code></td>
+    <td valign="top" align="left" height="31">Reads iSCSI boot configuration options 
+    from [FILENAME] script file and program settings on the selected port.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-FILE=[FILENAME]</code></td>
+    <td valign="top" align="left">Specifies the file name for 
+    -SAVEIMAGE, -RESTOREIMAGE, -SAVECONFIG or -RESTORECONFIG option.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-P</code></td>
+    <td valign="top" align="left">With this command, BootUtil pauses the
+    screen after displaying every 25th line. <br>
+    In pause mode, the last line of the screen will contain information that:<br>
+    - screen has been paused, and<br>
+    - user can press Enter to continue</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-NODPL</code></td>
+    <td valign="top" align="left">With this command, BootUtil does not display the PCI device location.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4">
+  <tr>
+    <th valign="top">Power Management Options</th>
+    <th> </th>
+  </tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+    <td><code>-WOLDISABLE or -WOLD</code></td>
+    <td>Disables Wake on Lan (WOL) functionality on the selected adapter.</td>
+  </tr>
+  <tr>
+    <td><code>-WOLENABLE or -WOLE</code></td>
+    <td>Enables Wake on Lan (WOL) functionality on the selected adapter.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4">
+  <tr>
+    <th>Flash Programming Options</th>
+    <th></th>
+  </tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-UP or -UPDATE=[ROMType]</code><p><code>
+[-FILE=Filename]</code></td>
+    <td valign="top" align="left">
+	Updates the flash memory of the adapter specified by the -NIC option with 
+	the given FLB flash firmware image file. If -QUIET is not specified, the 
+	user is prompted to confirm overwriting the existing firmware image before 
+	upgrading. If a Filename is not provided, the utility looks for the default 
+	bootimg.FLB file which contains all image types.
+	<p>The following examples use pxe, but could also be efi, efi64, FCoE or 
+	iSCSI.<br>
+	eg: Bootutil -Nic=x -up=pxe<br>
+	or Bootutil -Nic=x -up=pxe -file=pxeimg.flb
+	  <p>If your adapter supports a 
+	combo option ROM, the following command option automatically detects the 
+	supported combo image and programs the adapter with that image.<br>
+	-up=combo<p>&nbsp;up=pxe+efi and up=iscsi+efi are valid.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-SAVEIMAGE or SI</code></td>
+    <td valign="top" align="left">Saves the existing flash firmware image in the 
+flash memory of the adapter specified by the -NIC option to a disk file. The 
+destination file is specified by the -FILE option.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-RESTOREIMAGE or RI</code></td>
+    <td valign="top" align="left">Restores a previously-saved flash firmware image 
+    to the same network adapter using the -NIC option.
+    The source file is specified by the -FILE option.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-QUIET</code></td>
+    <td valign="top" align="left">Runs BootUtil without confirmation prompts. This option is used with 
+-IMAGEVERSION, -UP, -UPDATE, -RESTOREIMAGE, or -HELP option.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4">
+  <tr>
+    <th>Adapter Selection Options</th>
+    <th></th>
+  </tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+     <td valign="top" align="left"><code>-ALL</code></td>
+     <td valign="top" align="left">Selects all supported network ports found in the 
+system.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-NIC=XX</code></td>
+    <td valign="top" align="left">Selects a specific network port in the system. If 
+    used without any executable option, it prints the iSCSI boot configuration of 
+    the selected port, or saves it in the file when the -O option is used.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-TARGET=XX</code></td>
+    <td valign="top" align="left">This is an FCoE-specific selection option. Legal 
+    values are 1,2,3,and 4. This option is required for configuration commands -WWPN, 
+    -FCOELUN, FCOEVLAN, and - BOOTORDER.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-BLINK</code></td>
+    <td valign="top" align="left">Blinks the LED on the selected port for ten 
+    seconds.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4">
+  <tr>
+    <th>Adapter Flash Enable/Disable Options</th>
+    <th></th>
+  </tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-FLASHENABLE or -FE</code></td>
+    <td valign="top" align="left">Enables the capability to run 
+    the flash firmware on the selected adapter.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-FLASHDISABLE or -FD</code></td>
+    <td valign="top" align="left">Disables the capability to run 
+    the flash firmware on the selected adapter.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" ><code>-BOOTENABLE=[PXE, ISCSIPRIMARY, 
+    ISCSISECONDARY, FCOE, or DISABLED]</code></td>
+    <td valign="top" align="left">Selects flash firmware type to 
+    enable or disable on the selected port. The combo option ROM could have all
+    capabilities. The monolithic option ROM has either PXE, FCoE, or iSCSI 
+    capability but not all. 
+    This command will NOT WORK on monolithic Option ROMs.
+    <table class="note">
+      <tr>
+        <td valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></td>
+        <td valign="top"><B><I>NOTES</I>:</B>
+        This manual command is not applicable to the UEFI network driver.<br>
+    	The UEFI network driver is enabled by default and loaded automatically 
+	    unless network ports are already used by other flash firmware.</td>
+      </tr>
+    </table>
+    </td>
+</table>
+
+<table border="1" cellpadding="4">
+<tr>
+  <th>PXE Boot Configuration options (can be used 
+  with -NIC or -ALL) </th>
+    <th></th>
+</tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-DEFAULTCONFIG or -DEFCFG</code></td>
+    <td align="left">Sets the PXE configuration of the selected NIC 
+    back to default settings.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-SETUPENABLE or -STE</code></td>
+    <td align="left">Enables Setup Menu.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-SETUPDISABLE OR -STD</code></td>
+    <td align="left">Disables Setup Menu.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-TITLEENABLE OR -TLE</code></td>
+    <td align="left">Enables Initial Title Message.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-TITLEDISABLE OR -TLD</code></td>
+    <td align="left">Disables Initial Title Message.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-MESSAGEENABLE or -MSE</code></td>
+    <td align="left">Enables display of the Control-S Setup message 
+    when PXE initializes.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-MESSAGEDISABLE or -MSD</code></td>
+    <td align="left">Disables display of the Control-S Setup message 
+    when PXE initializes.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-SETWAITTIME=X or -SWT=X</code></td>
+    <td align="left">Set the setup delay time for the NIC to X seconds. 
+    Valid delay times are 0, 2, 3, and 5.</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><code>-MODE</code></td>
+    <td align="left">This parameter should not be used except as advised 
+    by Intel Support personnel.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4">
+  <tr>
+    <th>iSCSI Boot Configuration Options</th>
+    <th>&nbsp;</th>
+  </tr>
+  <tr>
+    <th width="30%">Parameter</th>
+    <th width="70%">Description</th>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-SAVECONFIG</code></td>
+    <td valign="top" align="left">Saves a snapshot of iSCSI boot configurations
+     on the selected port to a binary file. Need to specify the file name by 
+     the -FILE option.<br>
+     <strong><em><img src="warning.gif" alt="" width="28" height="21" border="0">     WARNING:</em></strong> For security reasons it is recommended 
+     that CHAP settings are disabled when using this option.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-RESTORECONFIG</code></td>
+    <td valign="top" align="left">Restores previously-saved iSCSI boot 
+    configuration snapshot on the selected port. Need the -FILE option 
+    to specify the saved data.<br><strong><em><img src="warning.gif" alt="" width=    "28" height="21" border="0">     WARNING:</em></strong> This feature 
+    may create multiple primary or secondary ports if the same command 
+    is issued to multiple ports. Review the boot priority setting in 
+    the iSCSI setup menu for the next system boot.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4" >
+  <tr>
+    <th valign="top" align="center"><b>Port Configuration Options for 
+    iSCSI Initiator</b></th>
+    <td valign="top" align="left">These options can either be used 
+    individually with the -NIC=XX option, or in a script file with the -I 
+    option. The value is specified in<br>
+    -[OPTION]=[VALUE] format.</td>
+  </tr>
+  <tr>
+    <th valign="top" width="30%">-[OPTION]=[VALUE]</th>
+    <th valign="top" width="70%">Description</th>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-INITIATORNAME</code></td>
+    <td valign="top" align="left">Specifies the iSCSI Qualified 
+    Name (IQN) for the initiator.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" ><code>-INITIATORIP</code></td>
+    <td valign="top" align="left" >Specifies the initiator IPv4 address 
+    in dotted decimal notation.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-INITIATORDHCP</code></td>
+    <td valign="top" align="left">Enable or disable to get initiator 
+    configuration from DHCP.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" ><code>-NETMASK</code></td>
+    <td valign="top" align="left" >Specifies the initiator subnet mask 
+    in dotted decimal notation.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left" ><code>-GATEWAY</code></td>
+    <td valign="top" align="left" >Specifies the gateway IPv4 address 
+    in dotted decimal notation.</td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><code>-BOOTPRIORITY</code></td>
+    <td valign="top" align="left">Specifies iSCSI boot priority as 
+    PRIMARY, SECONDARY or DISABLE.</td>
+  </tr>
+</table>
+
+<table border="1" cellpadding="4">
+
+<tr>
+<td valign="top" align="left" width="30%">
+<p align="center"><b>iSCSI Target Configuration Options</b></td>
+<td valign="top" align="left" width="70%">&nbsp;These options can either 
+be used individually with the -NIC=XX option, or in a script file with the -I 
+option. The value is specified in<br>
+-[OPTION]=[VALUE] format.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%">
+<p align="center"><b>-[OPTION]=[VALUE]</b></td>
+<td valign="top" align="left" width="70%">
+<p align="center"><b>Description</b></td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-TARGETNAME</code></td>
+<td valign="top" align="left" width="70%">Specifies the iSCSI Qualified Name (IQN) for the 
+target.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-TARGETIP</code></td>
+<td valign="top" align="left" width="70%">Specifies the target IPv4 address in dotted 
+decimal notation.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-TARGETDHCP</code></td>
+<td valign="top" align="left" width="70%">Enable or Disable to get the 
+target information from DHCP Root Path.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-TARGETPORT</code></td>
+<td valign="top" align="left" width="70%">Specifies the TCP port number on the target to 
+connect to.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-BOOTLUN</code></td>
+<td valign="top" align="left" width="70%">Specifies the LUN number to boot from.</td>
+</tr>
+</table>
+
+<table border="1" cellpadding="4" width="100%"  >
+
+<tr>
+<td valign="top" align="left" width="30%">
+<p align="center"><b>Authentication Configuration Options</b></td>
+<td valign="top" align="left" width="70%">These options can either be 
+used individually with the -NIC=XX option, or in a script file with the -I 
+option. The value is specified in<br>
+-[OPTION]=[VALUE] format.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%">
+<p align="center"><b>-[OPTION]=[VALUE]</b></td>
+<td valign="top" align="left" width="70%">
+<p align="center"><b>Description</b></td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-AUTHENTICATIONMETHOD</code></td>
+<td valign="top" align="left" width="70%">Specifies either NONE, CHAP or MutualCHAP</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-CHAPUSERNAME</code></td>
+<td valign="top" align="left" width="70%">Specifies CHAP user name.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-CHAPSECRET</code></td>
+<td valign="top" align="left" width="70%">Specifies a secret text string 
+to go with the CHAP user name. Secret must be 12 to 16 characters long.</td>
+</tr>
+
+<tr>
+<td valign="top" align="left" width="30%"><code>-MUTUALCHAPSECRET</code></td>
+<td valign="top" align="left" width="70%">Specifies the reverse (target) 
+CHAP secret text string. Secret must be 12 to 16 characters long.</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%">
+<p align="center"><b>FCoE General Configuration Options</b></td>
+<td valign="top" align="left" width="70%">These options have to be used 
+with the -NIC=XX option. They cannot be used with the -ALL option.</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%"><code>-WWPNPREFIX</code></td>
+<td valign="top" align="left" width="70%">Specifies the Prefix to use 
+for the WWPN. The prefix comprises of 4 hex digits. Separators '-' or ':' are 
+allowed but optional. <br>
+eg: BOOTUTIL -NIC=1 -WWPNPREFIX=20-00 </td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%"><code>-WWNNPREFIX</code></td>
+<td valign="top" align="left" width="70%">Specifies the Prefix to use 
+for the WWNN. The prefix comprises of 4 hex digits. Separators '-' or ':' are 
+allowed but optional. <br>
+eg: BOOTUTIL -NIC=1 -WWNNPREFIX=10-00</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%">
+<p align="center"><b>FCoE Target Configuration Options</b></td>
+<td valign="top" align="left" width="70%">These Options require the use 
+of both the -NIC=XX Option AND the -TARGET=XX Option. The -ALL option is not 
+allowed.</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%"><code>-WWPN</code></td>
+<td valign="top" align="left" width="70%">Specifies the WWPN for the 
+selected Target. The WWPN consists of 16 HEX digits or 8 bytes. Each byte can be 
+separated with '-' or ':' as an optional separator.<br>eg: BOOTUTIL -NIC=1 
+-TARGET=1 -WWPN=00-11-22-33-44-55-66-77</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%"><code>-FCOELUN</code></td>
+<td valign="top" align="left" width="70%">Specifies the LUN for the 
+selected FCoE Target. Valid range is 0..255.</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%"><code>-FCOEVLAN</code></td>
+<td valign="top" align="left" width="70%">Specifies the VLAN to use in 
+order to connect to the selected target. Valid range is 0..4094.</td>
+</tr>
+<tr>
+<td valign="top" align="left" width="30%"><code>-BOOTORDER</code><br>
+&nbsp;</td>
+<td valign="top" align="left" width="70%">Specifies the boot order for 
+the selected target. Valid range is 1-4. If 0 is specified then this target will 
+be excluded from the boot order. Boot order values of 1-4 can only be assigned 
+once to target(s) across all FCoE boot-enabled ports.<br>
+NOTE: These commands can all be used on the same command line to configure an 
+entire target in one shot.<br>
+eg: BOOTUTIL -NIC=1 -TARGET=2 -WWPN=0011223344556677 -FCOELUN=0 -FCOEVLAN=1 -BOOTORDER=2 </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<p>The CHAP Authentication feature of this product requires the following 
+acknowledgements:<br>
+This product includes cryptographic software written by Eric Young (eay@cryptsoft.com). 
+This product includes software written by Tim Hudson (tjh@cryptsoft.com)<br>
+This product includes software developed by the OpenSSL Project for use in the 
+OpenSSL Toolkit. (http://www.openssl.org/)</p><hr>
+<h3>Examples</h3>
+<p>The following examples show how to enter some typical BootUtil command lines:</p>
+
+<h4>Example 1:</h4>
+<p>To enable the flash firmware on the first network adapter for the system to 
+be capable of executing the flash firmware.<br>
+</p>
+<blockquote class="style1">
+    BootUtil -NIC=1 -FLASHENABLE</blockquote>
+
+<h4>Example 2:</h4>
+<p>To disable the flash firmware on all the network adapters.<br>
+</p>
+<blockquote class="style1">
+    BootUtil -ALL -FD</blockquote>
+
+<h4>Example 3:</h4>
+<P>To display BootUtil FLB flash firmware types and versions.</P>
+<blockquote>
+    <p class="style1">BootUtil -IMAGEVERSION</P>
+</blockquote>
+
+<h4>Example 4:</h4>
+<P>To update all ports of a supported NIC with PXE. </P>
+<blockquote>
+    <p class="style1">1. BootUtil -UP=PXE -ALL (Assumes input file is 
+	bootimg.flb)<br>
+	2. Bootutil -UP=PXE -ALL -FILE=BOOTIMG.FLB (explicit user specified file)</p>
+</blockquote>
+
+<h4>Example 5:</h4>
+<P>To update a combo image on supported adapter (eg, pxe+iscsi).</P>
+<blockquote class="style1">
+    Bootutil -UP=Combo -NIC=2 -FILE=BOOTIMG.FLB</blockquote>
+
+<p>The above command will succeed if the PXE+ISCSI combination is supported on 
+NIC #2. If not an error is displayed to the user.</p>
+
+<TABLE class="note"  >
+<tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong>  THE -UP and -UPDATE commands are equivalent 
+and interchangeable.</TD>
+</tr>
+</TABLE>
+
+<h4>Example 6:</h4>
+<p>To enable PXE firmware on the third network port in the system.</p>
+<blockquote>
+	<p class="style1">BootUtil -BOOTENABLE=PXE -NIC=3</p>
+</blockquote>
+
+<TABLE class="note">
+<tr>
+<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+<TD valign="top"><strong>NOTE:</strong> This command will work only if PXE is part 
+of a combo Option ROM and not a discrete Option ROM.</TD>
+</tr>
+</TABLE>
+
+<h4>Example 7:</h4>
+<p>To disable the firmware on the second network port in the system.</p>
+<blockquote>
+	<p class="style1">BootUtil -NIC=2 -BOOTENABLE=DISABLED</p>
+</blockquote>
+<h4>Example 8:</h4>
+<p>To get help descriptions.</p>
+<blockquote>
+	<p class="style1">BootUtil -?</p>
+</blockquote>
+<h4>Example 9:</h4>
+<p>To enable DHCP for the iSCSI initiator on all the network ports in the 
+system.</p>
+<blockquote>
+	<p class="style1">BootUtil -INITIATORDHCP=ENABLE -ALL</p>
+</blockquote>
+<h4>Example 10:</h4>
+<p>To load the iSCSI boot configurations from a text script file to the first 
+network port.</p>
+<blockquote>
+	<p class="style1">BootUtil -I=CONFIG.TXT -NIC=1</p>
+</blockquote>
+<hr>
+<h2>Exit Codes</h2>
+<p>BootUtil returns exit codes to the OS environment. Possible exit codes are listed below:</p>
+
+<br>
+<table border="1" cellpadding="3" cellspacing="0">
+  <tr>
+    <th>Code Name</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>All BootUtil operations completed successfully</td>
+    <td align="center">0</td>
+  </tr>
+  <tr>
+    <td>Bad command line parameter</td>
+    <td align="center">1</td>
+  </tr>
+  <tr>
+    <td>No supported network port detected</td>
+    <td align="center">2</td>
+  </tr>
+  <tr>
+    <td height="17">Invalid network port selected </td>
+    <td align="center" height="17">3</td>
+  </tr>
+  <tr>
+    <td>FLASH operation failed</td>
+    <td align="center">4</td>
+  </tr>
+  <tr>
+    <td>EEPROM read operation failed</td>
+    <td align="center">5</td>
+  </tr>
+  <tr>
+    <td>EEPROM write operation failed</td>
+    <td align="center">6</td>
+  </tr>
+  <tr>
+    <td>File content is missing or corrupt </td>
+    <td align="center">7</td>
+  </tr>
+  <tr>
+    <td>Operator termination</td>
+    <td align="center">8</td>
+  </tr>
+  <tr>
+    <td>LOM not supported for selected operation</td>
+    <td align="center">9</td>
+  </tr>
+  <tr>
+    <td>Network port is not bootable</td>
+    <td align="center">10</td>
+  </tr>
+  <tr>
+    <td>FLASH memory is disabled for flash firmware </td>
+    <td align="center">11</td>
+  </tr>
+  <tr>
+    <td>FLASH memory too small for selected firmware </td>
+    <td align="center">12</td>
+  </tr>
+  <tr>
+    <td>Programming iSCSI boot configurations failed </td>
+    <td align="center">13</td>
+  </tr>
+  <tr>
+    <td>System memory allocation failed </td>
+    <td align="center">14</td>
+  </tr>
+  <tr>
+    <td>File operation failed</td>
+    <td align="center">15</td>
+  </tr>
+  <tr>
+    <td>FCoE operation failed</td>
+    <td align="center">16</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+</body>
+</html>

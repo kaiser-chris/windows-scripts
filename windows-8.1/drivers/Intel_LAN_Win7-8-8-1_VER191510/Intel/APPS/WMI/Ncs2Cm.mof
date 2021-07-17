@@ -1,0 +1,2811 @@
+ /************************************************************************
+*                                                                       *
+*               INTEL CORPORATION PROPRIETARY INFORMATION               *
+*  This software is supplied under the terms of a license agreement or  *
+*  nondisclosure agreement with Intel Corporation and may not be copied *
+*   or disclosed except in accordance with the terms of that agreement. *
+*        Copyright (c) 2008 Intel Corporation. All Rights Reserved.     *
+*                                                                       *
+************************************************************************/
+/***********************************************************************\
+*
+* NAME:	Ncs2Cm.mof	
+*
+* DESCRIPTION: Master MOF file with base class definitions from DMTF's 
+*			   CIM 2.6.0 schema needed for Intel PRO Network Adapters
+*			   WMI Provider 802.3 schema. 
+*
+* PREREQUISITE: none
+* 
+*
+* NOTE:	This file generates language neutral MOF for IntelNCS2 namespace. 
+*		This file also generates ENU language specific MFL. 
+*
+\***********************************************************************/
+
+#pragma namespace ("\\\\.\\Root")
+
+instance of __Namespace
+{
+    Name = "IntelNCS2";
+};
+
+#pragma namespace ("\\\\.\\Root\\IntelNCS2")
+
+// ==================================================================
+//    ManagedElement
+// ================================================================== 
+   [Abstract, Version ("2.6.0"), Description (
+     "ManagedElement is an abstract class that provides a common "  
+     "superclass (or top of the inheritance tree) for the "
+     "non-association classes in the CIM Schema."): ToSubclass Amended  ]
+class CIM_ManagedElement {  
+      [MaxLen (64): ToSubclass,
+	    Description (  
+        "The Caption property is a short textual description (one-"    
+        "line string) of the object."): ToSubclass Amended]   
+   string Caption;  
+      [Description (  
+        "The Description property provides a textual description of "
+        "the object."): ToSubclass Amended]   
+   string Description;    
+};
+
+
+// ================================================================== 
+//    ManagedSystemElement
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Description (
+     "CIM_ManagedSystemElement is the base class for the System "
+     "Element hierarchy. Membership Criteria: Any distinguishable "
+     "component of a System is a candidate for inclusion in this "
+     "class. Examples: software components, such as files; and "
+     "devices, such as disk drives and controllers, and physical "
+     "components such as chips and cards.") : ToSubclass Amended ] 
+class CIM_ManagedSystemElement : CIM_ManagedElement {
+      [Description (
+        "A datetime value indicating when the object was installed. "
+        "A lack of a value does not indicate that the object is not "
+        "installed."): ToSubclass Amended, 
+       MappingStrings {"MIF.DMTF|ComponentID|001.5"}: ToSubclass] 
+   datetime InstallDate;
+      [MaxLen (256): ToSubclass,
+		 Description (
+        "The Name property defines the label by which the object is "
+        "known. When subclassed, the Name property can be overridden "
+        "to be a Key property."): ToSubclass Amended] 
+   string Name;
+      [MaxLen (10): ToSubclass, Description ( 
+        "  A string indicating the current status of the object. " 
+        "Various operational and non-operational statuses are " 
+        "defined. Operational statuses are \"OK\", \"Degraded\", " 
+        "\"Stressed\" and \"Pred Fail\". \"Stressed\" indicates that " 
+        "the Element is functioning, but needs attention. Examples " 
+        "of \"Stressed\" states are overload, overheated, etc. The " 
+        "condition \"Pred Fail\" (failure predicted) indicates that " 
+        "an Element is functioning properly but predicting a failure " 
+        "in the near future. An example is a SMART-enabled hard " 
+        "drive. \n" 
+        "  Non-operational statuses can also be specified. These " 
+        "are \"Error\", \"NonRecover\", \"Starting\", \"Stopping\", " 
+        " \"Stopped\", " 
+        "\"Service\", \"No Contact\" and \"Lost Comm\". \"NonRecover\" " 
+        "indicates that a non-recoverable error has occurred. " 
+        "\"Service\" describes an Element being configured, maintained, " 
+        "cleaned, or otherwise administered. This status could apply " 
+        "during mirror-resilvering of a disk, reload of a user " 
+        "permissions list, or other administrative task. Not all such " 
+        "work is on-line, yet the Element is neither \"OK\" nor in " 
+        "one of the other states. \"No Contact\" indicates that the " 
+        "current instance of the monitoring system has knowledge of " 
+        "this Element but has never been able to establish " 
+        "communications with it. \"Lost Comm\" indicates that the " 
+        "ManagedSystemElement is known to exist and has been contacted " 
+        "successfully in the past, but is currently unreachable. " 
+        "\"Stopped\" indicates that the ManagedSystemElement is known " 
+        "to exist, it is not operational (i.e. it is unable to " 
+        "provide service to users), but it has not failed. It has " 
+        "purposely been made non-operational. The Element " 
+        "may have never been \"OK\", the Element may have initiated its " 
+        "own stop, or a management system may have initiated the stop."): ToSubclass Amended, 
+       ValueMap {"OK", "Error", "Degraded", "Unknown", "Pred Fail", 
+                 "Starting", "Stopping", "Service", "Stressed", 
+                 "NonRecover", "No Contact", "Lost Comm", "Stopped"}  : ToSubclass Amended ] 
+   string Status; 
+};
+
+
+// ==================================================================
+//    LogicalElement
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Description (
+     "CIM_LogicalElement is a base class for all the components of "
+     "a System that represent abstract system components, such "
+     "as Files, Processes, or LogicalDevices."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_LogicalElement : CIM_ManagedSystemElement {
+};
+
+
+
+// ===================================================================
+//    LogicalDevice
+// ===================================================================
+   [Abstract, Version ("2.6.0"), Description (
+     "An abstraction or emulation of a hardware entity, that may "
+     "or may not be Realized in physical hardware. Any "
+     "characteristics of a LogicalDevice that are used to manage "
+     "its operation or configuration are contained in, or "
+     "associated with, the LogicalDevice object. Examples of the "
+     "operational properties of a Printer would be paper sizes "
+     "supported, or detected errors. Examples of the configuration "
+     "properties of a Sensor Device would be threshold settings. "
+     "Various configurations could exist for a LogicalDevice. "
+     "These configurations could be contained in Setting objects "
+     "and associated with the LogicalDevice."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_LogicalDevice : CIM_LogicalElement {
+      [Propagated("CIM_System.CreationClassName"), 
+       Key, MaxLen (256): ToSubclass, 
+	Description ("The scoping System's CreationClassName."): ToSubclass Amended ]
+   string SystemCreationClassName;
+      [Propagated("CIM_System.Name"),
+       Key, MaxLen (256): ToSubclass, 
+	Description ("The scoping System's Name."): ToSubclass Amended ]
+   string SystemName;
+      [Key, MaxLen (256): ToSubclass, 
+	Description (
+        "CreationClassName indicates the name of the class or "
+        "the subclass used in the creation of an instance. When "
+        "used with the other key properties of this class, this "
+        "property allows all instances of this class and its "
+        "subclasses to be uniquely identified."): ToSubclass Amended ]
+   string CreationClassName;
+      [Key, MaxLen (64): ToSubclass, 
+	Description (
+        "An address or other identifying information to uniquely "
+        "name the LogicalDevice.") : ToSubclass Amended]
+   string DeviceID;
+      [Description (
+        "Boolean indicating that the Device can be power managed "
+        "- ie, put into a power save state. This boolean does not "
+        "indicate that power management features are currently "
+        "enabled, or if enabled, what features are supported. "
+        "Refer to the PowerManagementCapabilities array for this "
+        "information. If this boolean is false, the integer value "
+        "1, for the string, \"Not Supported\", should be the only "
+        "entry in the PowerManagementCapabilities array.") : ToSubclass Amended]    
+   boolean PowerManagementSupported;
+      [Description(
+        "Indicates the specific power-related capabilities of a "
+        "LogicalDevice. The array values, 0=\"Unknown\", 1="
+        "\"Not Supported\" and 2=\"Disabled\" are self-explanatory. "
+        "The value, 3=\"Enabled\" indicates that the power management "
+        "features are currently enabled but the exact feature set "
+        "is unknown or the information is unavailable. "
+        "\"Power Saving Modes Entered Automatically\" (4) describes "
+        "that a Device can change its power state based on usage or "
+        "other criteria. \"Power State Settable\" (5) indicates that "
+        "the SetPowerState method is supported. \"Power Cycling "
+        "Supported\" (6) indicates that the SetPowerState method "
+        "can be invoked with the PowerState input variable set to 5 ("
+        "\"Power Cycle\"). \"Timed Power On Supported\" (7) indicates "
+        "that the SetPowerState method can be invoked with the Power"
+        "State input variable set to 5 (\"Power Cycle\") and the Time "
+        "parameter set to a specific date and time, or interval, "
+        "for power-on."): ToSubclass Amended,
+       ValueMap {"0", "1", "2", "3", "4", "5", "6", "7"}: ToSubclass Amended,
+       Values {"Unknown", "Not Supported", "Disabled", 
+               "Enabled", "Power Saving Modes Entered Automatically",
+               "Power State Settable", "Power Cycling Supported",
+               "Timed Power On Supported"}: ToSubclass Amended ]
+   uint16 PowerManagementCapabilities[];
+      [Description (
+        "The primary availability and status of the Device. (Additional "
+        "status information can be specified using the Additional"
+        "Availability array property.) For example, the Availability "
+        "property indicates that the Device is running and has full "
+        "power (value=3), or is in a warning (4), test (5), degraded "
+        "(10) or power save state (values 13-15 and 17). Regarding the "
+        "Power Save states, these are defined as follows: "
+        "Value 13 (\"Power Save - Unknown\") indicates "
+        "that the Device is known to be in a power save mode, but its "
+        "exact status in this mode is unknown; 14 (\"Power Save - Low "
+        "Power Mode\") indicates that the Device is in a power save "
+        "state but still functioning, and may exhibit degraded "
+        "performance; 15 (\"Power Save - Standby\") describes that "
+        "the Device is not functioning but could be brought to full "
+        "power 'quickly'; and value 17 (\"Power Save - Warning\") "
+        "indicates that the Device is in a warning state, though also "
+        "in a power save mode."): ToSubclass Amended, 
+       ValueMap {"1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "10", "11", "12", "13", "14", "15", "16", "17", "18", 
+                "19", "20", "21"}: ToSubclass Amended,
+       Values {"Other", "Unknown", "Running/Full Power", "Warning", 
+               "In Test", "Not Applicable", "Power Off", "Off Line", 
+               "Off Duty", "Degraded", "Not Installed", "Install Error",
+               "Power Save - Unknown", "Power Save - Low Power Mode", 
+               "Power Save - Standby", "Power Cycle","Power Save - Warning", 
+               "Paused", "Not Ready", "Not Configured", "Quiesced"}: ToSubclass Amended, 
+       MappingStrings {"MIF.DMTF|Operational State|006",
+        "MIB.IETF|HOST-RESOURCES-MIB.hrDeviceStatus", 
+        "MIF.DMTF|Host Device|001.5"},
+       ModelCorrespondence {"CIM_LogicalDevice.AdditionalAvailability"} : ToSubclass]
+   uint16 Availability;
+      [Description (
+        "The StatusInfo property indicates whether the Logical"
+        "Device is in an enabled (value = 3), disabled (value = "
+        "4) or some other (1) or unknown (2) state. If this "
+        "property does not apply to the LogicalDevice, the value, "
+        "5 (\"Not Applicable\"), should be used.  "
+        "If a Device is (\"Enabled\")(value=3), it has been "
+        "powered up, and is configured and operational.  The Device "
+        "may or may not be functionally active, depending on whether "
+        "its Availability (or AdditionalAvailability) indicate that "
+        "it is (\"Running/Full Power\")(value=3) or (\"Off line\")"
+        "(value=8). In an enabled but offline mode, a Device may be "
+        "performing out-of-band requests, such as running Diagnostics.  "
+        "If (\"Disabled\") StatusInfo value=4), a Device can only be " 
+        "\"enabled\" or powered off.  In a personal computer environment, "
+        "(\"Disabled\") means that the Device's driver is not "
+        "available in the stack. In other environments, a Device can "
+        "be disabled by removing its configuration file. A disabled "
+        "device is physically present in a System and consuming "
+        "resources, but cannot be communicated with until a load "
+        "of a driver, a load of a configuration file or some other "
+        "\"enabling\" activity has occurred."): ToSubclass Amended,
+       ValueMap {"1", "2", "3", "4", "5"}: ToSubclass Amended,
+       Values {"Other", "Unknown", "Enabled",
+               "Disabled", "Not Applicable"}: ToSubclass Amended,
+       MappingStrings {"MIF.DMTF|Operational State|006"}: ToSubclass ]
+   uint16 StatusInfo;
+      [Description (
+        "LastErrorCode captures the last error code reported by " 
+        "the LogicalDevice."): ToSubclass Amended ]
+   uint32 LastErrorCode;
+      [Description (
+        "ErrorDescription is a free-form string supplying more " 
+        "information about the error recorded in LastErrorCode, and " 
+        "information on any corrective actions that may be taken."): ToSubclass Amended ]
+   string ErrorDescription;
+      [Description (
+        "ErrorCleared is a boolean property indicating that the " 
+        "error reported in LastErrorCode is now cleared."): ToSubclass Amended ]
+   boolean ErrorCleared;
+      [MaxLen (256): ToSubclass, ArrayType ("Indexed"): ToSubclass, Description (
+        "OtherIdentifyingInfo captures additional data, beyond "
+        "DeviceID information, that could be used to identify a "
+        "LogicalDevice. One example would be to hold the Operating"
+        "System's user friendly name for the Device in this "
+        "property."): ToSubclass Amended,
+       ModelCorrespondence {
+        "CIM_LogicalDevice.IdentifyingDescriptions"}: ToSubclass ]
+   string OtherIdentifyingInfo[];
+      [Description (
+        "The number of consecutive hours that this Device has been "
+        "powered, since its last power cycle."): ToSubclass Amended,
+       Units ("Hours"): ToSubclass Amended, Counter : ToSubclass]
+   uint64 PowerOnHours;
+      [Description (
+        "The total number of hours that this Device has been "
+        "powered."): ToSubclass Amended,
+       Units ("Hours"): ToSubclass Amended, Counter: ToSubclass]
+   uint64 TotalPowerOnHours;
+      [ArrayType ("Indexed"): ToSubclass, Description (
+        "An array of free-form strings providing explanations "
+        "and details behind the entries in the OtherIdentifyingInfo "
+        "array. Note, each entry of this array is related to the "
+        "entry in OtherIdentifyingInfo that is located at the same "
+        "index."): ToSubclass Amended,
+       ModelCorrespondence {"CIM_LogicalDevice.OtherIdentifyingInfo"}: ToSubclass]
+   string IdentifyingDescriptions[];
+      [Description (
+        "Additional availability and status of the Device, beyond that "
+        "specified in the Availability property. The Availability "
+        "property denotes the primary status and availability of the "
+        "Device. In some cases, this will not be sufficient to denote "
+        "the complete status of the Device. In those cases, the "
+        "AdditionalAvailability property can be used to provide further "
+        "information. For example, a Device's primary Availability may "
+        "be \"Off line\" (value=8), but it may also be in a low power "
+        "state (AdditonalAvailability value=14), or the Device could be "
+        "running Diagnostics (AdditionalAvailability value=5, \"In "
+        "Test\")."): ToSubclass Amended,
+       ValueMap {"1", "2", "3", "4", "5", "6", "7", "8", "9",
+                 "10", "11", "12", "13", "14", "15", "16", "17", "18",  
+                 "19", "20", "21"}: ToSubclass Amended,
+       Values {"Other", "Unknown", "Running/Full Power", "Warning", 
+               "In Test", "Not Applicable", "Power Off", "Off Line", 
+               "Off Duty", "Degraded", "Not Installed", "Install Error",
+               "Power Save - Unknown", "Power Save - Low Power Mode", 
+               "Power Save - Standby", "Power Cycle", 
+               "Power Save - Warning", "Paused", "Not Ready",
+               "Not Configured", "Quiesced"}: ToSubclass Amended, 
+       ModelCorrespondence {"CIM_LogicalDevice.Availability"}: ToSubclass]
+   uint16 AdditionalAvailability[];
+      [Description (
+        "Maximum time in milliseconds, that a Device can run in "
+        "a \"Quiesced\" state. A Device's state is defined in its "
+        "Availability and AdditionalAvailability properties, where "
+        "\"Quiesced\" is conveyed by the value 21. What occurs at "
+        "the end of the time limit is device-specific. The Device "
+        "may unquiesce, may offline or take other action. A value of "
+        "0 indicates that a Device can remain quiesced indefinitely."): ToSubclass Amended, 
+       Units ("MilliSeconds"): ToSubclass Amended ]
+   uint64 MaxQuiesceTime;
+      [Description(
+        "SetPowerState defines the desired power state for a "
+        "LogicalDevice and when a Device should be put into that "
+        "state. The desired power state is specified by setting "
+        "the PowerState parameter to one of the "
+        "following integer values: 1=\"Full Power\", 2=\"Power Save "
+        "- Low Power Mode\", 3=\"Power Save - Standby\", 4=\"Power "
+        "Save - Other\", 5=\"Power Cycle\" or 6=\"Power Off\". "
+        "The Time parameter (for all state changes but 5, "
+        "\"Power Cycle\") indicates when the power state should be "
+        "set, either as a regular date-time value or as an interval "
+        "value (where the interval begins when the method "
+        "invocation is received). When the PowerState parameter is "
+        "equal to 5, \"Power Cycle\", the Time parameter indicates "
+        "when the Device should power on again. Power off is "
+        "immediate. SetPowerState should return 0 if successful, 1 "
+        "if the specified PowerState and Time request is not "
+        "supported, and some other value if any other error "
+        "occurred. In a subclass, the set of possible return codes "
+        "could be specified, using a ValueMap qualifier on the method. "
+        "The strings to which the ValueMap contents are 'translated' "
+        "may also be specified in the subclass as a Values array "
+        "qualifier."): ToSubclass Amended ]
+   uint32 SetPowerState(
+      [IN, ValueMap {"1", "2", "3", "4", "5", "6"}: ToSubclass Amended ,
+           Values {"Full Power", "Power Save - Low Power Mode", 
+                   "Power Save - Standby", "Power Save - Other", 
+                   "Power Cycle", "Power Off"}: ToSubclass Amended] 
+       uint16 PowerState, 
+      [IN] datetime Time);
+      [Description (
+        "Requests a reset of the LogicalDevice. The return value "
+        "should be 0 if the request was successfully executed, "
+        "1 if the request is not supported and some other value "
+        "if an error occurred. In a subclass, the set of possible "
+        "return codes could be specified, using a ValueMap qualifier "
+        "on the method. The strings to which the ValueMap contents "
+        "are 'translated' may also be specified in the subclass as a "
+        "Values array qualifier."): ToSubclass Amended ]
+    uint32 Reset();
+      [Description (
+        "Requests that the LogicalDevice be enabled (\"Enabled\" "
+        "input parameter = TRUE) or disabled (= FALSE). If "
+        "successful, the Device's StatusInfo property should also "
+        "reflect the desired state (enabled/disabled). The return "
+        "code should be 0 if the request was successfully executed, "
+        "1 if the request is not supported and some other value if "
+        "an error occurred. In a subclass, the set of possible "
+        "return codes could be specified, using a ValueMap qualifier "
+        "on the method. The strings to which the ValueMap contents "
+        "are 'translated' may also be specified in the subclass as a "
+        "Values array qualifier.") : ToSubclass Amended]
+    uint32 EnableDevice(
+      [IN] boolean Enabled);
+      [Description (
+        "  Requests that the LogicalDevice be brought online (\"Online\" "
+        "input parameter = TRUE) or taken offline (= FALSE). "
+        "\"Online\" indicates that the Device is ready to accept "
+        "requests, and is operational and fully functioning. In this "
+        "case, the Device's Availability property would be set to "
+        "a value of 3 (\"Running/Full Power\"). \"Offline\" indicates "
+        "that a Device is powered up and operational, but not processing "
+        "functional requests. In an offline state, a Device may be capable "
+        "of running diagnostics or generating operational alerts. For "
+        "example, when the \"Offline\" button is pushed on a Printer, the "
+        "Device is no longer available to process print jobs, but "
+        "could be available for diagnostics or maintenance. \n"
+        "  If this method is successful, the Device's Availability and "
+        "AdditionalAvailability properties should reflect the updated "
+        "status. If a failure occurs trying to bring the Device online "
+        "or offline, it should remain in its current state. IE, the "
+        "request, if unsuccessful, should not leave the Device in an "
+        "indeterminate state. When bringing a Device back \"Online\", "
+        "from an \"Offline\" mode, the Device should be restored to its "
+        "last \"Online\" state, if at all possible. Only a Device that "
+        "has a StatusInfo of \"Enabled\" (value=3) and has been "
+        "configured can be brought online or taken offline. \n"
+        "  OnlineDevice should return 0 if successful, 1 if the request "
+        "is not supported at all, 2 if the request is not supported due "
+        "to the current state of the Device, and some other value if any "
+        "other error occurred. In a subclass, the set of possible return "
+        "codes could be specified, using a ValueMap qualifier on the method. "
+        "The strings to which the ValueMap contents are 'translated' may "
+        "also be specified in the subclass as a Values array qualifier."): ToSubclass Amended]
+   uint32 OnlineDevice(
+      [IN] boolean Online);
+      [Description (
+        "  Requests that the LogicalDevice cleanly cease all current "
+        "activity (\"Quiesce\" input parameter = TRUE) or resume "
+        "activity (= FALSE). For this method to quiesce a Device, "
+        "that Device should have an Availability (or Additional"
+        "Availability) of \"Running/Full Power\" (value=3) and a "
+        "StatusInfo of \"Enabled\" (value=3). For example, if quiesced, "
+        "a Device may then be offlined for diagnostics, or disabled "
+        "for power off and hot swap.  For the method to \"unquiesce\" "
+        "a Device, that Device should have an Availability (or Additional"
+        "Availability) of \"Quiesced\" (value=21) and a StatusInfo of "
+        "\"Enabled\" (value=3). In this case, the Device would "
+        "be returned to an \"Enabled\" and \"Running/Full Power\" "
+        "status. \n"
+        "  The method's return code should indicate the success or "
+        "failure of the quiesce. It should return 0 if successful, "
+        "1 if the request is not supported at all, 2 if the request "
+        "is not supported due to the current state of the Device, "
+        "and some other value if any other error occurred. In a subclass, "
+        "the set of possible return codes could be specified, using a "
+        "ValueMap qualifier on the method.  The strings to which the "
+        "ValueMap contents are 'translated' may also be specified in "
+        "the subclass as a Values array qualifier."): ToSubclass Amended ]
+   uint32 QuiesceDevice(
+      [IN] boolean Quiesce);
+      [Description (
+        "Requests that the Device capture its current configuration, "
+        "setup and/or state information in a backing store. The goal "
+        "would be to use this information at a later time (via the "
+        "RestoreProperties method), to return a Device to its present "
+        "\"condition\". This method may not be supported by all Devices. "
+        "The method should return 0 if successful, 1 if the request is "
+        "not supported, and some other value if any other error occurred. "
+        "In a subclass, the set of possible return codes could be "
+        "specified, using a ValueMap qualifier on the method. The strings "
+        "to which the ValueMap contents are 'translated' may also be "
+        "specified in the subclass as a Values array qualifier."): ToSubclass Amended ]
+   uint32 SaveProperties();
+      [Description (
+        "Requests that the Device re-establish its configuration, "
+        "setup and/or state information from a backing store. The "
+        "intent is to capture this information at an earlier time "
+        "(via the SaveProperties method), and use it to return a "
+        "Device to this earlier \"condition\". This method may not "
+        "be supported by all Devices. The method should return 0 if "
+        "successful, 1 if the request is not supported, and some "
+        "other value if any other error occurred. In a subclass, "
+        "the set of possible return codes could be specified, using "
+        "a ValueMap qualifier on the method. The strings to which "
+        "the ValueMap contents are 'translated' may also be specified "
+        "in the subclass as a Values array qualifier."): ToSubclass Amended ]
+   uint32 RestoreProperties();        
+};  
+
+
+
+// ===================================================================
+// Controller
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "Controller is a superclass for grouping the miscellaneous "
+   "control-related Devices that exist. Examples of Controllers "
+   "are SCSIControllers, USBControllers, SerialControllers, ... "
+   "The Controller class is an abstraction for Devices with a "
+   "single protocol stack, which exist primarily for communication "
+   "to, and control or reset of downstream (ControlledBy) Devices."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_Controller : CIM_LogicalDevice {
+
+   [Description ("Time of last reset of the Controller."): ToSubclass Amended ]
+   datetime TimeOfLastReset;
+
+   [Description (
+       "The protocol used by the Controller to access 'controlled' "
+       "Devices."): ToSubclass Amended,
+    ValueMap {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+       "11", "12", "13", "14", "15", "16", "17", "18", "19",
+       "20", "21", "22", "23", "24", "25", "26", "27", "28",
+       "29", "30", "31", "32", "33", "34", "35", "36", "37",
+       "38", "39", "40", "41", "42", "43", "44", "45", "46", 
+       "47"}: ToSubclass Amended,
+    Values {"Other", "Unknown", "EISA", "ISA", "PCI", "ATA/ATAPI",
+       "Flexible Diskette", "1496", "SCSI Parallel Interface",
+       "SCSI Fibre Channel Protocol", "SCSI Serial Bus Protocol",
+       "SCSI Serial Bus Protocol-2 (1394)", 
+       "SCSI Serial Storage Architecture", "VESA", "PCMCIA",        
+       "Universal Serial Bus", "Parallel Protocol", "ESCON",
+       "Diagnostic", "I2C", "Power", "HIPPI", "MultiBus", "VME",
+       "IPI", "IEEE-488", "RS232", "IEEE 802.3 10BASE5",
+       "IEEE 802.3 10BASE2", "IEEE 802.3 1BASE5",
+       "IEEE 802.3 10BROAD36", "IEEE 802.3 100BASEVG",
+       "IEEE 802.5 Token-Ring", "ANSI X3T9.5 FDDI", "MCA", 
+       "ESDI", "IDE", "CMD", "ST506", "DSSI", "QIC2", 
+       "Enhanced ATA/IDE", "AGP", "TWIRP (two-way infrared)", 
+       "FIR (fast infrared)", "SIR (serial infrared)", 
+       "IrBus"}: ToSubclass Amended, 
+    MappingStrings {"MIF.DMTF|Bus Port|003",
+       "MIF.DMTF|Disks|003.3"}: ToSubclass,
+    ModelCorrespondence {"CIM_Controller.ProtocolDescription"}: ToSubclass ]
+   uint16 ProtocolSupported;
+
+   [Description (
+       "Maximum number of directly addressable entities supported "
+       "by this Controller.  A value of 0 should be used if the "
+       "number is unknown or unlimited."): ToSubclass Amended,
+    MappingStrings {"MIF.DMTF|Bus Port|003"}: ToSubclass ]
+   uint32 MaxNumberControlled;  
+
+   [Description (
+       "A free form string providing more information related "
+       "to the ProtocolSupported by the Controller."): ToSubclass Amended,
+    ModelCorrespondence {"CIM_Controller.ProtocolSupported"}: ToSubclass,
+    MappingStrings {"MIF.DMTF|Bus Port|003"} : ToSubclass]
+    string ProtocolDescription;
+};
+
+
+// ===================================================================
+// PCIController
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "PCIController is a superclass for the PCIBridge and PCIDevice "
+   "classes. These classes model adapters and bridges on a PCI "
+   "bus. The properties in PCIController and its subclasses are "
+   "defined in the various PCI Specifications published by the "
+   "PCI SIG."): ToSubclass Amended,  LOCALE(0x409)]
+class CIM_PCIController : CIM_Controller {
+
+   [Description (
+       "Current contents of the register that provides basic "
+       "control over the device's ability to respond "
+       "to, and/or perform PCI accesses."): ToSubclass Amended ]
+   uint16 CommandRegister;
+
+   [Description (
+       "An array of integers indicating controller capabilities. "
+       "Information such as \"Supports 66MHz\" (value=2) is "
+       "specified in this property. The data in the Capabilities array "
+       "is gathered from the PCI Status Register and the PCI "
+       "Capabilities List as defined in the PCI Specification."): ToSubclass Amended,
+    ArrayType ("Indexed"): ToSubclass, 
+    ValueMap {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+       "10", "11", "12"}: ToSubclass Amended,
+    Values {"Unknown", "Other", "Supports 66MHz", 
+       "Supports User Definable Features", 
+       "Supports Fast Back-to-Back Transactions", 
+       "PCI-X Capable", "PCI Power Management Supported", 
+       "Message Signaled Interrupts Supported", 
+       "Parity Error Recovery Capable", 
+       "AGP Supported", "Vital Product Data Supported", 
+       "Provides Slot Identification", "Hot Swap Supported"}: ToSubclass Amended, 
+    ModelCorrespondence {"CIM_PCIController.CapabilityDescriptions"}: ToSubclass]
+   uint16 Capabilities[];
+
+   [Description (
+       "An array of free-form strings providing more detailed "
+       "explanations for any of the PCIController features indicated "
+       "in the Capabilities array. Note, each entry of this array "
+       "is related to the entry in the Capabilities array that "
+       "is located at the same index."): ToSubclass Amended,
+    ArrayType ("Indexed"): ToSubclass, 
+    ModelCorrespondence {"CIM_PCIController.Capabilities"}: ToSubclass ]
+   string CapabilityDescriptions[];
+
+   [Description (
+       "The slowest device select timing for a target device."): ToSubclass Amended, 
+    ValueMap {"0", "1", "2", "3", "4", "5"}: ToSubclass Amended,
+    Values {"Unknown", "Other", "Fast", "Medium", "Slow", 
+       "Reserved"}: ToSubclass Amended ]
+   uint16 DeviceSelectTiming;
+
+   [Description (
+       "Register of 8 bits that identifies the basic function of the "
+       "PCI device. This is only the upper byte (offset 0Bh) of the "
+       "3 byte ClassCode field. Note that the property's ValueMap "
+       "array specifies the decimal representation of this "
+       "information."): ToSubclass Amended, 
+    ValueMap {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+       "10", "11", "12", "13", "14", "15", "16", "17", "18..254", 
+       "255"}: ToSubclass Amended, 
+    Values {"Pre 2.0", "Mass Storage", "Network", "Display", 
+       "Multimedia", "Memory", "Bridge", "Simple Communications", 
+       "Base Peripheral", "Input", "Docking Station", "Processor", 
+       "Serial Bus", "Wireless", "Intelligent I/O", 
+       "Satellite Communication", "Encryption/Decryption", 
+       "Data Acquisition and Signal Processing", "PCI Reserved", 
+       "Other"}: ToSubclass Amended ]
+   uint8 ClassCode;
+
+   [Description (
+       "Specifies the system cache line size in doubleword increments "
+       "(e.g., a 486-based system would store the value 04h, "
+       "indicating a cache line size of four doublewords."): ToSubclass Amended, 
+    Units ("DoubleWords"): ToSubclass Amended ]
+   uint8 CacheLineSize;
+
+   [Description (
+       "Defines the minimum amount of time, in PCI clock cycles, that "
+       "the bus master can retain ownership of the bus."): ToSubclass Amended, 
+    Units ("PCI clock cycles"): ToSubclass Amended ]
+   uint8 LatencyTimer;
+
+   [Description (
+       "Defines the PCI interrupt request pin (INTA# to "
+       "INTD#) to which a PCI functional device is connected."): ToSubclass Amended, 
+    ValueMap {"0", "1", "2", "3", "4", "5"}: ToSubclass Amended,
+    Values {"None", "INTA#", "INTB#", "INTC#", "INTD#", "Unknown"}: ToSubclass Amended ]
+   uint16 InterruptPin;
+
+   [Description (
+       "Doubleword Expansion ROM base memory address."): ToSubclass Amended, 
+    Units ("DoubleWords"): ToSubclass Amended ]
+   uint32 ExpansionROMBaseAddress;
+
+   [Description (
+       "Reports if the PCI device can perform the self test "
+       "function. Returns bit 7 of the BIST register as a boolean."): ToSubclass Amended ]
+   boolean SelfTestEnabled;
+
+   [Description (
+       "Method to invoke PCI device self-test. This method sets bit "
+       "6 of the BIST register. The return result is the lower "
+       "four bits of the BIST register where 0 indicates success and "
+       "non-zero is a device dependent failure. Support for this "
+       "method is optional in the PCI Specification."): ToSubclass Amended ]
+   uint8 BISTExecution( );
+};
+
+
+// ===================================================================
+// PCIDevice
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "Capabilities and management of a PCI device controller "
+   "on an adapter card."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_PCIDevice : CIM_PCIController {
+
+   [Description ("Array of doubleword base memory addresses."): ToSubclass Amended ]
+   uint32 BaseAddress[6];
+
+   [Description ("Subsystem identifier code."): ToSubclass Amended]
+   uint16 SubsystemID;
+
+   [Description (
+       "Subsystem vendor ID. ID information is reported from a "
+       "PCIDevice via protocol-specific requests. The correct place "
+       "in the CIM Schema for this information is in CIM_Physical"
+       "Element (the Manufacturer property) for hardware, and "
+       "CIM_Product (the Vendor property) if the information is "
+       "related to Product acquisition. This data is also reported "
+       "here since it is part of the standard output from the "
+       "Device, and as an optimization."): ToSubclass Amended]
+   uint16 SubsystemVendorID;
+
+   [Description (
+       "Register indicating how long the master would like to "
+       "retain PCI bus ownership whenever it initiates a "
+       "transaction. A zero value indicates no requirement."): ToSubclass Amended, 
+    Units ("250 nanoseconds"): ToSubclass Amended]
+   uint8 MinGrantTime;
+
+   [Description (
+       "Register specifying how often the device needs access to "
+       "the PCI bus in 250ns. A zero value indicates no "
+       "requirement."): ToSubclass Amended, 
+    Units ("250 nanoseconds"): ToSubclass Amended]
+   uint8 MaxLatency;
+};
+
+
+// ==================================================================
+//    ServiceAccessPoint
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Description (
+     "CIM_ServiceAccessPoint represents the ability to utilize or "
+     "invoke a Service.  Access points represent that a Service is "
+     "made available to other entities for use."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_ServiceAccessPoint : CIM_LogicalElement {
+      [Propagated ("CIM_System.CreationClassName"), Key, 
+       MaxLen (256): ToSubclass, Description (
+        "The scoping System's CreationClassName."): ToSubclass Amended ] 
+   string SystemCreationClassName;
+      [Propagated ("CIM_System.Name"), Key, MaxLen (256): ToSubclass,
+       Description ("The scoping System's Name."): ToSubclass Amended ] 
+   string SystemName;
+      [Key, MaxLen (256): ToSubclass, Description (
+        "CreationClassName indicates the name of the class or the "
+        "subclass used in the creation of an instance. When used "
+        "with the other key properties of this class, this property "
+        "allows all instances of this class and its subclasses to "
+        "be uniquely identified.") : ToSubclass Amended]
+   string CreationClassName;
+      [Override ("Name"), Key, MaxLen (256): ToSubclass, Description (
+        "The Name property uniquely identifies the ServiceAccessPoint "
+        "and provides an indication of the functionality that is "
+        "managed.  This functionality is described in more detail in "
+        "the object's Description property.") : ToSubclass Amended] 
+   string Name;
+};
+
+
+// ==================================================================
+//     ProtocolEndpoint
+// ==================================================================
+        [Abstract, Version ("2.6.0"), Description (
+         "A communication point from which data may be sent or "
+         "received. ProtocolEndpoints link router interfaces and "
+         "switch ports to LogicalNetworks.") : ToSubclass Amended,  LOCALE(0x409)]
+class CIM_ProtocolEndpoint : CIM_ServiceAccessPoint {
+        [Override ("Name"), MaxLen(256): ToSubclass, Description (
+         "A string which identifies this ProtocolEndpoint with either "
+         "a port or an interface on a device. To ensure uniqueness, "
+         "the Name property should be prepended or appended with "
+         "information from the Type or OtherTypeDescription "
+         "properties. The method chosen is described in the "
+         "NameFormat property of this class.") : ToSubclass Amended]
+    string Name;
+        [MaxLen (256): ToSubclass, Description (
+         "NameFormat contains the naming heuristic that is chosen to "
+         "ensure that the value of the Name property is unique. For "
+         "example, one might choose to prepend the name of the port "
+         "or interface with the Type of ProtocolEndpoint that this "
+         "instance is (e.g., IPv4) followed by an underscore."): ToSubclass Amended ]
+    string NameFormat;
+        [Description (
+         "ProtocolType is an enumeration providing information to "
+         "categorize and classify different instances of this class. "
+         "For most instances, information in this enumeration and the "
+         "subclass' definition overlap. However, there are several cases "
+         "where a specific subclass of ProtocolEndpoint is not required "
+         "(for example, there is no Fibre Channel Endpoint). Hence, this "
+         "property is needed to define the type of Endpoint. Note that "
+         "in a future major release of the CIM Schema, it is likely "
+         "that ProtocolEndpoint will be ABSTRACT, forcing "
+         "subclassing and removing the need for this property."): ToSubclass Amended, 
+         ValueMap {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+          "10", "11", "12", "13", "14", "15", "16", "17", "18", 
+          "19", "20", "21", "22", "23", "24", "25", "26", "27"}: ToSubclass Amended,
+         Values {"Unknown", "Other", "IPv4", "IPv6", "IPX", 
+          "AppleTalk", "DECnet", "SNA", "CONP", "CLNP",
+          "VINES", "XNS", "ATM", "Frame Relay",
+          "Ethernet", "TokenRing", "FDDI", "Infiniband", 
+          "Fibre Channel", "ISDN BRI Endpoint", 
+          "ISDN B Channel Endpoint", "ISDN D Channel Endpoint", 
+          // 22
+          "IPv4/v6", "BGP", "OSPF", "MPLS", "UDP", "TCP"}: ToSubclass Amended,
+         ModelCorrespondence {
+          "CIM_ProtocolEndpoint.OtherTypeDescription"}: ToSubclass ] 
+    uint16 ProtocolType;
+        [MaxLen(64): ToSubclass, Description (
+         "A string describing the type of ProtocolEndpoint when "
+         "the Type property of this class (or any of its "
+         "subclasses) is set to 1 (i.e., \"Other\"). This "
+         "property should be set to NULL when the Type property "
+         "is any value other than 1."): ToSubclass Amended,
+           ModelCorrespondence {"CIM_ProtocolEndpoint.ProtocolType"}: ToSubclass ]
+   string OtherTypeDescription;
+};
+
+
+// ==================================================================
+//     IPProtocolEndpoint
+// ==================================================================
+        [Abstract, Version ("2.6.0"), Description (
+         "A ProtocolEndpoint that is dedicated to running IP.") : ToSubclass Amended,  LOCALE(0x409)]
+class CIM_IPProtocolEndpoint : CIM_ProtocolEndpoint {
+        [Description (
+         "The IP address that this ProtocolEndpoint represents, "
+         "formatted according to the appropriate convention as "
+         "defined in the AddressType property of this class " 
+         "(e.g., 171.79.6.40).") : ToSubclass Amended] 
+    string Address;
+        [Description (
+         "The mask for the IP address of this ProtocolEndpoint, "
+         "formatted according to the appropriate convention as "
+         "defined in the AddressType property of this class " 
+         "(e.g., 255.255.252.0).") : ToSubclass Amended] 
+    string SubnetMask;
+        [Description (
+         "An enumeration that describes the format of the address "
+         "property. Whenever possible, IPv4-compatible addresses "
+         "should be used instead of native IPv6 addresses (see "
+         "RFC 2373, section 2.5.4). In order to have a consistent "
+         "format for IPv4 addresses in a mixed IPv4/v6 environment, "
+         "all IPv4 addresses and both IPv4-compatible IPv6 addresses "
+         "and IPv4-mapped IPv6 addresses, per RFC 2373, section "
+         "2.5.4, should be formatted in standard IPv4 format."): ToSubclass Amended,
+         ValueMap {"0", "1", "2"}: ToSubclass Amended,
+         Values {"Unknown", "IPv4", "IPv6"}: ToSubclass Amended ]
+    uint16 AddressType;
+        [Description (
+         "It is not possible to tell from the address alone if a "
+         "given IPProtocolEndpoint can support IPv4 and IPv6, or "
+         "just one of these. This property explicitly defines the "
+         "support for different versions of IP that this "
+         "IPProtocolEndpoint has."): ToSubclass Amended,
+         ValueMap {"0", "1", "2"}: ToSubclass Amended,
+         Values {"Unknown", "IPv4 Only", "IPv6 Only"}: ToSubclass Amended ]
+    uint16 IPVersionSupport;
+};
+
+
+// ==================================================================
+//     VLAN
+// ==================================================================
+        [Abstract, Version ("2.6.0"), Description (
+         "An instance of VLAN represents a VLAN within a switch. "
+         "In a particular switch, there should be an instance of VLAN "
+         "for every VLAN available in the switch. For example, in a "
+         "switch with port-based VLANs, if there are 16 VLANs to which "
+         "ports can be assigned (VLAN 1 through VLAN 16), there should "
+         "be an instance of CIM_VLAN for each of VLAN 1 through "
+         "VLAN 16."
+         "\n\n"
+         "VLAN inherits Name from ServiceAccessPoint. Use this for "
+         "the textual name of the VLAN, if there is one. Otherwise, "
+         "synthesize a textual name, e.g., VLAN 0003. (Consider "
+         "leading zero fill, as shown, to ensure that if the textual "
+         "VLAN names are extracted and presented by a management "
+         "applications, the VLAN names will sort in the expected order. "
+         "It's irritating to see a list sorted "
+         "'VLAN 1, VLAN 10, VLAN 11, VLAN 2, VLAN 3...', "
+         "when it could have been "
+         "'VLAN 0001, VLAN 0002, ..., VLAN 0010, VLAN 0011, ....'.) "
+         "The numeric part of the name should be at least four "
+         "digits wide since 802.1Q specifies 4095 VLANs."
+         "\n\n"
+         "It is intended that VLAN be subclassed only if necessary "
+         "to add attributes. The type of the VLAN can be inferred from "
+         "the VLANService(s) with which the VLAN is associated "
+         "in the VLANFor association."
+         "\n\n"
+         "An instance of VLAN may be associated with more than one "
+         "VLANService. For example, there are switches that "
+         "support both 802.1Q VLANs and the vendor's proprietary "
+         "VLANs. In some such switches if a broadcast packet received "
+         "on a port in 802.1Q VLAN 5 will be transmitted from a port "
+         "in proprietary VLAN 5. In effect, there is only one VLAN 5, "
+         "and the type of port only determines the packet format for "
+         "tagged packets. In the case just described, only one "
+         "instance of CIM_VLAN should be instantiated for VLAN 5, and "
+         "it should be associated both with the 802.1Q VLANService "
+         "and the proprietary VLANService. "
+         "\n\n"
+         "In typical VLAN-aware switches, packets can be assigned to "
+         "a VLAN based on the port on which they are received " 
+         "(port-based VLANs), based on the source MAC address " 
+         "(MAC-based VLANs), or based on the value of a set of bits in "
+         "the packet (protocol-based VLANs). If it is desirable to "
+         "represent the VLAN assignment predicate for some MAC-based "
+         "VLAN switch, it will be necessary to subclass VLAN. The list "
+         "of MAC addresses associated with a VLAN would be an "
+         "attribute of the subclass. If it is desirable to represent "
+         "the VLAN assignment predicate in a protocol-based VLAN "
+         "switch, it will be necessary to subclass VLAN, "
+         "InboundVLAN, or both. If the predicate applies to all ports "
+         "in the switch, then only VLAN needs to be subclassed. If the "
+         "predicate may vary based on the port, then InboundVLAN must "
+         "be subclassed, and CIM_VLAN might have to be subclassed "
+         "as well."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_VLAN : CIM_ServiceAccessPoint {
+        [Description ("VLAN identifying number."): ToSubclass Amended ]
+    uint32 VLANNumber;
+};
+
+
+// ==================================================================
+//    Component
+// ==================================================================
+   [Association, Abstract, Aggregation, Version ("2.6.0"), 
+    Description (
+     "CIM_Component is a generic association used to establish "
+     "'part of' relationships between Managed System Elements. For "
+     "example, the SystemComponent association defines parts of "
+     "a System.") : ToSubclass Amended,  LOCALE(0x409)] 
+class CIM_Component {
+      [Aggregate, Key, Description (
+        "The parent element in the association.") : ToSubclass Amended] 
+   CIM_ManagedSystemElement REF GroupComponent;
+      [Key, Description (
+        "The child element in the association.") : ToSubclass Amended] 
+   CIM_ManagedSystemElement REF PartComponent;
+};
+
+
+// ===================================================================
+// RedundancyGroup
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "A class derived from LogicalElement that is a special "
+   "collection of ManagedSystemElements. This collection indicates "
+   "that the aggregated components together provide redundancy. "
+   "All elements aggregated in a RedundancyGroup should be "
+   "instantiations of the same object class.") : ToSubclass Amended,  LOCALE(0x409)] 
+class CIM_RedundancyGroup : CIM_LogicalElement {
+
+   [Key, MaxLen (256): ToSubclass, Description (
+       "CreationClassName indicates the name of the class or "
+       "the subclass used in the creation of an instance. When "
+       "used with the other key properties of this class, this "
+       "property allows all instances of this class and its "
+       "subclasses to be uniquely identified."): ToSubclass Amended ]
+   string CreationClassName;
+
+   [Override("Name"), 
+    Key, MaxLen (256): ToSubclass, Description (
+      "The RedundancyGroup Name serves as the key for the "
+      "Group's instance in an enterprise environment."): ToSubclass Amended ]
+   string Name;
+
+   [Description (
+       "RedundancyStatus provides information on the state of the "
+       "RedundancyGroup. \"Fully Redundant\" (value=2) means that "
+       "all of the configured redundancy is still available; "
+       "\"Degraded Redundancy\" (3) means that some failures have "
+       "been experienced but some reduced amount of redundancy is "
+       "still available; \"Redundancy Lost\" (4) means that a "
+       "sufficient number of failures have been experienced such "
+       "that no redundancy is available and the next failure "
+       "experienced will cause overall failure. Also, the values, "
+       "\"Other\" (1) and \"Unknown\" (0), are defined."): ToSubclass Amended,
+    ValueMap {"0", "1", "2", "3", "4"}: ToSubclass Amended, 
+    Values {"Unknown", "Other", "Fully Redundant", 
+       "Degraded Redundancy", "Redundancy Lost"} : ToSubclass Amended]
+   uint16 RedundancyStatus;
+};
+
+
+// ===================================================================
+// RedundancyComponent
+// ===================================================================
+[Abstract, Association, Aggregation, Version ("2.6.0"), Description (
+   "A RedundancyGroup aggregates Managed System Elements and "
+   "indicates that these elements, taken together, provide "
+   "redundancy. All elements aggregated in a RedundancyGroup "
+   "should be instantiations of the same object class."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_RedundancyComponent : CIM_Component {
+
+   [Override ("GroupComponent"), Aggregate,
+    Description (
+       "The RedundancyComponent association indicates that "
+       "'this set of fans' or 'these physical extents' participate "
+       "in a single RedundancyGroup.") : ToSubclass Amended]
+   CIM_RedundancyGroup REF GroupComponent;
+};
+
+
+// ===================================================================
+// NetworkAdapter 
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "NetworkAdapter is an Abstract class defining general "
+   "networking hardware concepts (for example, PermanentAddress or "
+   "Speed of operation). NetworkAdapters are Devices with the "
+   "ability to support multiple, higher level protocols and provide "
+   "the implementation behind the Network Model's ProtocolEndpoint "
+   "class. (This information is conveyed using the DeviceSAP"
+   "Implementation association, defined in the Core Model.) "
+   "NetworkAdapters and their Endpoints represent the potential for "
+   "connectivity among peers. \n"
+   "The 'potential for connectivity' is very different than the "
+   "master-slave/controller-controlled by relationships of CIM_"
+   "Controller. Sometimes, however, a single Device is both a kind "
+   "of NetworkAdapter and a Controller - for example, when a Fibre"
+   "ChannelAdapter is operating as a ComputerSystem's SCSIController. "
+   "In this case, there are aspects of the Device that are network "
+   "oriented and others that are Controller oriented - and, both the "
+   "Controller and Adapter classes should be instantiated. A Device"
+   "Identity relationship would also be created to tie together these "
+   "differing aspects/abstractions of the Device."): ToSubclass Amended,  LOCALE(0x409)] 
+class CIM_NetworkAdapter : CIM_LogicalDevice {
+
+   [MaxLen (64): ToSubclass, Description (
+       "PermanentAddress defines the network address hardcoded into "
+       "an adapter.  This 'hardcoded' address may be changed via "
+       "firmware upgrade or software configuration. If so, this field "
+       "should be updated when the change is made.  PermanentAddress "
+       "should be left blank if no 'hardcoded' address exists for the "
+       "NetworkAdapter."): ToSubclass Amended,
+    MappingStrings {"MIF.DMTF|Network Adapter 802 Port|001.2"}: ToSubclass ]       
+   string PermanentAddress;
+
+   [MaxLen (64): ToSubclass, Description (
+       "An array of strings indicating the network addresses for an "
+       "adapter."): ToSubclass Amended,
+    ArrayType ("Indexed"): ToSubclass,
+    MappingStrings {"MIF.DMTF|Network Adapter 802 Port|001.3"}: ToSubclass ]
+   string NetworkAddresses[]; 
+
+   [Description (
+       "An estimate of the current bandwidth in Bits per Second. "
+       "For Adapters which vary in bandwidth or for those where "
+       "no accurate estimation can be made, this property should "
+       "contain the nominal bandwidth."): ToSubclass Amended,
+    Units ("Bits per Second"): ToSubclass Amended, 
+    MappingStrings {"MIB.IETF|RFC1213-MIB.ifSpeed", 
+       "MIF.DMTF|Network Adapter 802 Port|001.5"}: ToSubclass ]
+   uint64 Speed;
+
+   [Description ( 
+       "The maximum speed, in Bits per Second, for the Network"
+       "Adapter."): ToSubclass Amended, 
+    Units ("Bits per Second"): ToSubclass Amended ] 
+    uint64 MaxSpeed;
+
+   [Description (
+       "Boolean indicating that the Adapter is operating in "
+       "full duplex mode."): ToSubclass Amended ]
+   boolean FullDuplex;
+
+   [Description ( 
+       "A boolean indicating whether the NetworkAdapter is capable " 
+       "of automatically determining the speed or other communications "
+       "characteristics of the attached network media."): ToSubclass Amended ] 
+    boolean AutoSense;
+
+   [Description (
+       "The total number of octets transmitted, including framing "
+       "characters."): ToSubclass Amended,
+    Mappingstrings {"MIB.IETF|RFC1213-MIB.ifOutOctets", 
+       "MIF.DMTF|Network Adapter 802 Port|001.7"}: ToSubclass, 
+    Counter: ToSubclass ] 
+    uint64 OctetsTransmitted;
+
+   [Description (
+       "The total number of octets received, including framing "
+       "characters."): ToSubclass Amended,
+    Mappingstrings {"MIB.IETF|RFC1213-MIB.ifInOctets",
+       "MIF.DMTF|Network Adapter 802 Port|001.9"}: ToSubclass, 
+    Counter : ToSubclass] 
+    uint64 OctetsReceived;
+};
+
+
+// ===================================================================
+// ExtraCapacityGroup
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "A class derived from RedundancyGroup indicating that the "
+   "aggregated elements have more capacity or capability than is "
+   "needed.  An example of this type of redundancy is the "
+   "installation of N+1 power supplies or fans in a system."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_ExtraCapacityGroup : CIM_RedundancyGroup {
+
+   [Description (
+       "MinNumberNeeded indicates the smallest number of elements "
+       "that must be operational in order to have redundancy.  "
+       "For example, in an N+1 redundancy relationship, "
+       "the MinNumberNeeded property should be set equal to N."): ToSubclass Amended ]
+   uint32 MinNumberNeeded;
+
+   [Description (
+       "Boolean indicating whether load balancing is supported by "
+       "the ExtraCapacityGroup."): ToSubclass Amended ]
+   boolean LoadBalancedGroup; 
+};
+
+
+// ===================================================================
+// NetworkAdapterRedundancyComponent
+// ===================================================================
+[Abstract, Association, Aggregation, Version ("2.6.0"), Description (
+   "CIM_NetworkAdapterRedundancyComponent indicates the role that "
+   "a NetworkAdapter plays in a ExtraCapacityGroup, providing "
+   "load balancing.") : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_NetworkAdapterRedundancyComponent : CIM_RedundancyComponent {
+
+   [Override("GroupComponent"), Aggregate,
+    Description (
+       "The RedundancyGroup representing a set of load balanced "
+       "NetworkAdapters."): ToSubclass Amended ]
+   CIM_ExtraCapacityGroup REF GroupComponent;
+
+   [Override("PartComponent"), 
+    Description (
+       "The Network Adapter(s) belonging to the RedundancyGroup."): ToSubclass Amended ]
+   CIM_NetworkAdapter REF PartComponent;
+
+   [Description (
+       "Indicates the scope of load balancing for the NetworkAdapters "
+       "involved in the RedundancyGroup. Load balancing may be "
+       "restricted to transmitting data only (value=1), "
+       "receiving data only (value=2), or used for both transmit "
+       "and receive (value=3)."): ToSubclass Amended, 
+    ValueMap {"0", "1", "2", "3"}: ToSubclass Amended, 
+    Values {"Unknown", "Load Balancing - Transmit Only",
+       "Load Balancing - Receive Only", "Full Load Balancing"}: ToSubclass Amended ]
+   uint16 ScopeOfBalancing;
+
+   [Description (
+       "Boolean indicating whether the Network Adapter is an original "
+       "primary adapter (value=1), a preferred primary adapter (2), "
+       "or both (3). Values of \"Unknown\" and \"Not Applicable\" may "
+       "also be specified."): ToSubclass Amended,
+    ValueMap {"0", "1", "2", "3", "4"}: ToSubclass Amended, 
+    Values {"Unknown", "Original Primary", "Preferred Primary", 
+       "Both", "Not Applicable"}: ToSubclass Amended ]
+   uint16 PrimaryAdapter;
+};
+
+
+
+// ===================================================================
+// EthernetAdapter
+// ===================================================================
+[Abstract, Version ("2.6.0"), Description (
+   "Capabilities and management of an EthernetAdapter."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_EthernetAdapter : CIM_NetworkAdapter {
+
+   [Override ("NetworkAddresses"), 
+    Description (
+       "Ethernet/802.3 MAC addresses formatted as twelve hexadecimal "
+       "digits (e.g. \"010203040506\"), with each pair representing "
+       "one of the six octets of the MAC address in \"canonical\" bit "
+       "order.  (Thus, the Group address bit is found in the low "
+       "order bit of the first character of the string.)"): ToSubclass Amended,
+    ArrayType ("Indexed"): ToSubclass ]
+    string NetworkAddresses[];
+
+   [Description (
+       "The maximum size of the INFO (non-MAC) field that will be "
+       "received or transmitted."): ToSubclass Amended, 
+    Mappingstrings {"MIB.IETF|BRIDGE-MIB.dot1dTpPortMaxInfo"}: ToSubclass ]
+    uint32 MaxDataSize;
+
+   [Description (
+       "Capabilities of the EthernetAdapter. For example, the "
+       "Device may support AlertOnLan, WakeOnLan, Load Balancing "
+       "and/or FailOver. If failover or load balancing "
+       "capabilities are listed, a SpareGroup (failover) or "
+       "ExtraCapacityGroup (load balancing) should also be defined "
+       "to completely describe the capability."): ToSubclass Amended, 
+    ArrayType ("Indexed"), 
+    ValueMap {"0", "1", "2", "3", "4", "5"}: Amended,  
+    Values {"Unknown", "Other", "AlertOnLan", "WakeOnLan", 
+       "FailOver", "LoadBalancing"}: Amended, 
+    ModelCorrespondence {
+       "CIM_EthernetAdapter.CapabilityDescriptions"}: ToSubclass ]
+   uint16 Capabilities[];
+
+   [Description (
+       "An array of free-form strings providing more detailed "
+       "explanations for any of the EthernetAdapter features "
+       "indicated in the Capabilities array. Note, each entry of "
+       "this array is related to the entry in the Capabilities "
+       "array that is located at the same index."): ToSubclass Amended, 
+    ArrayType ("Indexed"): ToSubclass, 
+    ModelCorrespondence {"CIM_EthernetAdapter.Capabilities"}: ToSubclass ]
+   string CapabilityDescriptions[];
+
+   [Description (
+       "Specifies which capabilities are enabled from the list "
+       "of all supported ones, defined in the Capabilities array."): ToSubclass Amended, 
+    ValueMap {"0", "1", "2", "3", "4", "5"}: ToSubclass Amended,  
+    Values {"Unknown", "Other", "AlertOnLan", "WakeOnLan", 
+       "FailOver", "LoadBalancing"}: ToSubclass Amended, 
+    ModelCorrespondence {"CIM_EthernetAdapter.Capabilities"}: ToSubclass]
+   uint16 EnabledCapabilities[];
+
+   [Description (
+       "The number of times there was an invalid data symbol when "
+       "a valid carrier was present. The count is incremented at "
+       "most once per carrier event, even if multiple symbol "
+       "errors occur during the carrier event."): ToSubclass Amended, 
+    MappingStrings {"MIB.IETF|EtherLike-MIB.dot3StatsSymbolErrors"}: ToSubclass, 
+    Counter : ToSubclass] 
+   uint32 SymbolErrors;
+
+   [Description ("The total number of packets transmitted."): ToSubclass Amended, 
+    MappingStrings {"MIF.DMTF|Network Adapter 802 Port|001.6"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint64 TotalPacketsTransmitted;
+
+   [Description ("The total number of packets received."): ToSubclass Amended, 
+    MappingStrings {"MIF.DMTF|Network Adapter 802 Port|001.8"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint64 TotalPacketsReceived;
+
+   [Description (
+       "A count of frames received on a particular interface "
+       "that are not an integral number of octets in length and do "
+       "not pass the FCS check. The count represented by an "
+       "instance of this object is incremented when the alignment"
+       "Error status is returned by the MAC layer to the LLC (or "
+       "other MAC user). Received frames for which multiple error "
+       "conditions obtain are, according to the conventions of IEEE "
+       "802.3 Layer Management, counted exclusively according to "
+       "the error status presented to the LLC."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsAlignmentErrors"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 AlignmentErrors;
+
+   [Description (
+       "A count of frames received on a particular interface "
+       "that are an integral number of octets in length but do "
+       "not pass the FCS check. The count represented by an "
+       "instance of this object is incremented when the Frame"
+       "CheckError status is returned by the MAC layer to the "
+       "LLC (or other MAC user). Received frames for which "
+       "multiple error conditions obtaine are, according to the "
+       "conventions of IEEE 802.3 Layer Management, counted "
+       "exclusively according to the error status presented to "
+       "the LLC."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsFCSErrors"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 FCSErrors;
+
+   [Description (
+       "A count of successfully transmitted frames on a particular "
+       "interface for which transmission is inhibited by exactly "
+       "one collision. A frame that is counted by an instance of "
+       "this object is not counted by the corresponding instance "
+       "of the MultipleCollisionFrames property.") : ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsSingleCollisionFrames"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 SingleCollisionFrames;
+
+   [Description (
+       "A count of successfully transmitted frames on a particular "
+       "interface for which transmission is inhibited by more than "
+       "one collision. A frame that is counted by an instance of "
+       "this object is not counted by the corresponding instance "
+       "of the SingleCollisionFrames property.") : ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsMultipleCollisionFrames"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 MultipleCollisionFrames;
+
+   [Description (
+       "A count of times that the SQE TEST ERROR message is "
+       "generated by the PLS sublayer for a particular interface. "
+       "The SQE TEST ERROR message is defined in section "
+       "7.2.2.2.4 of ANSI/IEEE 802.3-1985 and its generation is "
+       "described in section 7.2.4.6 of the same document."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsSQETestErrors"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 SQETestErrors;
+
+   [Description (
+       "A count of frames for which the first transmission "
+       "attempt on a particular interface is delayed because the "
+       "medium is busy. The count represented by an instance of "
+       "this object does not include frames involved in collisions."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsDeferredTransmissions"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 DeferredTransmissions;
+
+   [Description (
+       "The number of times that a collision is detected on a "
+       "particular interface later than 512 bit-times into the "
+       "transmission of a packet. Five hundred and twelve bit-"
+       "times corresponds to 51.2 microseconds on a 10 Mbit/s "
+       "system. A (late) collision included in a count "
+       "represented by an instance of this object is also "
+       "considered as a (generic) collision for purposes of "
+       "other collision-related statistics."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsLateCollisions"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 LateCollisions;
+
+   [Description (
+       "A count of frames for which transmission on a particular "
+       "interface fails due to excessive collisions."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsExcessiveCollisions"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 ExcessiveCollisions;
+
+   [Description (
+       "A count of frames for which transmission on a particular "
+       "interface fails due to an internal MAC sublayer transmit "
+       "error. A frame is only counted by an instance of this "
+       "object if it is not counted by the corresponding instance "
+       "of either the LateCollisions property, the Excessive"
+       "Collisions property, or the CarrierSenseErrors property. "
+       "The precise meaning of the count represented by an instance "
+       "of this object is implementation-specific.  In particular, "
+       "an instance of this object may represent a count of "
+       "transmission errors on a particular interface that are "
+       "not otherwise counted."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsInternalMacTransmitErrors"}: ToSubclass, 
+    Counter: ToSubclass  ] 
+   uint32 InternalMACTransmitErrors;
+
+   [Description (
+       "A count of frames for which reception on a particular "
+       "interface fails due to an internal MAC sublayer receive "
+       "error. A frame is only counted by an instance of this "
+       "object if it is not counted by the corresponding instance "
+       "of either the FrameTooLongs property, the AlignmentErrors "
+       "property, or the FCSErrors property. The precise meaning "
+       "of the count represented by an instance of this object is "
+       "implementation-specific.  In particular, an instance of "
+       "this object may represent a count of receive errors on a "
+       "particular interface that are not otherwise counted."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsInternalMacReceiveErrors"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 InternalMACReceiveErrors;
+
+   [Description (
+       "The number of times that the carrier sense condition was "
+       "lost or never asserted when attempting to transmit a frame "
+       "on a particular interface. The count represented by an "
+       "instance of this object is incremented at most once per "
+       "transmission attempt, even if the carrier sense condition "
+       "fluctuates during a transmission attempt."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsCarrierSenseErrors"}: ToSubclass, 
+    Counter: ToSubclass ] 
+   uint32 CarrierSenseErrors;
+
+   [Description (
+       "A count of frames received on a particular interface that "
+       "exceed the maximum permitted frame size. The count "
+       "represented by an instance of this object is incremented "
+       "when the FrameTooLong status is returned by the MAC layer "
+       "to the LLC (or other MAC user). Received frames for which "
+       "multiple error conditions obtain are, according to the "
+       "conventions of IEEE 802.3 Layer Management, counted "
+       "exclusively according to the error status presented to "
+       "the LLC."): ToSubclass Amended,
+    Mappingstrings {
+       "MIB.IETF|EtherLike-MIB.dot3StatsFrameTooLongs"}: ToSubclass, 
+    Counter: ToSubclass  ] 
+   uint32 FrameTooLongs;
+};
+
+// ==================================================================
+//    Dependency   
+// ==================================================================
+   [Association, Abstract, Version ("2.6.0"), Description (   
+     "CIM_Dependency is a generic association used to establish "   
+     "dependency relationships between ManagedElements.") : ToSubclass Amended,  LOCALE(0x409)]    
+class CIM_Dependency {   
+      [Key, Description (   
+        "Antecedent represents the independent object in this "   
+        "association.") : ToSubclass Amended]    
+   CIM_ManagedElement REF Antecedent;   
+      [Key, Description (   
+        "Dependent represents the object dependent on the "   
+        "Antecedent."): ToSubclass Amended ]    
+   CIM_ManagedElement REF Dependent;   
+};   
+ 
+
+// ==================================================================
+//    ProvidesServiceToElement
+// ==================================================================
+   [Abstract, Association, Version ("2.6.0"), Description (
+     "CIM_ProvidesServiceToElement is used to describe that "
+     "ManagedElements may be dependent on the functionality "
+     "of one or more Services. An example is that a Processor "
+     "and an Enclosure (PhysicalElement) are dependent on AlertOn"
+     "LAN Services to signal an incomplete or erroneous boot, and "
+     "hardware-related errors."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_ProvidesServiceToElement : CIM_Dependency {
+      [Override ("Antecedent"), Description (
+        "The Service provided."): ToSubclass Amended ]
+   CIM_Service ref Antecedent;
+      [Override ("Dependent"), Description (
+        "The ManagedElement dependent on the Service."): ToSubclass Amended ]
+   CIM_ManagedElement ref Dependent;
+};
+
+
+
+// ==================================================================
+//    ServiceSAPDependency
+// ==================================================================
+   [Abstract, Association, Version ("2.6.0"), Description (
+     "CIM_ServiceSAPDependency is an association between a Service "
+     "and a ServiceAccessPoint indicating that the referenced SAP "
+     "is utilized by the Service to provide its functionality. For "
+     "example, Boot Services may invoke BIOS' Disk Services "
+     "(interrupts) in order to function."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_ServiceSAPDependency : CIM_Dependency {
+      [Override ("Antecedent"), 
+       Description ("The required ServiceAccessPoint."): ToSubclass Amended ] 
+   CIM_ServiceAccessPoint REF Antecedent;
+      [Override ("Dependent"), Description (
+        "The Service that is dependent on an underlying SAP."): ToSubclass Amended ] 
+   CIM_Service REF Dependent;
+};
+
+
+// ==================================================================
+//    Service
+// ==================================================================  
+   [Abstract, Version ("2.6.0"), Description (
+     "A CIM_Service is a Logical Element that contains the "
+     "information necessary to represent and manage the "
+     "functionality provided by a Device and/or SoftwareFeature. "
+     "A Service is a general-purpose object to configure and "
+     "manage the implementation of functionality.  It is not the "
+     "functionality itself.") : ToSubclass Amended,  LOCALE(0x409)] 
+class CIM_Service : CIM_LogicalElement {
+      [Propagated ("CIM_System.CreationClassName"), Key, 
+       MaxLen (256): ToSubclass, Description (
+        "The scoping System's CreationClassName."): ToSubclass Amended ] 
+   string SystemCreationClassName;
+      [Propagated ("CIM_System.Name"), Key, MaxLen (256): ToSubclass,
+       Description ("The scoping System's Name."): ToSubclass Amended ] 
+   string SystemName;
+      [Key, MaxLen (256): ToSubclass, Description (
+        "CreationClassName indicates the name of the class or the "
+        "subclass used in the creation of an instance. When used "
+        "with the other key properties of this class, this property "
+        "allows all instances of this class and its subclasses to "
+        "be uniquely identified.") : ToSubclass Amended]
+   string CreationClassName;
+      [Override ("Name"), Key, MaxLen (256): ToSubclass, Description (
+        "The Name property uniquely identifies the Service and "
+        "provides an indication of the functionality that is "
+        "managed. This functionality is described in more detail in "
+        "the object's Description property."): ToSubclass Amended ] 
+   string Name;
+      [MaxLen (10): ToSubclass, Description (
+        "StartMode is a string value indicating whether the Service "
+        "is automatically started by a System, Operating System, etc. "
+        "or only started upon request."): ToSubclass Amended, 
+       ValueMap {"Automatic", "Manual"}: ToSubclass Amended ] 
+   string StartMode;
+      [Description (
+        "Started is a boolean indicating whether the Service "
+        "has been started (TRUE), or stopped (FALSE)."): ToSubclass Amended ] 
+   boolean Started;
+      [Description (
+        "The StartService method places the Service in the started "
+        "state. It returns an integer value of 0 if the Service was "
+        "successfully started, 1 if the request is not supported and "
+        "any other number to indicate an error. In a subclass, the "
+        "set of possible return codes could be specified, using a "
+        "ValueMap qualifier on the method. The strings to which the "
+        "ValueMap contents are 'translated' may also be specified in "
+        "the subclass as a Values array qualifier."): ToSubclass Amended ] 
+   uint32 StartService();
+      [Description (
+        "The StopService method places the Service in the stopped "
+        "state. It returns an integer value of 0 if the Service was "
+        "successfully stopped, 1 if the request is not supported and "
+        "any other number to indicate an error. In a subclass, the "
+        "set of possible return codes could be specified, using a "
+        "ValueMap qualifier on the method. The strings to which the "
+        "ValueMap contents are 'translated' may also be specified in "
+        "the subclass as a Values array qualifier."): ToSubclass Amended ] 
+   uint32 StopService();
+};
+
+
+// ==================================================================
+//     VLANService
+// ==================================================================
+        [Abstract, Version ("2.6.0"), Description (
+         "VLANService represents the VLAN aspects of the function "
+         "performed by a switch. Some VLAN-aware devices participate "
+         "in protocols where VLAN information is propagated among "
+         "switches, e.g., GVRP in 802.1Q switches and VTP in Cisco "
+         "Catalyst switches. VLANService also represents the function "
+         "performed by the switch as a participant in such a protocol."
+         "\n\n"
+         "VLANService must be subclassed so that instances can be "
+         "distinguished by their class. If there is a name assigned to "
+         "a set of VLAN-aware switches, e.g., the VTP domain name in "
+         "Cisco Catalyst switches, use the Name attribute inherited "
+         "from CIM_Service to store the name."
+         "\n\n"
+         "A VLANService should be instantiated in a VLAN-aware switch "
+         "even if there is no GVRP-like protocol."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_VLANService : CIM_Service {
+};
+
+
+// ==================================================================
+//     802dot1QVLANService
+// ==================================================================
+        [Abstract, Version ("2.6.0"), Description (
+         "If a switch supports 802.1Q, an instance of this class "
+         "should be instantiated in the switch. If the switch "
+         "supports GVRP, this class represents the function that "
+         "the switch performs with respect to GVRP."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_802dot1QVLANService : CIM_VLANService {
+};
+
+
+// ==================================================================
+//     VLANFor
+// ==================================================================
+        [Abstract, Association, Version ("2.6.0"), Description(
+         "The VLAN Port used by the VLAN Service."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_VLANFor : CIM_ServiceSAPDependency {
+        [Override ("Antecedent") ]
+    CIM_VLAN REF Antecedent;
+        [Override ("Dependent"), Min (1) ]
+    CIM_VLANService REF Dependent;
+};
+
+
+// ===================================================================
+// DeviceServiceImplementation
+// ===================================================================
+[Abstract, Association, Version ("2.6.0"), Description (
+   "An association between a Service and how it is implemented. "
+   "The cardinality of this association is many-to-many. "
+   "A Service may be provided by more than one Logical"
+   "Device, operating in conjunction.  And, any Device may "
+   "provide more than one Service.  When multiple Devices are "
+   "associated with a single Service, it is assumed that these "
+   "elements operate in conjunction to provide the Service.  If "
+   "different implementations of a Service exist, each of these "
+   "implementations would result in individual instantiations "
+   "of the Service object.  These individual instantiations "
+   "would then have associations to the unique implementations."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DeviceServiceImplementation : CIM_Dependency {
+
+   [Override ("Antecedent"),
+    Description ("The LogicalDevice."): ToSubclass Amended ]
+   CIM_LogicalDevice REF Antecedent;
+   
+   [Override ("Dependent"),
+    Description ("The Service implemented using the LogicalDevice."): ToSubclass Amended ]
+   CIM_Service REF Dependent;
+};
+
+
+// ==================================================================
+//    LogicalIdentity
+// ==================================================================
+   [Association, Abstract, Version ("2.6.0"), Description (
+     "CIM_LogicalIdentity is an abstract and generic association, "
+     "indicating that two LogicalElements represent different "
+     "aspects of the same underlying entity. This relationship "
+     "conveys what could be defined with multiple inheritance. It "
+     "is restricted to the 'logical' aspects of a ManagedSystem"
+     "Element. In most scenarios, the Identity relationship is "
+     "determined by the equivalence of Keys or some other "
+     "identifying properties of the related Elements. The "
+     "association should only be used in well understood scenarios. "
+     "This is why the association is abstract - allowing more "
+     "concrete definition and clarification in subclasses. One of "
+     "the scenarios where this relationship is reasonable is to "
+     "represent that a Device is both a 'bus' entity and a "
+     "'functional' entity. For example, a Device could be both a "
+     "USB (bus) and a Keyboard (functional) entity."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_LogicalIdentity {
+      [Key, Description (
+        "SystemElement represents one aspect of the Logical"
+        "Element."): ToSubclass Amended ]
+   CIM_LogicalElement ref SystemElement;
+      [Key, Description (
+        "SameElement represents an alternate aspect of the "
+        "System entity."): ToSubclass Amended ]
+   CIM_LogicalElement ref SameElement;
+};
+
+
+
+// ===================================================================
+// NetworkVirtualAdapter
+// ===================================================================
+[Abstract, Association, Version ("2.6.0"), Description (
+   "NetworkVirtualAdapter describes that an instance of Network"
+   "Adapter is actually the result of several Adapters "
+   "participating in a load balanced RedundancyGroup."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_NetworkVirtualAdapter : CIM_LogicalIdentity {
+
+   [Override ("SystemElement"), 
+    Description ("The 'virtual' NetworkAdapter."): ToSubclass Amended ]
+   CIM_NetworkAdapter REF SystemElement;
+
+   [Override ("SameElement"), 
+    Description (
+       "The ExtraCapacity RedundancyGroup that describes the load "
+       "balancing. The result of the load balancing is the 'virtual' "
+       "Adapter."): ToSubclass Amended ]
+   CIM_ExtraCapacityGroup REF SameElement;
+};
+
+
+// ==================================================================
+//    SAPSAPDependency
+// ==================================================================
+   [Abstract, Association, Version ("2.6.0"), Description (
+     "CIM_SAPSAPDependency is an association between a Service"
+     "AccessPoint and another ServiceAccessPoint indicating that "
+     "the latter is required in order for the former ServiceAccess"
+     "Point to utilize or connect with its Service. For example, "
+     "to print at a network printer, local Print Access Points "
+     "must utilize underlying network-related SAPs, or "
+     "ProtocolEndpoints, in order to send the print request."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_SAPSAPDependency:CIM_Dependency {
+      [Override ("Antecedent"), Description (
+        "The required ServiceAccessPoint."): ToSubclass Amended ] 
+   CIM_ServiceAccessPoint REF Antecedent;
+      [Override ("Dependent"), Description (
+        "The ServiceAccessPoint that is dependent on an underlying "
+        "SAP."): ToSubclass Amended ] 
+   CIM_ServiceAccessPoint REF Dependent;
+};
+
+
+
+// ===================================================================
+// DeviceSAPImplementation
+// ===================================================================
+   [Association, Abstract, Version ("2.6.0"), Description (
+     "An association between a ServiceAccessPoint and how "
+     "it is implemented. The cardinality of this association "
+     "is many-to-many.  A SAP may be provided by more "
+     "than one LogicalDevice, operating in conjunction.  And, any "
+     "Device may provide more than one ServiceAccessPoint. "
+     "When many LogicalDevices are associated with a single "
+     "SAP, it is assumed that these elements operate in "
+     "conjunction to provide the AccessPoint.  If different "
+     "implementations of a SAP exist, each of these implementations "
+     "would result in individual instantiations of the "
+     "ServiceAccessPoint object.  These individual instantiations "
+     "would then have associations to the unique implementations."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DeviceSAPImplementation : CIM_Dependency {
+      [Override ("Antecedent"),
+       Description ("The LogicalDevice."): ToSubclass Amended ]
+   CIM_LogicalDevice REF Antecedent;
+      [Override ("Dependent"),
+       Description (
+        "The ServiceAccessPoint implemented using the LogicalDevice."): ToSubclass Amended]
+   CIM_ServiceAccessPoint REF Dependent;
+};
+
+
+// ===================================================================
+//    Configuration
+// ===================================================================
+   [Version ("2.6.0"), Description (
+     "The Configuration object allows the grouping of sets of "
+     "parameters (defined in Setting objects) and dependencies for "
+     "one or more ManagedSystemElements. The Configuration object "
+     "represents a certain behavior, or a desired functional state "
+     "for the ManagedSystemElements. The desired functional state "
+     "is typically driven by external requirements such as time or "
+     "location. For example, to connect to a Mail System from "
+     "'home', a dependency on a modem exists, but a dependency on "
+     "a network adapter exists at 'work'. Settings for the "
+     "pertinent LogicalDevices (in this example, POTSModem and "
+     "NetworkAdapter) can be defined and aggregated by the "
+     "Configuration. Therefore, two 'Connect to Mail' "
+     "Configurations may be defined grouping the relevant "
+     "dependencies and Setting objects."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_Configuration : CIM_ManagedElement {
+      [Key, MaxLen (256): ToSubclass, Description (
+        "The label by which the Configuration object is known."): ToSubclass Amended ]
+   string Name;
+};
+
+
+// ===================================================================
+//    ElementConfiguration
+// ===================================================================
+   [Association, Version ("2.6.0"), Description (
+     "This association relates a Configuration object to one or "
+     "more ManagedSystemElements. The Configuration object "
+     "represents a certain behavior, or a desired functional state "
+     "for the associated ManagedSystemElements."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_ElementConfiguration {
+      [Key, Description ("The ManagedSystemElement."): ToSubclass Amended ]
+   CIM_ManagedSystemElement REF Element;
+      [Key, Description (
+        "The Configuration object that groups the Settings and "
+        "dependencies associated with the ManagedSystemElement."): ToSubclass Amended ] 
+   CIM_Configuration REF Configuration;
+};
+
+
+
+// ===================================================================
+// DeviceIdentity
+// ===================================================================
+[Association, Abstract,
+ Version ("2.6.0"), Description (
+   "CIM_DeviceIdentity indicates that two LogicalDevices "
+   "represent different aspects of the same underlying entity. "
+   "This association refines the CIM_LogicalIdentity superclass "
+   "by restricting it to the Device level and defining its use in "
+   "well understood scenarios. One of these scenarios is to "
+   "represent that a Device is both a 'bus' entity and a "
+   "'functional' entity. For example, a Device could be both a PCI "
+   "Device (or a USB Device), as well as a CIM_Keyboard. The other "
+   "scenario is where a Device plays multiple functional roles "
+   "that can not be distinguished by their hardware realization "
+   "alone. For example, a Fibre Channel adapter might have aspects "
+   "of both a NetworkAdapter and a SCSIController."): ToSubclass Amended,  LOCALE(0x409)  ]
+class CIM_DeviceIdentity: CIM_LogicalIdentity {
+   [Override ("SystemElement"), 
+    Description (
+       "SystemElement represents one aspect of the Device."): ToSubclass Amended ]
+   CIM_LogicalDevice ref SystemElement;
+   [Override ("SameElement"), 
+    Description (
+       "SameElement represents an alternate aspect of "
+       "the System entity."): ToSubclass Amended ]
+   CIM_LogicalDevice ref SameElement;
+};
+
+
+// ===================================================================
+// DeviceSoftware
+// ===================================================================
+[Association, Version ("2.6.0"), Description (
+   "The DeviceSoftware relationship identifies any software that "
+   "is associated with a Device - such as drivers, configuration "
+   "or application software, or firmware."): ToSubclass Amended,  LOCALE(0x409) ] 
+class CIM_DeviceSoftware : CIM_Dependency {
+
+   [Override ("Antecedent"),
+    Description ("The SoftwareElement."): ToSubclass Amended ]
+   CIM_SoftwareElement REF Antecedent;
+
+   [Override ("Dependent"),
+    Description (
+       "The LogicalDevice that requires or uses the software."): ToSubclass Amended ]
+   CIM_LogicalDevice REF Dependent;
+
+   [Description (
+       "An enumerated integer to indicate the role this software "
+       "plays in regards to its associated Device. For example, this "
+       "software could be instrumentation (value=5) or firmware (6)."): ToSubclass Amended,
+    ValueMap {"0", "1", "2", "3", "4", "5", "6", "7", "8"}: ToSubclass Amended,
+    Values {"Unknown", "Other", "Driver", "Configuration Software", 
+       "Application Software", "Instrumentation", "Firmware",
+       "BIOS", "Boot ROM"}: ToSubclass Amended,
+    ModelCorrespondence {"CIM_DeviceSoftware.PurposeDescription"}: ToSubclass,
+    MappingStrings {"MIF.DMTF|SubComponent Software|001.2"}: ToSubclass ]
+   uint16 Purpose;
+
+   [Description (
+       "A free-form string to provide more information for "
+       "the Purpose property, e.g. \"Application Software\".") : ToSubclass Amended,
+    ModelCorrespondence {"CIM_DeviceSoftware.Purpose"} : ToSubclass] 
+   string PurposeDescription;
+
+   [Description (
+       "Boolean indicating that the software is 'burned into' or "
+       "otherwise located on the hardware of the LogicalDevice."): ToSubclass Amended ]
+   boolean LoadedOnDevice; 
+
+   [Description (
+       "Boolean indicating whether the software is upgradeable, "
+       "when it is LoadedOnDevice. Software that is loaded as "
+       "part of the OperatingSystem is typically changeable and "
+       "upgradeable. However, when DeviceSoftware is burned into "
+       "EEPROM or a chip that Realizes the LogicalDevice, then "
+       "it may not be upgradeable. This property indicates the "
+       "ability to update and upgrade DeviceSoftware."): ToSubclass Amended ]
+   boolean UpgradeableOnDevice;
+};
+
+
+// ===================================================================
+//    Setting
+// ===================================================================
+   [Abstract, Version ("2.6.0"), Description (
+     "The Setting class represents configuration-related and "
+     "operational parameters for one or more ManagedSystem"
+     "Element(s). A ManagedSystemElement may have multiple Setting "
+     "objects associated with it. The current operational values "
+     "for an Element's parameters are reflected by properties in "
+     "the Element itself or by properties in its associations. "
+     "These properties do not have to be the same values present "
+     "in the Setting object. For example, a modem may have a "
+     "Setting baud rate of 56Kb/sec but be operating "
+     "at 19.2Kb/sec."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_Setting : CIM_ManagedElement {
+      [MaxLen (256): ToSubclass, Description (
+        "The identifier by which the Setting object is known."): ToSubclass Amended ]
+   string SettingID;
+      [Description (
+        "The VerifyOKToApplyToMSE method is used to verify that "
+        "this Setting can be 'applied' to the referenced Managed"
+        "SystemElement, at the given time or time interval. This "
+        "method takes three input parameters: MSE (the Managed"
+        "SystemElement that is being verified), TimeToApply (which, "
+        "being a datetime, can be either a specific time or a time "
+        "interval), and MustBeCompletedBy (which indicates the "
+        "required completion time for the method). The return "
+        "value should be 0 if it is OK to apply the Setting, 1 if "
+        "the method is not supported, 2 if the Setting cannot be "
+        "applied within the specified times, and any other number "
+        "if an error occurred. In a subclass, the "
+        "set of possible return codes could be specified, using a "
+        "ValueMap qualifier on the method. The strings to which the "
+        "ValueMap contents are 'translated' may also be specified in "
+        "the subclass as a Values array qualifier."): ToSubclass Amended ]
+   uint32 VerifyOKToApplyToMSE(
+      [IN] CIM_ManagedSystemElement ref MSE, 
+      [IN] datetime TimeToApply, 
+      [IN] datetime MustBeCompletedBy);
+      [Description (
+        "  The ApplyToMSE method performs the actual application of "
+        "the Setting to the referenced ManagedSystemElement. It "
+        "takes three input parameters: MSE (the ManagedSystem"
+        "Element to which the Setting is being applied), "
+        "TimeToApply (which, being a datetime, can be either a "
+        "specific time or a time interval), and MustBeCompletedBy "
+        "(which indicates the required completion time for the "
+        "method). Note that the semantics of this method are that "
+        "individual Settings are either wholly applied or not "
+        "applied at all to their target ManagedSystemElement. The "
+        "return value should be 0 if the Setting is successfully "
+        "applied to the referenced ManagedSystemElement, 1 if the "
+        "method is not supported, 2 if the Setting was not applied "
+        "within the specified times, and any other number if an "
+        "error occurred. In a subclass, the set of possible return "
+        "codes could be specified, using a ValueMap qualifier on "
+        "the method. The strings to which the ValueMap contents are "
+        "'translated' may also be specified in the subclass as a "
+        "Values array qualifier. \n"
+        "  Note: If an error occurs in applying the Setting to a "
+        "ManagedSystemElement, the Element must be configured as "
+        "when the 'Apply' attempt began. That is, the Element "
+        "should NOT be left in an indeterminate state."): ToSubclass Amended ]
+   uint32 ApplyToMSE(
+      [IN] CIM_ManagedSystemElement ref MSE, 
+      [IN] datetime TimeToApply, 
+      [IN] datetime MustBeCompletedBy);
+      [Description (
+        "  The VerifyOKToApplyToCollection method is used to verify "
+        "that this Setting can be 'applied' to the referenced "
+        "Collection of ManagedSystemElements, at the given time "
+        "or time interval, without causing adverse effects to "
+        "either the Collection itself or its surrounding "
+        "environment. The net effect is to execute the "
+        "VerifyOKToApply method against each of the Elements "
+        "aggregated by the Collection. This method takes three "
+        "input parameters: Collection (the Collection of Managed"
+        "SystemElements that is being verified), TimeToApply (which, "
+        "being a datetime, can be either a specific time or a time "
+        "interval), and MustBeCompletedBy (which indicates the "
+        "required completion time for the method). The return "
+        "value should be 0 if it is OK to apply the Setting, 1 if "
+        "the method is not supported, 2 if the Setting cannot be "
+        "applied within the specified times, and any other number if "
+        "an error occurred. One output parameter is defined - "
+        "CanNotApply - which is a string array that lists the keys "
+        "of the ManagedSystemElements to which the Setting can NOT be "
+        "applied. This enables those Elements to be revisited and "
+        "either fixed, or other corrective action taken. \n"
+        "  In a subclass, the set of possible return codes could be "
+        "specified, using a ValueMap qualifier on the method. The "
+        "strings to which the ValueMap contents are 'translated' may "
+        "also be specified in the subclass as a Values array "
+        "qualifier.") : ToSubclass Amended] 
+   uint32 VerifyOKToApplyToCollection (
+      [IN] CIM_CollectionOfMSEs ref Collection,
+      [IN] datetime TimeToApply, 
+      [IN] datetime MustBeCompletedBy,
+      [IN (false), OUT] string CanNotApply[]);
+      [Description (
+        "  The ApplyToCollection method performs the application of "
+        "the Setting to the referenced Collection of ManagedSystem"
+        "Elements. The net effect is to execute the ApplyToMSE "
+        "method against each of the Elements aggregated by the "
+        "Collection. If the input value ContinueOnError is FALSE, "
+        "this method applies the Setting to all Elements in the "
+        "Collection until it encounters an error, in which case it "
+        "stops execution, logs the key of the Element that caused "
+        "the error in the CanNotApply array, and issues a return code "
+        "of 2. If the input value ContinueOnError is TRUE, then this "
+        "method applies the Setting to all the ManagedSystemElements "
+        "in the Collection, and reports the failed Elements in the "
+        "array, CanNotApply. For the latter, processing will continue "
+        "until the method is applied to all Elements in the "
+        "Collection, regardless of any errors encountered. The key of "
+        "each ManagedSystemElement to which the Setting could not be "
+        "applied is logged into the CanNotApply array. This method "
+        "takes four input parameters: Collection (the Collection of "
+        "Elements to which the Setting is being applied), TimeToApply "
+        "(which, being a datetime, can be either a specific time or a "
+        "time interval), ContinueOnError (TRUE means to continue "
+        "processing on encountering an error), and MustBeCompletedBy "
+        "(which indicates the required completion time for the "
+        "method). The return value should be 0 if the Setting is "
+        "successfully applied to the referenced Collection, 1 if the "
+        "method is not supported, 2 if the Setting was not applied "
+        "within the specified times, 3 if the Setting cannot be "
+        "applied using the input value for ContinueOnError, and any "
+        "other number if an error occurred. One output parameter is "
+        "defined, CanNotApplystring, which is an array that lists "
+        "the keys of the ManagedSystemElements to which the Setting "
+        "was NOT able to be applied. This output parameter has "
+        "meaning only when the ContinueOnError parameter is TRUE. \n"
+        "  In a subclass, the set of possible return codes could be "
+        "specified, using a ValueMap qualifier on the method. The "
+        "strings to which the ValueMap contents are 'translated' may "
+        "also be specified in the subclass as a Values array "
+        "qualifier. \n"
+        "Note: if an error occurs in applying the Setting to a "
+        "ManagedSystemElement in the Collection, the Element must be "
+        "configured as when the 'Apply' attempt began. That is, the "
+        "Element should NOT be left in an indeterminate state."): ToSubclass Amended ]
+   uint32 ApplyToCollection(
+      [IN] CIM_CollectionOfMSEs ref Collection, 
+      [IN] datetime TimeToApply, 
+      [IN] boolean ContinueOnError,
+      [IN] datetime MustBeCompletedBy, 
+      [IN (false), OUT] string CanNotApply[]);
+      [Description ( 
+        "The VerifyOKToApplyIncrementalChangeToMSE method " 
+        "is used to verify that a subset of the properties in " 
+        "this Setting can be 'applied' to the referenced Managed" 
+        "SystemElement, at the given time or time interval. This " 
+        "method takes four input parameters: MSE (the Managed" 
+        "SystemElement that is being verified), TimeToApply (which, " 
+        "being a datetime, can be either a specific time or a time " 
+        "interval), MustBeCompletedBy (which indicates the " 
+        "required completion time for the method), and a " 
+        "PropertiesToApply array (which contains a list of the " 
+        "property names whose values will be verified.) " 
+        "If the array is null, empty or contains the string \"ALL\" " 
+        "as a property name, then all Settings properties shall be " 
+        "verified.  If it is set to \"NONE\", then no Settings " 
+        "properties will be verified. The return " 
+        "value should be 0 if it is OK to apply the Setting, 1 if " 
+        "the method is not supported, 2 if the Setting cannot be " 
+        "applied within the specified times, and any other number " 
+        "if an error occurred. In a subclass, the " 
+        "set of possible return codes could be specified, using a " 
+        "ValueMap qualifier on the method. The strings to which the " 
+        "ValueMap contents are 'translated' may also be specified in " 
+        "the subclass as a Values array qualifier."): ToSubclass Amended ] 
+   uint32 VerifyOKToApplyIncrementalChangeToMSE( 
+      [IN] CIM_ManagedSystemElement ref MSE, 
+      [IN] datetime TimeToApply, 
+      [IN] datetime MustBeCompletedBy, 
+      [IN] string PropertiesToApply[]); 
+      [Description ( 
+        "  The ApplyIncrementalChangeToMSE method performs the " 
+        "actual application of a subset of the properties in " 
+        "the Setting to the referenced ManagedSystemElement. It " 
+        "takes four input parameters: MSE (the ManagedSystem" 
+        "Element to which the Setting is being applied), " 
+        "TimeToApply (which, being a datetime, can be either a " 
+        "specific time or a time interval), MustBeCompletedBy " 
+        "(which indicates the required completion time for the " 
+        "method), and a PropertiesToApply array (which contains a "
+        "list of the property names whose values will be applied.) If a " 
+        "property is not in this list, it will be ignored by the Apply. " 
+        "If the array is null, empty or contains the string \"ALL\" " 
+        "as a property name, then all Settings properties shall be " 
+        "applied.  If it is set to \"NONE\", then no Settings " 
+        "properties will be applied. \n" 
+        "  Note that the semantics of this method are that " 
+        "individual Settings are either wholly applied or not " 
+        "applied at all to their target ManagedSystemElement. The " 
+        "return value should be 0 if the Setting is successfully " 
+        "applied to the referenced ManagedSystemElement, 1 if the " 
+        "method is not supported, 2 if the Setting was not applied " 
+        "within the specified times, and any other number if an " 
+        "error occurred. In a subclass, the set of possible return " 
+        "codes could be specified, using a ValueMap qualifier on " 
+        "the method. The strings to which the ValueMap contents are " 
+        "'translated' may also be specified in the subclass as a " 
+        "Values array qualifier. \n" 
+        "  Note: If an error occurs in applying the Setting to a " 
+        "ManagedSystemElement, the Element must be configured as " 
+        "when the 'Apply' attempt began. That is, the Element " 
+        "should NOT be left in an indeterminate state."): ToSubclass Amended ] 
+   uint32 ApplyIncrementalChangeToMSE( 
+      [IN] CIM_ManagedSystemElement ref MSE, 
+      [IN] datetime TimeToApply, 
+      [IN] datetime MustBeCompletedBy, 
+      [IN] string PropertiesToApply[]); 
+      [Description ( 
+        "  The VerifyOKToApplyIncrementalChangeToCollection method " 
+        "is used to verify that a subset of the properties in " 
+        "this Setting can be 'applied' to the referenced " 
+        "Collection of ManagedSystemElements, at the given time " 
+        "or time interval, without causing adverse effects to " 
+        "either the Collection itself or its surrounding " 
+        "environment. The net effect is to execute the " 
+        "VerifyOKToApplyIncrementalChangeToMSE method " 
+        "against each of the Elements " 
+        "aggregated by the Collection. This method takes three " 
+        "input parameters: Collection (the Collection of Managed" 
+        "SystemElements that is being verified), TimeToApply (which, " 
+        "being a datetime, can be either a specific time or a time " 
+        "interval), MustBeCompletedBy (which indicates the " 
+        "required completion time for the method), and a " 
+        "PropertiesToApply array (which contains a list of the " 
+        "property names whose values will be verified. " 
+        "If they array is null or empty or constains the string \"all\" " 
+        "as a property name then all Settings properties shall be " 
+        "verified.  If it is set to \"none\" then no Settings properties " 
+        "will be verified). The return " 
+        "value should be 0 if it is OK to apply the Setting, 1 if " 
+        "the method is not supported, 2 if the Setting cannot be " 
+        "applied within the specified times, and any other number if " 
+        "an error occurred. One output parameter is defined - " 
+        "CanNotApply - which is a string array that lists the keys of " 
+        "the ManagedSystemElements to which the Setting can NOT be " 
+        "applied. This enables those Elements to be revisited and " 
+        "either fixed, or other corrective action taken. \n" 
+        "  In a subclass, the set of possible return codes could be " 
+        "specified, using a ValueMap qualifier on the method. The " 
+        "strings to which the ValueMap contents are 'translated' may " 
+        "also be specified in the subclass as a Values array " 
+        "qualifier."): ToSubclass Amended ] 
+   uint32 VerifyOKToApplyIncrementalChangeToCollection ( 
+      [IN] CIM_CollectionOfMSEs ref Collection, 
+      [IN] datetime TimeToApply, 
+      [IN] datetime MustBeCompletedBy, 
+      [IN] string PropertiesToApply[], 
+      [IN (false), OUT] string CanNotApply[]); 
+      [Description ( 
+        "  The ApplyIncrementalChangeToCollection method performs " 
+        "the application of a subset of the properties in this " 
+        "Setting to the referenced Collection of ManagedSystem" 
+        "Elements. The net effect is to execute the " 
+        "ApplyIncrementalChangeToMSE " 
+        "method against each of the Elements aggregated by the " 
+        "Collection. If the input value ContinueOnError is FALSE, " 
+        "this method applies the Setting to all Elements in the " 
+        "Collection until it encounters an error, in which case it " 
+        "stops execution, logs the key of the Element that caused " 
+        "the error in the CanNotApply array, and issues a return code " 
+        "of 2. If the input value ContinueOnError is TRUE, then this " 
+        "method applies the Setting to all the ManagedSystemElements " 
+        "in the Collection, and reports the failed Elements in the " 
+        "array, CanNotApply. For the latter, processing will continue " 
+        "until the method is applied to all Elements in the " 
+        "Collection, regardless of any errors encountered. The key of " 
+        "each ManagedSystemElement to which the Setting could not be " 
+        "applied is logged into the CanNotApply array. This method " 
+        "takes four input parameters: Collection (the Collection of " 
+        "Elements to which the Setting is being applied), TimeToApply " 
+        "(which, being a datetime, can be either a specific time or a " 
+        "time interval), ContinueOnError (TRUE means to continue " 
+        "processing on encountering an error), and MustBeCompletedBy " 
+        "(which indicates the required completion time for the " 
+        "method), and a PropertiesToApply array (which contains a list " 
+        "of the property names whose values will be applied.) If a " 
+        "property is not in this list, it will be ignored by the Apply. " 
+        "If the array is null or empty or contains the string \"ALL\" " 
+        "as a property name, then all Settings properties shall be " 
+        "applied. If it is set to \"NONE\", then no Settings properties " 
+        "will be applied. \n"
+        "  The return value should be 0 if the Setting is " 
+        "successfully applied to the referenced Collection, 1 if the " 
+        "method is not supported, 2 if the Setting was not applied " 
+        "within the specified time, 3 if the Setting cannot be " 
+        "applied using the input value for ContinueOnError, and any " 
+        "other number if an error occurred. One output parameter is " 
+        "defined, CanNotApplystring, which is an array that lists " 
+        "the keys of the ManagedSystemElements to which the Setting " 
+        "was NOT able to be applied. This output parameter has " 
+        "meaning only when the ContinueOnError parameter is TRUE. \n" 
+        "  In a subclass, the set of possible return codes could be " 
+        "specified, using a ValueMap qualifier on the method. The " 
+        "strings to which the ValueMap contents are 'translated' may " 
+        "also be specified in the subclass as a Values array " 
+        "qualifier. \n" 
+        "  Note: if an error occurs in applying the Setting to a " 
+        "ManagedSystemElement in the Collection, the Element must be " 
+        "configured as when the 'Apply' attempt began. That is, the " 
+        "Element should NOT be left in an indeterminate state."): ToSubclass Amended ] 
+   uint32 ApplyIncrementalChangeToCollection( 
+      [IN] CIM_CollectionOfMSEs ref Collection, 
+      [IN] datetime TimeToApply, 
+      [IN] boolean ContinueOnError, 
+      [IN] datetime MustBeCompletedBy, 
+      [IN] string PropertiesToApply[], 
+      [IN (false), OUT] string CanNotApply[]); 
+};
+
+
+
+// ===================================================================
+// BootService
+// ===================================================================
+   [Abstract, Version ("2.6.0"), Description (
+     "BootService represents the functionality provided by a Device, "
+     "software or via a Network to load an Operating System on a "
+     "UnitaryComputerSystem."): ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_BootService : CIM_Service {
+};
+
+
+
+// ===================================================================
+//    SettingContext
+// ===================================================================
+   [Association, Aggregation, Version ("2.6.0"), Description (
+     "This relationship associates Configuration objects with "
+     "Setting objects. For example, a NetworkAdapter's Settings "
+     "could change based on the site/network to which its hosting "
+     "ComputerSystem is attached. In this case, the ComputerSystem "
+     "would have two different Configuration objects, corresponding "
+     "to the differences in network configuration for the two network "
+     "segments. Configuration A would aggregate a Setting object for "
+     "the NetworkAdapter when operating on segment \"ANet\", whereas "
+     "Configuration B would aggregate a different NetworkAdapter "
+     "Setting object, specific to segment \"BNet\". Note that many "
+     "Settings of the computer are independent of the network "
+     "Configuration. For example, both Configurations A and B would "
+     "aggregate the same Setting object for the ComputerSystem's "
+     "MonitorResolution."):ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_SettingContext {
+      [Aggregate, Key, Description (
+        "The Configuration object that aggregates the Setting."): ToSubclass Amended ]
+   CIM_Configuration REF Context;
+      [Key, Description ("An aggregated Setting."): ToSubclass Amended ]
+   CIM_Setting REF Setting;
+};
+
+
+
+// ===================================================================
+//    ElementSetting
+// ===================================================================
+   [Association, Abstract, Version ("2.6.0"), Description (
+     "ElementSetting represents the association between Managed"
+     "SystemElements and the Setting class(es) defined for them.") : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_ElementSetting {
+      [Key, Description ("The ManagedSystemElement."): ToSubclass Amended ]
+   CIM_ManagedSystemElement REF Element;
+      [Key, Description (
+        "The Setting object associated with the ManagedSystem"
+        "Element.") : ToSubclass Amended]
+   CIM_Setting REF Setting;
+};
+
+
+
+
+
+
+// ==================================================================
+//    DiagnosticTest
+// ==================================================================
+   [Abstract, Version("2.6.0"), Description (
+     "The CIM_DiagnosticTest class represents the ability to "
+     "execute a test. Specific diagnostic tests may be defined by "
+     "subclassing and/or instantiating this object. To provide "
+     "more detail for a type of test (i.e, additional properties "
+     "and methods), subclassing is appropriate. To indicate that a "
+     "test exists and may be applied to a specific ManagedSystem"
+     "Element, instantiation of the DiagnosticTest class may "
+     "suffice.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticTest : CIM_Service {
+      [Description (
+        "The descriptions for each Characteristic are below:\n "
+        "\n"
+        "* \"Is Exclusive\" (value=2) is specified for the test "
+        "module only if the diagnostic cannot run more than one test "
+        "at a time, regardless of how many SystemElements are "
+        "supported. Typically, this occurs when hardware or software "
+        "constraints prevent the test from running as multiple, "
+        "concurrent instances. If the diagnostic can be run against "
+        "multiple SystemElements, but only once per Element, then set "
+        "the IsExclusiveForMSE boolean property on the appropriate "
+        "instances of DiagnosticTestForMSE. \n"
+        "\n"
+        "* If \"Is Interactive\" (value=3) is set, then the diagnostic "
+        "displays a message either before, during or after testing. \n"
+        "\n"
+        "* Set \"Is Destructive\" (value=4) if the diagnostic will "
+        "destroy data, or reconfigure the Element that is being "
+        "tested. \n" 
+        "\n"
+        "* \"Is Risky\" (value=5) indicates that data loss may occur "
+        "if the test is interrupted. Some tests make copies of data, "
+        "perform the test, and restore the data returning the tested "
+        "entity to its previous configuration. If the test is "
+        "interrupted, then loss of data or reconfiguration of the "
+        "tested ManagedSystemElement may occur. \n"
+        "\n"
+        "* If \"Is Package\" (value=6) is set, this test is actually "
+        "a set of lower level diagnostics, that are 'packaged' "
+        "together. \n"
+        "\n"
+        "\"Supports PercentOfTestCoverage\" (value=7) indicates that "
+        "a request for reduced test coverage can be specified using "
+        "the PercentOfTestCoverage property of Diagnostic Setting. \n"
+        "\n"
+        "Also, the values \"Unknown\" (0) and \"Other\" (1) may be "
+        "specified. If \"Other\" is defined, additional detail may be "
+        "found in the OtherCharacteristicDescription property of this "
+        "class."): ToSubclass Amended, 
+       Values{"Unknown", "Other", "Is Exclusive", "Is Interactive", 
+              "Is Destructive", "Is Risky", "Is Package", 
+              "Supports PercentOfTestCoverage"}: ToSubclass Amended,
+       ModelCorrespondence {
+        "CIM_DiagnosticTest.OtherCharacteristicDescription"}: ToSubclass]
+    uint16 Characteristics[];
+      [Description (
+        "Provides additional information for the Characteristic when "
+        "its value is set to 1 (\"Other\")."): ToSubclass Amended, 
+       ModelCorrespondence {"CIM_DiagnotistTest.Characteristics"}: ToSubclass]
+      string OtherCharacteristicDescription;
+      [Description(
+        "If this test is currently being performed, the InUse "
+        "property is set to TRUE. To determine which ManagedSystem"
+        "Element is being tested, query the DiagnosticResult objects "
+        "associated with this test (query DiagnosticResultForTest), "
+        "and for which the TestState equals 4 (\"In Progress\"). "
+        "The DiagnosticResult object is associated with the System"
+        "Element under test, using DiagnosticResultForMSE."): ToSubclass Amended ]
+    boolean IsInUse;
+      [Description(
+        "The \"Expensive\" qualifier can be applied to this class and "
+        "its RunTest method. If so, the ResourcesUsed property "
+        "describes the resources that are capitalized, based on a "
+        "default setup for the test. Multiple resources can be "
+        "specified since the property is an array."): ToSubclass Amended, 
+       Values{"CPU", "Memory", "Hard Disk", "CDROM", "Floppy", 
+              "PCI Bus", "USB Bus", "1394 Bus", "SCSI Bus", "IDE Bus", 
+              "Network", "ISA Bus", "EISA Bus", "VESA Bus", "PCMCIA Bus", 
+              "CardBus", "Access.bus", "NuBus", "AGP", "VME Bus", 
+              "Sbus IEEE 1396-1993", "MCA Bus", "GIO Bus", "XIO Bus", 
+              "HIO Bus", "PMC Bus", "SIO Bus"}: ToSubclass Amended]
+    uint16 ResourcesUsed[];
+      [Description(
+        "The RunTest method executes this test for the specified "
+        "ManagedSystemElement (defined using the SystemElement input "
+        "parameter). Results of the test are stored in a Diagnostic"
+        "Result object, a reference to which is returned as the Result "
+        "output parameter. How the test should execute, i.e. its "
+        "settings, is defined in a DiagnosticSetting object (or by a "
+        "subclass of DiagnosticSetting). A reference to a Setting "
+        "object is specified using the Setting input parameter.  If a "
+        "reference is not passed into the method, then a default "
+        "DiagnosticSetting may be used. This default Setting is "
+        "associated with the DiagnoticTest using the DefaultSetting "
+        "relationship of the Core Model. \n"
+        "When RunTest starts execution, the settings, which are time sensitive, "
+        "should be evaluated and captured. This is suggested since the "
+        "DiagnosticSetting object can be modified at any time, and therefore "
+        "the current test settings could be lost. \n"
+        "The method's return codes are expected to adhere to the XML "
+        "return codes as they are introduced. Currently, the standard "
+        "return values are: \n"
+        "0 = OK (function succeeded, but the test itself may have "
+        "failed \n"
+        "1 = Unspecified Error (function failed for unspecified "
+        "reasons) \n"
+        "2 = Not Implemented (function is not implemented for this "
+        "instance) \n"
+        "3 = Out Of Resources (component could not allocate required "
+        "resources, e.g. memory, disk space, etc.) \n"
+        "In a subclass, the set of possible return codes could be "
+        "specified, using a ValueMap qualifier on the method. The "
+        "strings to which the ValueMap contents are 'translated' may "
+        "also be specified in the subclass as a Values array qualifier.")
+        : ToSubclass Amended ]
+    uint32 RunTest([IN] CIM_ManagedSystemElement ref SystemElement, 
+          [IN] CIM_DiagnosticSetting ref Setting, 
+          [OUT] CIM_DiagnosticResult ref Result);   
+      [Description(
+        "Execution of this method will delete all instances of the "
+        "DiagnosticResultForMSE object, for this DiagnosticTest "
+        "and the specified ManagedSystemElement (defined using the "
+        "SystemElement input parameter). The DiagnosticResults "
+        "referenced in the DiagnosticResultForMSE instances will be "
+        "deleted.  Also the association DiagnosticResultForTest that "
+        "references to the DiagnosticResult object, and this test will "
+        " be deleted.\n"
+        "  One output parameter is defined - ResultsNotCleared "
+        "- which is a string array that lists the keys of the "
+        "DiagnosticResults which could not be deleted. This information "
+        "enables those Results to be revisited and either manually "
+        "removed, or other corrective action taken. \n"
+        "The method's return codes are expected to adhere to the XML "
+        "return codes as they are introduced. Currently, the standard "
+        "return values are: \n"
+        "0 = OK (function succeeded, but the test itself may have "
+        "failed \n"
+        "1 = Unspecified Error (function failed for unspecified "
+        "reasons) \n"
+        "2 = Not Implemented (function is not implemented for this "
+        "instance) \n"
+        "3 = Out Of Resources (component could not allocate required "
+        "resources, e.g. memory, disk space, etc.) \n"
+        "In a subclass, the set of possible return codes could be "
+        "specified, using a ValueMap qualifier on the method. The "
+        "strings to which the ValueMap contents are 'translated' may "
+        "also be specified in the subclass as a Values array qualifier.")
+        : ToSubclass Amended ]
+    uint32 ClearResults([IN] CIM_ManagedSystemElement ref SystemElement, 
+          [OUT] String ResultsNotCleared[]);   
+      [Description (
+        "After invocation of this method and its completion, the "
+        "specified test(s) will be discontinued for the indicated "
+        "ManagedSystemElement (defined by the SystemElement input "
+        "parameter). The test to discontinue is specified using the "
+        "Result input parameter. If all instances of this test should "
+        "be stopped for the SystemElement, then the Result reference "
+        "should be NULL. Upon completion of the method, test status "
+        "and other information (such as PercentComplete) will be "
+        "stored in the DiagnosticResult instance defined by the Result "
+        "input parameter. The output parameter, TestingStopped, is "
+        "used as follows:\n"
+        " Set to TRUE if testing was successfully stopped. \n"
+        " Set to FALSE if the current test(s) can not be stopped. \n"
+        "If set to FALSE, testing will stop when the diagnostic is "
+        "able to do so safely. To determine if/when the testing is "
+        "stopped, check the TestState property in the DiagnosticResult "
+        "instance defined by the Result parameter. TestState will "
+        "change from \"In Progress\" to \"Stopped\" (from 4 to 5). \n"
+        "The method's return codes are expected to adhere to the XML "
+        "return codes as they are introduced. Currently, the standard "
+        "return values are: \n"
+        "0 = OK (function succeeded, but the test itself may have "
+        "failed \n"
+        "1 = Unspecified Error (function failed for unspecified "
+        "reasons) \n"
+        "2 = Not Implemented (function is not implemented for this "
+        "instance) \n"
+        "3 = Out Of Resources (component could not allocate required "
+        "resources, e.g. memory, disk space, etc.) \n"
+        "In a subclass, the set of possible return codes could be "
+        "specified, using a ValueMap qualifier on the method. The "
+        "strings to which the ValueMap contents are 'translated' may "
+        "also be specified in the subclass as a Values array qualifier.")
+        : ToSubclass Amended ]
+    uint32 DiscontinueTest([IN] CIM_ManagedSystemElement ref SystemElement, 
+          [IN] CIM_DiagnosticResult ref Result, 
+          [OUT] Boolean TestingStopped);   
+};
+
+// ==================================================================
+//    DiagnosticSetting
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Description(
+     "Specific diagnostic test parameters and execution "
+     "instructions are defined by subclassing and/or instantiating "
+     "the DiagnosticSetting object. To provide more detailed "
+     "Settings for a type of test (i.e., additional properties), "
+     "subclassing is appropriate. When only the generic Setting "
+     "information is required, instantiation of the Diagnostic"
+     "Setting class may suffice.\n"
+     "Data from DiagnosticSetting is captured in DiagnosticResult. "
+     "When RunTest starts execution the settings, which are time sensitive, "
+     "should be evaluated and captured. This is suggested since the "
+     "DiagnosticSetting object can be modified at any time, and therefore "
+     "the current test settings could be lost.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticSetting : CIM_Setting {
+      [Key, MaxLen (256): ToSubclass, Override ("SettingID"), 
+       Description (
+        "The identifier by which the DiagnosticSetting object is " 
+        "known and uniquely named. One possible naming scheme is " 
+        "to name the SettingID using the DiagnosticTest's CreationClassName " 
+        "and DiagnosticName, plus a GUID (Globally Unique IDentifier).\n" 
+        "  Note that at an enterprise level, there is typically not a " 
+        "one to one mapping between a DiagnosticSetting and all " 
+        "copies of the DiagnosticTest.  The proposed naming convention will " 
+        "scale to the enterprise level."): ToSubclass Amended ]
+    string SettingID;
+      [Description (
+        "Sets the level of warning messages to be logged. If for "
+        "example no warning information is required, the level "
+        "would be set to \"No Warnings\" (value=0). Using \"Missing "
+        "Resources\" (value=1) will cause warnings to be generated "
+        "when required resources or hardware are not found. Setting "
+        "the value to 2, \"Testing Impacts\", results in both "
+        "missing resources and 'test impact' warnings (for example, "
+        "multiple retries required) to be reported."): ToSubclass Amended, 
+       Values {"No Warnings", "Missing Resources", 
+               "Testing Impacts", "All Warnings"}: ToSubclass Amended,
+       Write]
+    uint16 TestWarningLevel;
+      [Description (
+        "When this flag is true, the diagnostic test will report "
+        "'soft errors'. In this context, a soft error is a message "
+        "from the diagnostic reporting a known defect in the "
+        "hardware or driver configuration, or execution "
+        "environment.  Examples are: \"Not enough memory\", "
+        "\"Driver IOCTL not implemented\", \"Video RAM compare "
+        "failed during polygon fill test (A known defect in the "
+        "video chipset)\", etc."): ToSubclass Amended, 
+       Write] 
+    boolean ReportSoftErrors;
+      [Description (
+        "When this flag is true, the diagnostic test will report "
+        "'status messages'. In this context, a status message "
+        "indicates that the diagnostic code is at a checkpoint. "
+        "Examples are: \"Completion of phase 1\", \"Complex "
+        "pattern\", etc."): ToSubclass Amended, 
+       Write]
+    boolean ReportStatusMessages;
+      [Description (
+        "When this flag is true, the test will halt after finding "
+        "the first error."): ToSubclass Amended,
+       Write]
+    boolean HaltOnError;
+      [Description (
+        "When this flag is true, the test software should attempt "
+        "to run in an accelerated fashion either by reducing the "
+        "coverage or number of tests performed."): ToSubclass Amended, 
+       Write]
+    boolean QuickMode;
+      [Units ("Percent"): ToSubclass Amended, MinValue (0): ToSubclass, MaxValue (100): ToSubclass, 
+       Description(
+        "Requests the diagnostic software to reduce test coverage "
+        "to the specified percentage.  For example, a hard drive "
+        "scan test could be asked to run at 50%. The most "
+        "effective way to accomplish this is for the test software "
+        "to scan every other track, as opposed to only scanning the "
+        "first half of a drive. It is assumed that the effectiveness "
+        "of the test is impacted proportional to the percentage of "
+        "testing requested. Permissible values for this property "
+        "range from 0 to 100. \n"
+        "This property may not be applicable to all tests.  If it "
+        "can be set for a test, the value 7 (\"Supports PercentOf"
+        "TestCoverage\") should be entered into the DiagnosticTest's "
+        "Characteristics array."): ToSubclass Amended, 
+       ModelCorrespondence {"CIM_DiagnosticTest.Characteristics"}: ToSubclass, 
+       Write]
+    uint8 PercentOfTestCoverage;
+ };
+
+
+// ==================================================================
+//    DiagnosticResult
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Description(
+     "When a DiagnosticTest Service is running, test results "
+     "are reported using a DiagnosticResult object, or one of its "
+     "subclasses. A DiagnosticTest may be running because its "
+     "Service is Started or due to an invocation of the RunTest "
+     "method. DiagnosticResults are related to their Test via an "
+     "instance of the DiagnosticResultsForMSE association.\n"
+     "For every running of DiagnosticTest, a new instance of "
+     "DiagnosticResult, or one of it's subclasses should be created.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticResult {
+      [Propagated("CIM_DiagnosticTest.CreationClassName"), 
+       Key, MaxLen (256): ToSubclass,
+       Description ("The scoping Test's CreationClassName."): ToSubclass Amended ]
+    string DiagnosticCreationClassName;
+      [Propagated("CIM_DiagnosticTest.Name"),
+       Key, MaxLen (256): ToSubclass,
+       Description ("The scoping Test's Name."): ToSubclass Amended ]
+    string DiagnosticName;
+      [Key, MaxLen (1024): ToSubclass, 
+       Description (
+        "The Unique identifier for an instance of Diagnostic"
+        "Results."): ToSubclass Amended ]
+    string ExecutionID ; 
+      [Propagated ("CIM_DiagnosticTest.SystemCreationClassName"),
+       Key, MaxLen (256): ToSubclass,
+       Description ("The scoping Test's SystemCreationClassName."): ToSubclass Amended ]
+   string DiagSystemCreationClassName;
+      [Propagated ("CIM_DiagnosticTest.SystemName"), 
+       Key, MaxLen (256): ToSubclass,
+       Description ("The scoping Test's SystemName."): ToSubclass Amended ]
+   string DiagSystemName;
+      [Description (
+        "The date and time the result was last updated."): ToSubclass Amended ]
+    datetime TimeStamp;
+      [Description (
+        "If this property is TRUE, then this DiagnosticResult "
+        "summarizes the results from the execution of a packaged "
+        "set of DiagnosticTests. The Tests in the package can be "
+        "identified by following the DiagnosticResultForTest "
+        "association to the test and then using the DiagnosticTest"
+        "InPackage aggregation. The individual Results can be "
+        "broken out by instantiating DiagnosticResults for the "
+        "individual lower level tests and aggregating into the "
+        "'summary' Result using the DiagnosticResultInPackage "
+        "association."): ToSubclass Amended ]
+    boolean IsPackage;
+      [Description (
+        "The date and time  when this test started."): ToSubclass Amended ]
+    datetime TestStartTime;
+      [Description (
+        "The date and time when this test completed."): ToSubclass Amended ]
+    datetime TestCompletionTime;
+      [Description (
+        "Describes how the test is progressing. For example, if "
+        "the test was discontinued, the TestState will be "
+        "\"Stopped\" (value=5), or if testing is currently "
+        "executing, TestState will be \"In Progress\" (4)."): ToSubclass Amended,  
+       Values{"Unknown", "Other", "Passed", "Failed", 
+              "In Progress", "Stopped"}: ToSubclass Amended,
+       ModelCorrespondence {
+        "CIM_DiagnosticResult.OtherStateDescription"}: ToSubclass]
+     uint16 TestState;
+      [Description (
+        "When \"Other\" (value=1) is entered in the TestState "
+        "property, OtherStateDescription can be used to describe "
+        "the test's state."): ToSubclass Amended,
+       ModelCorrespondence {"CIM_DiagnosticResult.TestState"}: ToSubclass]
+     string OtherStateDescription;
+      [Units ("Seconds"): ToSubclass Amended, 
+       Description (
+        "Estimated number of seconds to perform the Diagnostic"
+        "Test indicated by the DiagnosticCreationClassName and "
+        "DiagnosticName properties.  After the test has completed, "
+        "the actual elapsed time can be determined by subtracting "
+        "the TestStartTime from the TestCompletionTime. A similar "
+        "property is defined in the association, DiagnosticTest"
+        "ForMSE. The difference between the two properties is "
+        "that the value stored in the association is a generic "
+        "test execution time for the Element and the Test. But, "
+        "the value here (in DiagnosticResult) is the estimated "
+        "time that this instance with the given settings would "
+        "take to run the test.  A CIM Consumer can compare this "
+        "value with the value in the association DiagnosticTestForMSE "
+        "to get an idea what impact their settings have on test "
+        "execution."): ToSubclass Amended, 
+       ModelCorrespondence {
+        "CIM_DiagnosticTestForMSE.EstimatedTimeOfPerforming"}: ToSubclass]
+    uint32 EstimatedTimeOfPerforming;
+      [Description(
+        "TestResults stores one or more textual results from the "
+        "execution of the DiagnosticTest(s) referenced by the "
+        "DiagnosticCreationClassName and DiagnosticName properties. "
+        "One entry is considered a cell location in the array. Each "
+        "entry is time stamped and contains the following "
+        "information, in the following format: \n"
+        " yyymmddhhttssoutc|DiagnosticName|Textual message \n"
+        "Where: \n"
+        "  yyy = year, e.g. 2000 \n"
+        "  mm = month (01 - 12) \n"
+        "  dd = day (01 - 31) \n" 
+        "  hh = hour (00 - 24) \n"
+        "  tt = minute (00-59) \n"
+        "  ss = second (00-59) \n"
+        "  o = \"+\" or \"-\" indicating the sign of the UTC "
+        "correction field \n"
+        "  utc = offset from UTC (Universal Coordinated Time) "
+        "in minutes \n"
+        "  DiagnosticName = string reference to the DiagnosticTest "
+        "object which was executed\n"
+        "  Textual message = free form string that is the 'test "
+        "result'."): ToSubclass Amended, 
+       ArrayType ("Ordered") ]
+    string TestResults[];
+      [Units ("Percent"): ToSubclass Amended, MinValue (0): ToSubclass, MaxValue (100): ToSubclass, 
+       Description (
+        "The percentage of the test that has executed thus far, if the "
+        "TestState property is set to \"In Progress\" or the percentage "
+        "of the complete test that was executed if the TestState property "
+        "is set to any of the completed states (\"Passed\", \"Failed\" or "
+        "\"Stopped\"). Final results may be based on less than 100% coverage "
+        "due to the parameters defined in DiagnosticSetting (such as "
+        "QuickMode, PercentOfTestCoverage or HaltOnError)." ): ToSubclass Amended ]
+    uint8 PercentComplete;
+
+
+// ---------  Properties below here are copied from  ------------------
+// ---------  DiagnosticSettings                     ------------------
+// Note that the DiagnosticSetting object can be modified at any time,
+// and the current test settings can be lost. When RunTest starts execution 
+// the settings, which are time sensitive, should be evaluated and captured. 
+
+      [Description (
+        "Sets the level of warning messages to be logged. If for "
+        "example no warning information is required, the level "
+        "would be set to \"No Warnings\" (value=0). Using \"Missing "
+        "Resources\" (value=1) will cause warnings to be generated "
+        "when required resources or hardware are not found. Setting "
+        "the value to 2, \"Testing Impacts\", results in both "
+        "missing resources and 'test impact' warnings (for example, "
+        "multiple retries required) to be reported."): ToSubclass Amended, 
+       Values {"No Warnings", "Missing Resources", 
+               "Testing Impacts", "All Warnings"}: ToSubclass Amended,
+       Write]
+    uint16 TestWarningLevel;
+      [Description (
+        "When this flag is true, the diagnostic test will report "
+        "'soft errors'. In this context, a soft error is a message "
+        "from the diagnostic reporting a known defect in the "
+        "hardware or driver configuration, or execution "
+        "environment.  Examples are: \"Not enough memory\", "
+        "\"Driver IOCTL not implemented\", \"Video RAM compare "
+        "failed during polygon fill test (A known defect in the "
+        "video chipset)\", etc."): ToSubclass Amended, 
+       Write] 
+    boolean ReportSoftErrors;
+      [Description (
+        "When this flag is true, the diagnostic test will report "
+        "'status messages'. In this context, a status message "
+        "indicates that the diagnostic code is at a checkpoint. "
+        "Examples are: \"Completion of phase 1\", \"Complex "
+        "pattern\", etc."): ToSubclass Amended, 
+       Write]
+    boolean ReportStatusMessages;
+      [Description (
+        "When this flag is true, the test will halt after finding "
+        "the first error."): ToSubclass Amended,
+       Write]
+    boolean HaltOnError;
+      [Description (
+        "When this flag is true, the test software should attempt "
+        "to run in an accelerated fashion either by reducing the "
+        "coverage or number of tests performed."): ToSubclass Amended, 
+       Write]
+    boolean QuickMode;
+      [Units ("Percent"): ToSubclass Amended, MinValue (0): ToSubclass, MaxValue (100): ToSubclass, 
+       Description(
+        "Requests the diagnostic software to reduce test coverage "
+        "to the specified percentage.  For example, a hard drive "
+        "scan test could be asked to run at 50%. The most "
+        "effective way to accomplish this is for the test software "
+        "to scan every other track, as opposed to only scanning the "
+        "first half of a drive. It is assumed that the effectiveness "
+        "of the test is impacted proportional to the percentage of "
+        "testing requested. Permissible values for this property "
+        "range from 0 to 100. \n"
+        "This property may not be applicable to all tests.  If it "
+        "can be set for a test, the value 7 (\"Supports PercentOf"
+        "TestCoverage\") should be entered into the DiagnosticTest's "
+        "Characteristics array."): ToSubclass Amended, 
+       ModelCorrespondence {"CIM_DiagnosticTest.Characteristics"}: ToSubclass, 
+       Write]
+    uint8 PercentOfTestCoverage;
+};
+
+
+// ==================================================================
+//    DiagnosticResultForMSE
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Association, Description (
+     "This is an association class relating diagnostic test "
+     "results to the ManagedSystemElement that is/was tested.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticResultForMSE {
+      [Key, Description (
+        "The diagnostic result."): ToSubclass Amended ]
+   CIM_DiagnosticResult REF Result;
+      [Key, Description (
+        "The ManagedSystemElement to which the diagnostic result "
+        "applies."): ToSubclass Amended ]
+   CIM_ManagedSystemElement REF SystemElement;
+};
+
+
+// ==================================================================
+//    DiagnosticResultForTest
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Association, Description (
+     "This is an association class to relate the results of a test "
+     "to the test itself.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticResultForTest {
+      [Key, Min (1), Max (1), Weak,
+       Description ("The result object."): ToSubclass Amended ]
+   CIM_DiagnosticResult REF DiagnosticResult;
+      [Min(1), Max(1), Key, 
+       Description ("The test that generated the result object."): ToSubclass Amended ]
+   CIM_DiagnosticTest REF DiagnosticTest;
+};
+
+
+// ==================================================================
+//    DiagnosticTestForMSE
+// ==================================================================
+   [Abstract, Version ("2.6.0"), Association, Description(
+     "This is an association class that relates a DiagnosticTest "
+     "to a ManagedSystemElement.  Consumers wishing to 'diagnose' "
+     "a particular Element could query this association, for the "
+     "Element, to determine what tests are available.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticTestForMSE : CIM_ProvidesServiceToElement {
+      [Override("Antecedent"), Description (
+        "The test that may be run against a ManagedSystemElement."): ToSubclass Amended ]
+   CIM_DiagnosticTest REF Antecedent;
+      [Override("Dependent"), Description (
+        "The ManagedSystemElement that can be tested."): ToSubclass Amended ]
+   CIM_ManagedSystemElement REF Dependent;
+      [Units ("Seconds"): ToSubclass Amended, 
+       Description (
+        "Estimated number of seconds to perform the referenced "
+        "DiagnosticTest against the ManagedSystemElement. Since "
+        "execution times could vary by Element, this property is "
+        "located in the association between the two entities. It is "
+        "also captured in DiagnosticResult, in the Estimated"
+        "TimeOfPerforming property.\n" 
+        "A CIM Consumer can compare this value with the value in "
+        "DiagnosticResult to get an idea of what impact their "
+        "settings have on test execution."): ToSubclass Amended,
+       ModelCorrespondence {
+        "CIM_DiagnosticResult.EstimatedTimeOfPerforming"}: ToSubclass]
+    uint32 EstimatedTimeOfPerforming;
+      [Description (
+        "If the DiagnosticTest referenced in this object can be run "
+        "concurrently against multiple SystemElements, but only "
+        "run one at a time for the referenced ManagedSystemElement, "
+        "then this boolean is set to TRUE. Alternately, if the test "
+        "can NOT be run concurrently irregardless of the System"
+        "Elements being tested, then the more general \"Is Exclusive\" "
+        "enumerated value (2) should be set in DiagnosticTest."
+        "Characteristics."): ToSubclass Amended ]
+    boolean IsExclusiveForMSE;
+};
+
+
+// ==================================================================
+//    DiagnosticTestInPackage
+// ==================================================================
+   [Abstract, Association, Version ("2.6.0"), Aggregation, Description (
+     "This is an association class that identifies a Diagnostic"
+     "Test as made up of lower level Tests. In this case, the "
+     "Test identified as the GroupComponent reference (i.e, "
+     "the higher level test) would have the \"Is Package\" "
+     "enumerated value specified in DiagnosticTest."
+     "Characteristics.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticTestInPackage : CIM_Component {
+      [Override("GroupComponent"), 
+       Description (
+        "The DiagnosticTest object that acts as the container for all "
+        "the tests of the package."): ToSubclass Amended ]
+   CIM_DiagnosticTest REF GroupComponent;
+      [Override("PartComponent"), 
+       Description (
+        "The DiagnosticTest object that is one of the elements of "
+        "the package."): ToSubclass Amended ]
+   CIM_DiagnosticTest REF PartComponent;  
+};
+
+     
+// ==================================================================
+//    DiagnosticResultInPackage
+// ==================================================================
+   [Abstract, Association, Version ("2.6.0"), Aggregation, Description(
+     "This is an association class that identifies a Diagnostic"
+     "Result as made up of lower level Results. In this case, the "
+     "Result identified as the PackageResult reference (i.e., "
+     "the higher level result) would have its IsPackage property "
+     "set to TRUE.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticResultInPackage {
+      [Key, Description (
+       "The DiagnosticResult object that acts as the container for all "
+       "the results of the package."): ToSubclass Amended ]
+   CIM_DiagnosticResult REF PackageResult;
+      [Key, Description (
+        "The DiagnosticResult object that is one of the elements of "
+        "the package."): ToSubclass Amended ]
+   CIM_DiagnosticResult REF Result; 
+};
+
+     
+// ==================================================================
+//    DiagnosticTestSoftware
+// ==================================================================
+   [Abstract, Association, Version ("2.6.0"), Description(
+     "This is an association class relating DiagnosticTest to "
+     "the SoftwareElements that provide this test. SoftwareElement "
+     "describes vendor/version information and other deployment "
+     "data.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticTestSoftware : CIM_Dependency {
+      [Override ("Antecedent"), Description (
+        "Vendor/version and other information about the software "
+        "that runs as the DiagnosticTest."): ToSubclass Amended ]
+   CIM_SoftwareElement REF Antecedent;
+      [Override ("Dependent"), Description (
+        "The DiagnosticTest whose software is described."): ToSubclass Amended ]
+   CIM_DiagnosticTest REF Dependent;
+};
+  
+
+// ==================================================================
+//    DiagnosticSettingForTest
+// ==================================================================
+   [Abstract, Association,Version ("2.6.0"), Description (
+     "This is an association class to relate test settings with "
+     "diagnostic tests.")
+     : ToSubclass Amended,  LOCALE(0x409) ]
+class CIM_DiagnosticSettingForTest : CIM_ElementSetting {
+      [Override("Element"), Description (
+        "The Test that can use the Setting object."): ToSubclass Amended ]
+   CIM_DiagnosticTest REF Element;
+      [Override("Setting"), Description (
+        "The Setting that can be applied to the execution of the "
+        "DiagnosticTest."): ToSubclass Amended ]
+   CIM_DiagnosticSetting REF Setting;
+};
+
+
+// ===================================================================
+// end of file
+// ===================================================================

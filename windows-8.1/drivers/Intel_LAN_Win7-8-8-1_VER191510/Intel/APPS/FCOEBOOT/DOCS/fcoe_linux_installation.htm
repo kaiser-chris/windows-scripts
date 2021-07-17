@@ -1,0 +1,667 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Linux Installation on Intel FCoE</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<style>
+<!--
+div.Section1
+	{page:Section1;}
+ li.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+
+div.page_header {
+	height: 25px;
+	padding: 8px;
+	font-size: 150%;
+	font-weight: bold;
+	background-color: #d9d8d1;
+}
+
+a {
+	color: #0000cc;
+}
+
+div.search {
+	font-size: 100%;
+	font-weight: normal;
+	margin: 4px 8px;
+	float: right;
+	top: 56px;
+	right: 12px
+}
+
+div.page_nav {
+	padding: 8px;
+}
+
+a.title {
+	display: block;
+	padding: 6px 8px;
+	font-weight: bold;
+	background-color: #edece6;
+	text-decoration: none;
+	color: #000000;
+}
+
+div.page_path {
+	padding: 8px;
+	font-weight: bold;
+	border: solid #d9d8d1;
+	border-width: 0px 0px 1px;
+}
+
+div.page_body {
+	padding: 8px;
+	font-family: monospace;
+}
+
+div.pre {
+	font-family: monospace;
+	font-size: 12px;
+	white-space: pre;
+}
+
+a.linenr {
+	color: #999999;
+	text-decoration: none
+}
+
+div.page_footer {
+	height: 17px;
+	padding: 4px 8px;
+	background-color: #d9d8d1;
+}
+
+div.page_footer_text {
+	float: left;
+	color: #555555;
+	font-style: italic;
+}
+
+a.rss_logo {
+	float: right;
+	padding: 3px 0px;
+	width: 35px;
+	line-height: 10px;
+	border: 1px solid;
+	border-color: #fcc7a5 #7d3302 #3e1a01 #ff954e;
+	color: #ffffff;
+	background-color: #ff6600;
+	font-weight: bold;
+	font-family: sans-serif;
+	font-size: 70%;
+	text-align: center;
+	text-decoration: none;
+}
+
+.style2 {
+	font-family: "Times New Roman", Times, serif;
+}
+.style4 {
+	font-family: "Times New Roman", Times, serif;
+	font-size: small;
+}
+
+.style6 {
+	margin-left: 40px;
+}
+
+.style7 {
+	font-family: "Times New Roman", Times, serif;
+	font-size: small;
+	margin-left: 40px;
+}
+
+.style8 {
+	font-family: "Courier New", Courier, monospace;
+}
+.style9 {
+	margin-left: 40px;
+	font-family: "Courier New", Courier, monospace;
+}
+.style10 {
+	font-family: "Courier New", Courier, monospace;
+	font-size: small;
+	margin-left: 40px;
+}
+.style11 {
+	font-family: "Courier New", Courier, monospace;
+	font-size: small;
+}
+
+.style12 {
+				margin-left: 80px;
+}
+.style13 {
+				margin-left: 120px;
+}
+
+.style14 {
+				margin-left: 80px;
+				font-family: "Courier New", Courier, monospace;
+				font-size: small;
+}
+.style15 {
+				list-style-type: lower-alpha;
+}
+
+.style16 {
+				margin-left: 80px;
+				font-family: "Courier New", Courier, monospace;
+}
+
+.style17 {
+				font-family: serif;
+}
+
+.style18 {
+				font-family: serif;
+				font-size: small;
+}
+
+-->
+</style>
+
+<script language="JavaScript" fptype="dynamicoutline">
+<!--
+function dynOutline() {}
+//-->
+</script>
+<script language="JavaScript1.2" fptype="dynamicoutline" for="document" event="onreadystatechange()">
+<!--
+initOutline()
+//-->
+</script>
+
+</head>
+
+<body onclick="dynOutline()" language="Javascript1.2">
+
+<h1>Linux Installation and Configuration of Intel&reg; Ethernet FCoE</h1>
+<p><a href="#SLES">SUSE* Linux Enterprise Server 11 FCoE Installation</a></p>
+<p><a href="#RHEL">Red Hat* Enterprise Linux 6 FCoE Installation</a></p>
+<p><a href="#Linux_FCoE_Configuration_">Linux FCoE Configuration</a></p>
+<hr>
+<h2><a name="SLES"></a>SUSE* Linux Enterprise Server 11 (SLES 11) FCoE Installation</h2>
+<h3>Select FCoE during OS Installation</h3>
+<ol>
+	<li>In Installation Settings, click the <b>Software</b> headline to go to <b>
+	Software Selection and System Tasks</b>. </li>
+	<li>In Software Selection and System Tasks, click <b>Details</b> to enter a 
+	new window. </li>
+	<li>Enter <b>Search</b> tab</li>
+	<li>In Search box, type &quot;fcoe&quot; and click <b>&quot;Search&quot;</b></li>
+	<li>Select open-fcoe package and click <b>&quot;Accept&quot;</b></li>
+	<li>Click <b>OK</b> for questions to get back to <b>&quot;Installation Settings&quot;</b></li>
+</ol>
+<h3>Using Yast to install after OS Installation</h3>
+
+<table class="note"  >
+  <tr>
+    <td valign="top">
+    <img border="0" src="note.gif" width="28" height="21"></td>
+    <td valign="top"><b>NOTE:</b> If 
+	FCoE is installed during OS installation, then this is not required.</td>
+  </tr>
+</table>
+
+<ol>
+	<li>Select&nbsp; <b>Software</b> in the left pane</li>
+	<li>Select <b>Software Management</b> in the right pane</li>
+	<li>Type &quot;fcoe&quot; in the search box, then click <b>Search</b> button</li>
+	<li>&quot;open-fcoe&quot; package will show in right pane</li>
+	<li>Select &quot;open-fcoe&quot; package, then click <b>Accept</b> </li>
+	<li>Verify &quot;Automatic Changes&quot; and click <b>OK</b></li>
+
+	<li>Click <b>Install</b> to install package </li>
+</ol>
+				
+																
+<hr>
+<h2><a name="RHEL"></a>Red Hat* Enterprise Linux 6 (RHEL 6) FCoE Installation</h2>
+<h3>Select FCoE during OS Installation</h3>
+<ol>
+	<li>
+	Select your desired installation profile (Basic Server, Database Server, Web 
+	Server, etc). 
+
+																
+	</li>
+	<li>
+	Set up your repositories as desired, and select the Customize now 
+	button before clicking Next to go to the software package selection 
+	screen. </li>
+	<li>
+	Under Base System, select FCoE Storage Client. Make sure that 
+	the optional package Intel LLDP Agent is included under Optional 
+	packages. </li>
+	<li>
+	Continue with OS installation. </li></ol>
+<h3>Using YUM to install after OS Installation</h3>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> If FCoE is installed during OS 
+			installation, then these steps are not required.</td>
+		</tr>
+	</table>
+<ol>
+	<li>Either configure the Red Hat Network (RHN) or mount the installation 
+	DVD.&nbsp; Please refer to the Red Hat documentation to learn how to register 
+	your repositories with YUM. </li>
+	<li><font face="Courier New">root# yum -y install fcoe*</font><ol type="a">
+	<li>You will notice several dependency packages being automatically 
+	installed.</li>
+	</ol>
+</ol>
+				
+																
+<hr>
+<h2><a name="Linux_FCoE_Configuration_"><font color="#0860a8">Linux Intel&reg; Ethernet FCoE 
+Configuration</font></a></h2>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"> <b>NOTE:</b> The following examples assume 
+			that the network interface named &quot;eth3&quot; is the FCoE interface.&nbsp; Your 
+			interface name is likely to be different.&nbsp; Please substitute your 
+			interface name when &quot;eth3&quot; is used below.</td>
+		</tr>
+	</table>
+<h3>Verifying the Network Interface</h3>
+<p>After the FCoE package has been installed, activate the interface.&nbsp; Then 
+ensure that link is established and active at 10G link speed to the network 
+switch.</p>
+<blockquote>
+	<p><font face="Courier New">root# ifconfig eth3 up</font></p>
+	<p><font face="Courier New">root# ethtool eth3</font></p>
+	<p>Settings for eth3:</p>
+	<p>Speed: 10000Mb/s<br>
+	Link detected: yes</p>
+</blockquote>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> If you do not see link 
+			detected, check cabling and correct before proceeding.</td>
+		</tr>
+	</table>
+<h3>Configuring Link Layer Discovery Protocol agent daemon (lldpad)</h3>
+<p>lldpad is a utility used to initiate and configure the Link Layer Discovery 
+Protocol (LLDP).&nbsp; LLDP enables the IEEE Data Center Bridging extensions (DCBX) 
+so that FCoE VLAN discovery, parameter negotiations and session initiation can 
+be accomplished.</p>
+<ol initcollapsed dynamicoutline>
+	<li>Start lldpad service and configure to start at boot time.</li>
+</ol>
+<blockquote>
+	<p><font face="Courier New">root# service lldpad</font><span style="FONT-FAMILY: Arial,sans-serif; COLOR: blue; FONT-SIZE: 10pt">
+	</span><font face="Courier New">start</font></p>
+	<blockquote>
+		<p><font face="Courier New">Starting lldpad: [done]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	[ OK ]</font></p>
+	</blockquote>
+	<p><font face="Courier New">root# chkconfig lldpad</font><span style="FONT-FAMILY: Arial,sans-serif; COLOR: blue; FONT-SIZE: 10pt">
+	</span><font face="Courier New">on</font></p>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> There is no output from this 
+			command but it will enable lldpad to automatically start when the 
+			system is booted.</td>
+		</tr>
+	</table>
+</blockquote>
+<ol start="2">
+	<li>Adjust DCB settings on every physical interface to be used for FCoE with 
+	these commands:
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> dcbtool makes change to /var/lib/lldpad/lldpad.conf.</td>
+		</tr>
+	</table>
+	<p><font face="Courier New">root# dcbtool sc eth3 dcb on</font></p>
+	<blockquote>
+		<p><font face="Courier New">root# dcbtool sc eth3 dcb on<br>
+		Version: 2<br>
+		Command: Set Config<br>
+		Feature: DCB State<br>
+		Port: eth3<br>
+		Status: Successful</font></p>
+	</blockquote>
+	<p><font face="Courier New">root# dcbtool sc eth3 app:fcoe e:1</font></p>
+	<blockquote>
+		<p><font face="Courier New">root# dcbtool sc eth3 app:fcoe e:1<br>
+		Version: 2<br>
+		Command: Set Config<br>
+		Feature: Application FCoE<br>
+		Port: eth3<br>
+		Status: Successful</font></p>
+	</blockquote>
+	<p><font face="Courier New">root# dcbtool sc eth3 pfc e:1 a:1 w:1</font></p>
+	<blockquote>
+	  <p><font face="Courier New">(this optional command ensures pfc is configured in the default way (not necessary to do on a fresh system)</font></p>
+	  <p><font face="Courier New">root# dcbtool sc eth3 pfc e:1 a:1 
+	    w:1<br>
+	    Version: 2<br>
+	    Command: Set Config<br>
+	    Feature: Priority Flow Control<br>
+	    Port: eth3<br>
+	    Status: Successful</font></p>
+	  </blockquote>
+	  <p><font face="Courier New">root# dcbtool go eth3 pfc </font></p>
+	  <blockquote>
+	    <p><font face="Courier New">(this optional command is used to verify that the settings are correct) </font></p>
+	    <p><font face="Courier New">root# dcbtool go eth3 pfc<br>
+        Version: 2<br>
+        Command: Get Oper<br>
+        Feature: Priority Flow Control<br>
+        Port: eth3<br>
+        Status: Successful<br>
+        Oper Version: 0<br>
+        Max Version: 0<br>
+        Errors: 0x00 - none<br>
+        Oper Mode: true<br>
+        Syncd: true<br>
+        pfcup: 0 0 0 1 0 0 0 0 </font></p>
+      </blockquote>
+	  <p><font face="Courier New">root# dcbtool go eth3 app:fcoe</font></p>
+	  <blockquote>
+	    <p><font face="Courier New">(this optional command is used to verify that the settings are correct)</font></p>
+	    <p><font face="Courier New">root# dcbtool go eth3 app:fcoe<br>
+        Version: 2<br>
+        Command: Get Oper<br>
+        Feature: Application FCoE<br>
+        Port: eth3<br>
+        Status: Successful<br>
+        Oper Version: 0<br>
+        Max Version: 0<br>
+        Errors: 0x00 - none<br>
+        Oper Mode: true<br>
+        Syncd: true<br>
+        appcfg: 08</font></p>
+      </blockquote>
+    </li>
+</ol>
+<h3>Configuring Intel&reg; Ethernet FCoE</h3>
+<ol>
+	<li>Create a configuration file for the VLAN interface. To copy cfg file, 
+	run command: 
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> The sample file is cfg-ethx.&nbsp; 
+			Copy it to a file which reflects your FCoE network interface name (eg. 
+			cfg-eth3).</td>
+		</tr>
+	</table>
+	</li>
+</ol>
+<blockquote>
+	<p><font face="Courier New">root# cp /etc/fcoe/cfg-ethx /etc/fcoe/cfg-eth3</font></p>
+</blockquote>
+<ol start="2">
+	<li>Start fcoe service and configure to start at boot time. </li>
+</ol>
+<blockquote>
+	<p><font face="Courier New">root# service fcoe start</font></p>
+	<blockquote>
+		<p><font face="Courier New">Starting FCoE initiator 
+		service:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ OK&nbsp; ]</font></p>
+	</blockquote>
+	<p><font face="Courier New">root# service fcoe status</font></p>
+	<blockquote>
+		<p><font face="Courier New">Created interfaces: eth3.100-fcoe</font></p>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> In the example 
+			above, an FCoE interface was created for eth3 using VLAN 100. &quot;No 
+			interfaces added&quot; indicates that the FIPVLAN protocol was not able 
+			to acquire a vlan and therefore an interface was not created.&nbsp; This 
+			must be corrected before continuing.&nbsp; This issue may be because you 
+			are not connected to a DCB enabled switch or DCB is disabled on this 
+			switch port.&nbsp; Contact your network administrator for further help.</td>
+		</tr>
+	</table>
+	</blockquote>
+</blockquote>
+<blockquote>
+	<p><font face="Courier New">root# chkconfig fcoe on</font></p>
+	<blockquote>
+		<table class="note">
+			<tr>
+				<td valign="top">
+				<img border="0" src="note.gif" width="28" height="21"></td>
+				<td valign="top"><b>NOTE:</b> There is no output from 
+				this command but it will enable FCoE to automatically start when 
+				the system is booted.</td>
+			</tr>
+		</table>
+	</blockquote>
+</blockquote>
+<ol>
+	<li value="3">Verify that a vlan interface has been created.</li>
+</ol>
+<blockquote>
+	<p><font face="Courier New">root# ifconfig -a </font></p>
+	<blockquote>
+		<p><font face="Courier New">eth3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Link encap:Ethernet 
+		HWaddr 00:1B:21:60:62:75 <br>
+		...<br>
+		eth3.100-fcoe Link encap:Ethernet HWaddr 00:1B:21:60:62:75 </font></p>
+		<p><font face="Courier New">...<br>
+&nbsp;</font></p>
+		<table class="note">
+			<tr>
+				<td valign="top">
+				<img border="0" src="note.gif" width="28" height="21"></td>
+				<td valign="top"><b>NOTE:</b> The interface name 
+				&quot;eth3.100-fcoe&quot; indicates that the FCoE Initialization Protocol 
+				(FIP) negotiated with the switch and established an FCoE session 
+				using VLAN 100. This process usually happens automatically for 
+				all DCBX enabled switches.</td>
+			</tr>
+		</table>
+	</blockquote>
+	<p><font face="Courier New">No FCoE ports configured</font></p>
+	<blockquote>
+		<table class="note">
+			<tr>
+				<td valign="top">
+				<img border="0" src="note.gif" width="28" height="21"></td>
+				<td valign="top"><b>NOTE:</b> This message indicates that 
+				the FIP VLAN Discovery failed. Please see your network 
+				administrator and ensure that this port is configured for DCBX 
+				and FCoE.</td>
+			</tr>
+		</table>
+	</blockquote>
+</blockquote>
+<ol start="4">
+	<li>Check that vlan interface can obtain FC-ID. Run command </li>
+</ol>
+<blockquote>
+	<blockquote>
+		<p><font face="Courier New">root# fcoeadm -i </font></p>
+		<blockquote>
+			<p><font face="Courier New">Description: 82599EB 10-Gigabit Network 
+			Connection<br>
+			Revision: 01<br>
+			Manufacturer: Intel Corporation<br>
+			Serial Number: 001B21606274<br>
+			Driver: ixgbe 2.0.62-k2<br>
+			Number of Ports: 2<br>
+			<br>
+			Symbolic Name: fcoe v0.1 over eth3.100-fcoe<br>
+			OS Device Name: host3<br>
+			Node Name: 0x1000001B21606277 <br>
+			Port Name: 0x2000001B21606277 <br>
+			FabricName: 0x2064000DECA33A01 <br>
+			Speed: 10 Gbit<br>
+			Supported Speed: 10 Gbit<br>
+			MaxFrameSize: 2112<br>
+			FC-ID (Port ID): 0x4A0064<br>
+			State: Online<br>
+&nbsp;</font></p>
+			<table class="note">
+				<tr>
+					<td valign="top">
+					<img border="0" src="note.gif" width="28" height="21"></td>
+					<td valign="top"><b>NOTE:</b> The important values to 
+					note are that the state is &quot;Online&quot;, the Port Name and the 
+					FC-ID. Your storage administrator may need the Port Name and 
+					the FC-ID in order to identify your connection when 
+					allocating zones for you.</td>
+				</tr>
+			</table>
+		</blockquote>
+	</blockquote>
+	<p><span style="FONT-WEIGHT: 400">If you see the FCoE interface and an FCID 
+	from the switch, you are ready to zone and provision your storage.&nbsp; Please 
+	see your storage administrator. </span>Once your storage administrator has 
+	properly provisioned your storage, you may continue to configure.</p>
+</blockquote>
+<ol start="5">
+	<li>Verify that you have been assigned on a storage target.</li>
+</ol>
+<blockquote>
+	<p><font face="Courier New">root# fcoeadm -t<br>
+	Interface: eth3.100-fcoe<br>
+	...<br>
+	FC-ID (Port ID): 0x4A06EF<br>
+	State: Online<br>
+	<br>
+	LUN ID Device Name Capacity Block Size Description<br>
+	------ ----------- -------- ---------- -----------<br>
+	0 /dev/sdb 25.00 GB 512 DGC RAID 10   (rev 0429)<br>
+&nbsp;</font></p>
+	<table class="note">
+		<tr>
+			<td valign="top">
+			<img border="0" src="note.gif" width="28" height="21"></td>
+			<td valign="top"><b>NOTE:</b> This example shows that a LUN 
+			has been provisioned and assigned to /dev/sdb.&nbsp; This may happen 
+			automatically but usually you must request a LUN from your storage 
+			administrator.</td>
+		</tr>
+	</table>
+</blockquote>
+<ol start="6">
+	<li>Verify that the file system has identified the SAN storage. </li>
+</ol>
+<blockquote>
+	<p><font face="Courier New">root#&nbsp; lsscsi<br>
+	[0:0:0:0] cd/dvd TSSTcorp CDDVDW SH-S223L SB02 /dev/sr1 <br>
+	[1:0:0:0] disk ATA ST3160811AS 3.AA /dev/sda <br>
+	[2:0:1:0] cd/dvd MATSHITA DVD-ROM SR-8178 PZ16 /dev/sr0 <br>
+	[3:0:0:0] disk DGC RAID 10 0429 /dev/sdb </font></p>
+</blockquote>
+<h3>Basic Intel&reg; Ethernet FCoE Commands</h3>
+<blockquote>
+	<p><b>show interface info: <font face="Courier New">fcoeadm -i </font></b>
+	</p>
+	<blockquote>
+		<p><font face="Courier New">root# fcoeadm -i<br>
+		Description: 82599EB 10-Gigabit Network Connection<br>
+		Revision: 01<br>
+		Manufacturer: Intel Corporation<br>
+		Serial Number: 001B21606274<br>
+		Driver: ixgbe 2.0.62-k2<br>
+		Number of Ports: 2<br>
+		<br>
+		Symbolic Name: fcoe v0.1 over eth3.100-fcoe<br>
+		OS Device Name: host3<br>
+		Node Name: 0x1000001B21606277 <br>
+		Port Name: 0x2000001B21606277 <br>
+		FabricName: 0x2064000DECA33A01 <br>
+		Speed: 10 Gbit<br>
+		Supported Speed: 10 Gbit<br>
+		MaxFrameSize: 2112<br>
+		FC-ID (Port ID): 0x4A0064<br>
+		State: Online</font></p>
+	</blockquote>
+	<p><b>show LUNs: <font face="Courier New">fcoeadm -l </font></b></p>
+	<blockquote>
+		<p><font face="Courier New">root# fcoeadm -l<br>
+		Interface: eth3.100-fcoe<br>
+		Roles: FCP Target<br>
+		Node Name: 0x50060160C46029CC <br>
+		Port Name: 0x50060160446029CC <br>
+		Target ID: 0<br>
+		MaxFrameSize: 2048<br>
+		OS Device Name: rport-3:0-1<br>
+		FC-ID (Port ID): 0x4A06EF<br>
+		State: Online<br>
+		<br>
+		LUN #0 Information:<br>
+		OS Device Name: /dev/sdb<br>
+		Description: DGC RAID 10 (rev 0429)<br>
+		Ethernet Port FCID: 0x4A0064<br>
+		Target FCID: 0x4A06EF<br>
+		Target ID: 0<br>
+		LUN ID: 0<br>
+		Capacity: 25.00 GB<br>
+		Capacity in Blocks: 52428799<br>
+		Block Size: 512 bytes<br>
+		Status: Attached</font></p>
+	</blockquote>
+</blockquote>
+<blockquote>
+	<p><b>show targets: <font face="Courier New">fcoeadm -t </font></b></p>
+	<blockquote>
+		<p><font face="Courier New">root# fcoeadm -t<br>
+		Interface: eth3.100-fcoe<br>
+		Roles: FCP Target<br>
+		Node Name: 0x50060160C46029CC <br>
+		Port Name: 0x50060160446029CC <br>
+		Target ID: 0<br>
+		MaxFrameSize: 2048<br>
+		OS Device Name: rport-3:0-1<br>
+		FC-ID (Port ID): 0x4A06EF<br>
+		State: Online<br>
+		<br>
+		LUN ID Device Name Capacity Block Size Description<br>
+		------ ----------- -------- ---------- -----------<br>
+		0 /dev/sdb 25.00 GB 512 DGC RAID 10 (rev 0429)</font></p>
+	</blockquote>
+</blockquote>
+<blockquote>
+	<p><b>show statistics: <font face="Courier New">fcoeadm -s</font></b></p>
+	<blockquote>
+		<p><font face="Courier New">root# fcoeadm -s eth3.100-fcoe 1</font><br>
+		<br>
+		eth3.100-fcoe interval: 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		Err&nbsp;&nbsp; Inv&nbsp;&nbsp;&nbsp;&nbsp; IvTx Link Cntl Input Input Output Output<br>
+		Seconds TxFrames TxBytes RxFrames RxBytes Frms CRC Byte Fail Reqs 
+		Requests MBytes Requests MBytes<br>
+		--------&nbsp;&nbsp; ---------- -------- ----------&nbsp; -------- 
+		-----&nbsp; ----&nbsp;&nbsp; ---- ---- ----&nbsp;&nbsp; --------- -------- 
+		--------- --------<br>
+		0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5424&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6444&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		0&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 79&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 526&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 <br>
+		1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5424&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6444&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		0&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 79&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 526&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 <br>
+		2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5424&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6444&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	  0&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 79&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 526&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 </font></p>
+	</blockquote>
+</blockquote>
+
+																
+</body>
+
+</html>

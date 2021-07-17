@@ -1,0 +1,454 @@
+<html>
+
+<head>
+
+<meta name="keywords" contents="Linux, driver">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>EFI Driver</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>
+<!--
+div.Section1
+	{page:Section1;}
+-->
+</style>
+</head>
+
+<body>
+
+<h1>UEFI Network Device Driver for Intel<sup>&reg;</sup> Ethernet Network Connections</h1>
+<p class="contents"><a href="#overview">Overview</a></p>
+<p class="contents"><a href="#adapters">Supported UEFI Implementations</a></p>
+<p class="contents"><a href="#install">Intel UEFI Network Driver Naming 
+Convention</a></p>
+<p class="contents"><a href="#parameters">Loading the UEFI Driver</a></p>
+<p class="contents"><a href="#Install Proset">Installing the UEFI Network Driver 
+Option ROM Using PROset</a></p>
+<p class="contents"><a href="#UEFI Shell">Installing the UEFI Network Driver 
+Option ROM From the UEFI Shell</a></p>
+<p class="contents"><a href="#Network Stack">UEFI Network 
+Stack</a></p>
+<p class="contents"><a href="#Configuring UEFI PXE">Configuring UEFI Network Stack for PXE</a></p>
+<p class="contents"><a href="#Configuring UEFI TCP">Configuring UEFI Network Stack for TCP/UDP/MTFTP</a></p>
+<p class="contents"><a href="#Unloading_the_UEFI_Network_Driver">Unloading the UEFI Network Driver</a></p>
+<p class="contents"><a href="#Speed Duplex">Force Speed and Duplex</a></p>&nbsp;
+
+<hr>
+
+<h2><a name="overview"></a>Overview</h2>
+<p>The UEFI network driver for Intel&reg; Ethernet Network 
+	Connection enables network connectivity under UEFI. It can be used in 
+	conjunction with UEFI software components available from other sources to 
+perform network functions in the UEFI environment. Intel's UEFI network driver supports Intel's FLB3 file format. This format extends the header information in the FLB file, enabling more than 16 image types, including a combined Option ROM and NVM image.</p>
+<table class="note">
+  <tr>
+    <td width="21" valign="top" align="center"><img src="note.gif" alt="" width="28" height="21" border="0"></td>
+    <td><strong>NOTE:</strong> If you update your adapter's NVM image, you must completly power cycle your system, including removing main power, for the update to take affect.</td>
+  </tr>
+</table>
+<hr>
+
+<h2><a name="adapters"></a>Supported UEFI Implementations</h2>
+<p>The UEFI network driver supports UEFI platforms based on the following UEFI/EFI 
+specifications:</p>
+<ul>
+	<li>UEFI 2.3 (<a href="http://www.uefi.org">http://www.uefi.org</a>)</li>
+	<li>UEFI 2.2</li>
+	<li>UEFI 2.1 </li>
+	<li>UEFI 2.0</li>
+	<li>EFI 1.10 (<a href="http://www.intel.com/technology/efi">http://www.intel.com/technology/efi</a>)</li>
+</ul>
+<p>UEFI driver binaries are provided for 64-bit (x86-64), and Itanium 
+processor family platforms.</p>
+
+<hr>
+
+<h2><a name="install">Intel UEFI Network Driver Naming Convention</a></h2>
+<p>The network driver version, UEFI platform type, and the network hardware 
+support can be determined by the file naming convention. The format of the 
+driver filename is listed below:<br>
+<br>
+<b>Exyzztn.efi</b></p>
+<p>where: </p>
+<blockquote>
+	<p>x - major version number of the UEFI driver in decimal<br>
+	y - minor version number of the UEFI driver in decimal<br>
+	zz - fix field of the version number<br>
+	<br>
+	t - the type of driver</p>
+	<blockquote>
+		<p>X - UEFI x64 driver<br>
+		I - UEFI Itanium driver</p>
+	</blockquote>
+	<p>n - class of adapter the driver is for</p>
+	<blockquote>
+		<p>2 – PCI/PCI-X Gigabit<br>
+		3 – PCIe Gigabit<br>
+		4 - 10 Gigabit</p>
+	</blockquote>
+</blockquote>
+<p>Examples:</p>
+<blockquote>
+	<p>E3603X3.efi - Version 3.6.03 of UEFI x64 driver for Intel PCIe Gigabit 
+	network connection<font SIZE="2"><br>
+	
+	</font>
+	E1001I4.efi - Version 1.0.01 of UEFI Itanium driver for Intel 10GBE network 
+	connection</p>
+</blockquote>
+
+<hr>
+
+<h2><a name="parameters">Loading the UEFI Network Driver</a></h2>
+<p class="monospace">
+The network driver can be loaded using the UEFI shell &quot;load&quot; command:</p>
+<blockquote>
+	<p class="monospace"><font face="Courier New" size="2">load e3040e2.efi</font></p>
+</blockquote>
+<table class="note">
+  <tr>
+    <td width="21" valign="top" align="center"><img border="0" src="note.gif" width="28" height="21"></td>
+    <td>
+	<p class="monospace"><strong>NOTE:</strong> Long initialization times observed 
+	with Intel’s UEFI driver are caused when the UNDI.Initialize command is 
+	called with the PXE_OPFLAGS_INITIALIZE_CABLE_DETECT flag set. In this case, 
+	UNDI.Initialize will try to detect the link state. </p>
+	<p class="monospace">If the port is connected and link is up, initialize 
+	will generally finish in about 3.5 seconds (the time needed to establish 
+	link, dependant on link conditions, link speed and controller type) and 
+	returns PXE_STATFLAGS_COMMAND_COMPLETE. If the port is disconnected (link is 
+	down), initialize will complete in about 5 seconds and return 
+	PXE_STATFLAGS_INIIALIZED_NO_MEDIA (driver initializes hardware then waits 
+	for link and timeouts when link is not establish in 5 secs).</p>
+	<p class="monospace">When UNDI.Initialize is called with 
+	PXE_OPFLAGS_INITIALIZE_DO_NOT_DETECT_CABLE the function will not try to 
+	detect link status and will take less than 1 second to complete.</p>
+	<p class="monospace">The behavior of UNDI.Initialize is described in UEFI 
+	specs 2.3.1: Initializing the network device will take up to four seconds 
+	for most network devices and in some extreme cases (usually poor cables) up 
+	to twenty seconds. Control will not be returned to the caller and the 
+	COMMAND_COMPLETE status flag will not be set until the adapter is ready to 
+	transmit.</td>
+  </tr>
+</table>
+     
+<hr>
+
+<h2><a name="Install Proset"></a>Installing the UEFI Network Driver Option ROM Using PROSet</h2>
+<p>Intel&reg; PROSet for Windows Device Manager can install the UEFI network driver on an 
+Intel network adapter's option ROM. The UEFI network driver will load 
+automatically during system UEFI boot When installed in the option ROM. UEFI 
+specific*.FLB images are included on the CD release media. The &quot;Boot Options&quot; 
+tab in Intel&reg; PROSet for Windows Device Manager will allow the UEFI*.FLB image to be installed on the network 
+adapter.</p>
+<p>The following FLB files are included on the release media:</p>
+<blockquote>
+	<p>BAxyzzX2.flb - Version x.y.zz of the PCI/PCI-X gigabit driver for x86-64<br>BAxyzzI2.flb - Version x.y.zz of the PCI/PCI-X gigabit driver for 
+		Itanium<br>BAxyzzX3.flb - Version x.y.zz of the PCIe gigabit driver for x86-64<br>BAxyzzI3.flb - Version x.y.zz of the PCIe gigabit driver for Itanium<br>BAxyzzX4.flb - Version x.y.zz of the 10-gigabit driver for x86-64<br>BAxyzzI4.flb - Version x.y.zz of the 10-gigabit driver for Itanium</p>
+</blockquote>
+<p>Intel&reg; PROSet for Windows Device Manager  can only be used to program add-in Intel PCI, PCI-X, and PCIe network 
+adapters. LOM (LAN On Motherboard) network connections cannot be programmed with 
+the UEFI network driver option ROM. Refer to the PROSet documentation for 
+detailed instructions.</p>
+<hr>
+
+  
+
+
+<h2><a name="UEFI Shell"></a>Installing the UEFI Network Driver Option ROM from the UEFI Shell</h2>
+<p>The <a href="boot_util.htm">BootUtil</a> command line utility can install the UEFI 
+network driver on an Intel network adapter's option ROM. The UEFI network driver 
+will load automatically during system UEFI boot When installed into the option 
+ROM. Run BootUtil with the following command line options to install the UEFI 
+network driver on all supported Intel network adapters:</p>
+<p>For x64 systems:</p>
+<blockquote>
+	<p class="monospace"><font face="Courier New" size="2">FS0:\&gt;bootutil64e 
+	–up=efi –all</font></p>
+</blockquote>
+<p>For ia64 systems:</p>
+<blockquote>
+	<p class="monospace"><font face="Courier New" size="2">FS0:\&gt;bootutil64 
+	–up=efi64 –all</font></p>
+</blockquote>
+<p>BootUtil can only be used to program add-in Intel PCI, PCI-X, 
+and PCIe network adapters. LOM (LAN On Motherboard) network connections cannot 
+be programmed with the UEFI network driver option ROM.</p>
+  
+  
+
+
+<hr>
+
+<h2><a name="Network Stack">UEFI Network Stack</a></h2>
+
+<p>As of UEFI 2.1 there are two network stack configurations under UEFI. The 
+most common configuration is the PXE based network stack. The alternate network stack provides IPv4 TCP, UDP, and MTFTP network protocol support. As of UEFI 2.1 
+the PXE and IP-based network stacks cannot be loaded or operate simultaneously. The following two sections describe each UEFI network stack 
+configuration.</p>
+<p>Reference implementations of the PXE and IP based network stack source code 
+are available for download at <a href="http://www.tianocore.org">
+www.tianocore.org</a>.</p>
+  
+  
+
+
+<hr>
+
+<h2><a name="Configuring UEFI PXE"></a>Configuring UEFI Network Stack for PXE</h2>
+
+<p>The PXE (Preboot eXecution Environment) based UEFI network stack provides 
+support for UEFI network boot loaders downloaded from a WFM compliant PXE 
+server. Services which can be enabled include Windows  Deployment Services (WDS), 
+ Linux network 
+installation (Elilo), and TFTP file transfers. To enable UEFI PXE services the following network protocol 
+drivers must be loaded with: snp.efi, bc.efi, and pxedhcp4.efi. These drivers 
+can be loaded from the UEFI &quot;load&quot; shell command, but are often included as part 
+of the UEFI system firmware. The UEFI shell command &quot;drivers&quot; can be used to 
+determine if the UEFI PXE drivers are included in the UEFI implementation. The 
+drivers command will output a table listing drivers loaded in the system. The 
+following entries must be present in order to network boot a UEFI system over 
+PXE:</p>
+<table border="1" width="98%">
+	<tr>
+		<td width="59" align="center">DRV</td>
+		<td width="133" align="center">VERSION</td>
+		<td align="center" width="63">TYPE</td>
+		<td align="center" width="57">CFG</td>
+		<td align="center" width="66">DIAG</td>
+		<td align="center" width="81">#D</td>
+		<td align="center" width="56">#C</td>
+		<td align="center" width="250">DRIVER NAME</td>
+		<td align="center">IMAGE NAME</td>
+	</tr>
+	<tr>
+		<td width="59">F5</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">Simple Network Protocol Driver </td>
+		<td>SNP</td>
+	</tr>
+	<tr>
+		<td width="59">F7</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">PXE Base Code Driver </td>
+		<td>BC</td>
+	</tr>
+	<tr>
+		<td width="59">F9</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">PXE DHCPv4 Driver </td>
+		<td>PxeDhcp4</td>
+	</tr>
+	<tr>
+		<td width="59">FA</td>
+		<td width="133">03004000</td>
+		<td width="63">B</td>
+		<td width="57">X</td>
+		<td width="66">X</td>
+		<td width="81">2</td>
+		<td width="56">2</td>
+		<td width="250">Intel(R) Network Connection 3.0.00</td>
+		<td>/e3000e2.efi</td>
+	</tr>
+</table>
+
+<hr>
+
+<p>A network boot option will appear in the boot options menu when the UEFI PXE 
+network stack and Intel UEFI network driver have been loaded. Selecting this<br>
+boot option will initiate a PXE network boot.</p>
+<h2><a name="Configuring UEFI TCP">Configuring UEFI Network Stack for TCP/UDP/MTFTP</a></h2>
+<p>
+An IP-based network stack is available to applications requiring IP-based 
+network protocols such as TCP, UDP, or MTFTP. The following UEFI network drivers must be built into the UEFI platform implementation to enable this 
+stack: SNP (Simple Network Protocol), MNP (Managed Network Protocol), ARP, DHCP4, IPv4, ip4config, TCPv4, UDPv4, and MTFTPv4. These drivers will show up in 
+the UEFI &quot;drivers&quot; command output if they are included in the platform UEFI 
+implementation:</p>
+<table border="1" width="98%">
+	<tr>
+		<td width="59" align="center">DRV</td>
+		<td width="133" align="center">VERSION</td>
+		<td align="center" width="63">TYPE</td>
+		<td align="center" width="57">CFG</td>
+		<td align="center" width="66">DIAG</td>
+		<td align="center" width="81">#D</td>
+		<td align="center" width="56">#C</td>
+		<td align="center" width="250">DRIVER NAME</td>
+		<td align="center">IMAGE NAME</td>
+	</tr>
+	<tr>
+		<td width="59">F5</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">IP4 CONFIG Network Service Driver</td>
+		<td>Ip4Config</td>
+	</tr>
+	<tr>
+		<td width="59">F7</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">Simple Network Protocol Driver </td>
+		<td>SNP</td>
+	</tr>
+	<tr>
+		<td width="59">F8</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">ARP Network Service Driver </td>
+		<td>Arp</td>
+	</tr>
+	<tr>
+		<td width="59">F9</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">Tcp Network Service Driver </td>
+		<td>Tcp4</td>
+	</tr>
+	<tr>
+		<td width="59">FA</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">IP4 Network Service Driver </td>
+		<td>Ip4</td>
+	</tr>
+	<tr>
+		<td width="59">FB</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">DHCP Protocol Driver </td>
+		<td>Dhcp4</td>
+	</tr>
+	<tr>
+		<td width="59">FC</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">6</td>
+		<td width="56">-</td>
+		<td width="250">UDP Network Service Driver </td>
+		<td>Udp4</td>
+	</tr>
+	<tr>
+		<td width="59">FD</td>
+		<td width="133">00000010</td>
+		<td width="63">D</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">-</td>
+		<td width="250">MTFTP4 Network Service </td>
+		<td>Mtftp4</td>
+	</tr>
+	<tr>
+		<td width="59">FE</td>
+		<td width="133">00000010</td>
+		<td width="63">B</td>
+		<td width="57">-</td>
+		<td width="66">-</td>
+		<td width="81">2</td>
+		<td width="56">6</td>
+		<td width="250">MNP Network Service Driver</td>
+		<td>/mnp.efi</td>
+	</tr>
+	<tr>
+		<td width="59">FF</td>
+		<td width="133">03099900</td>
+		<td width="63">B</td>
+		<td width="57">X</td>
+		<td width="66">X</td>
+		<td width="81">2</td>
+		<td width="56">2</td>
+		<td width="250">Intel(R) Network Connection 3.0.00</td>
+		<td>/e3000e2.efi</td>
+	</tr>
+</table>
+<p>The ifconfig UEFI shell command must be used to configure each network 
+interface. Running &quot;ifconfig -?&quot; from the UEFI shell will display usage 
+instructions for ifconfig.</p>
+<hr>
+<h2><a name="Unloading_the_UEFI_Network_Driver">Unloading the UEFI Network Driver</a></h2>
+<p>To unload a network driver from memory the UEFI &quot;unload&quot; command is used. The 
+syntax for using the unload command is as follows: &quot;unload [driver handle]&quot;, where driver handle is the number assigned to the driver in the far left column 
+of the &quot;drivers&quot; output screen.</p>
+<hr>
+<h2><a name="Speed Duplex"></a>Force Speed and Duplex</h2>
+<p>The UEFI network driver supports forced speed and duplex capability. The 
+force speed and duplex menu can be accessed with UEFI shell command &quot;drvcfg&quot;:</p>
+<blockquote>
+	<p class="monospace"><font face="Courier New" size="2">drvcfg -s [driver 
+	handle] [control handle]</font></p>
+</blockquote>
+<p>The following speed and duplex configurations can be 
+selected:</p>
+<ul>
+	<li>
+	<p>Autonegotiate (recommended)</li>
+	<li>
+	<p>100 Mbps, full duplex</li>
+	<li>
+	<p>100 Mbps, half duplex</li>
+	<li>
+	<p>10 Mbps, full duplex</li>
+	<li>
+	<p>10 Mbps, half duplex</li>
+</ul>
+<p>The speed and duplex setting selected must match the speed 
+and duplex setting of the connecting network port. A speed and duplex mismatch 
+between ports will result in dropped packets and poor network performance. It is 
+recommended to set all ports on a network to autonegotiate. Connected ports must 
+be set to autonegotiate in order to establish a 1 gigabit per second connection.
+</p>
+<p>Fiber-optic and 10 gigabit ethernet adapters do not support 
+forced speed and duplex.</p>
+<hr>
+<h3>Diagnostic Capability</h3>
+<p>The UEFI network driver features built in hardware diagnostic tests. The 
+diagnotic tests are called with the UEFI shell drvdiag command. </p>
+<blockquote>
+	<p class="monospace"><font face="Courier New" size="2">&quot;drvdiag -s&quot; -Perform 
+	a basic hardware register test<br>
+	&quot;drvdiag -e&quot; -Perform an internal loopback transmit and receive test</font></p>
+</blockquote>
+
+</body>
+</html>

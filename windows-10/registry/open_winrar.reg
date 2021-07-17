@@ -1,0 +1,39 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\shell\OpenWinRARHere]
+@="Open in WinRAR"
+"Extended"=""
+"Icon"="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+[HKEY_CLASSES_ROOT\Directory\shell\OpenWinRARHere\command]
+@="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenWinRARHere]
+@="Open in WinRAR"
+"Extended"=""
+"Icon"="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\OpenWinRARHere\command]
+@="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+
+
+[HKEY_CLASSES_ROOT\Drive\shell\OpenWinRARHere]
+@="Open in WinRAR"
+"Extended"=""
+"Icon"="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+[HKEY_CLASSES_ROOT\Drive\shell\OpenWinRARHere\command]
+@="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+
+
+[HKEY_CLASSES_ROOT\LibraryFolder\background\shell\OpenWinRARHere]
+@="Open in WinRAR"
+"Extended"=""
+"Icon"="D:\\Programs\\WinRAR\\WinRAR.exe"
+
+[HKEY_CLASSES_ROOT\LibraryFolder\background\shell\OpenWinRARHere\command]
+@="D:\\Programs\\WinRAR\\WinRAR.exe"

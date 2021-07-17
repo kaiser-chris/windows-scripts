@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>DHCP Server Configuration</h1>
+
+<p>If you are using Dynamic Host Configuration Protocol (DHCP), the DHCP server needs to be configured to provide the iSCSI Boot configurations to 
+the iSCSI initiator. It is necessary to set up the DHCP server to specify Root Path option 17 and Host Name option 12 to respond iSCSI target information back to the iSCSI initiator.  DHCP option 3, router list may be necessary, depending on 
+the network configuration.</p><b>DHCP Root Path Option 17:</b>
+<p>The iSCSI root path option configuration string uses the following format:</p>
+<blockquote>
+<code>iscsi</code><nobr><code>:&lt;server name or IP address&gt;:&lt;protocol&gt;:&lt;port&gt;:&lt;LUN&gt;:&lt;targetname&gt;
+</code></nobr>
+
+
+<ul>
+<blockquote>
+<li><b>Server name:</b> DHCP server name or valid IPv4 address literal.<br>Example: <code>192.168.0.20</code>.
+<li><b>Protocol:</b> Transportation protocol used by ISCSI. Default is tcp (6).
+<br>No other protocols are currently supported.
+<li><b>Port:</b> Port number of the iSCSI. A default value of 3260 will be used if this field is left blank.
+<li><b>LUN:</b> LUN ID configured on iSCSI target system. 
+Default is zero.
+<li><b>Target name:</b> iSCSI target name to uniquely identify an iSCSI target in IQN format.
+<br>Example: <code>iqn.1986-03.com.intel:target1</code>
+</blockquote>
+
+<b>DHCP Host Name Option 12:</b>
+<p>Configure option 12 with the hostname of the iSCSI initiator.</p>
+<p><b>DHCP Option 3, Router List:</b> </p>
+<P>Configure option 3 with the gateway or Router IP address, if the iSCSI initiator and iSCSI target are on different subnets.<br>
+</p>
+
+</body>
+</html>

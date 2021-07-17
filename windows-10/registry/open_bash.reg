@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\bash]
+@="Open a bash here"
+"Extended"=""
+"Icon"="\"C:\\Windows\\System32\\cmd.exe\""
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\bash\command]
+@="\"C:\\Windows\\System32\\bash.exe\""

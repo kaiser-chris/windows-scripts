@@ -1,0 +1,18 @@
+Windows Registry Editor Version 5.00
+
+; Use Notepad++ when Edit 
+;=================================================================================
+[HKEY_CLASSES_ROOT\regfile\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\cmdfile\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\text\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\batfile\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\JSFile\Shell\Edit\Command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""

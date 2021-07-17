@@ -1,0 +1,129 @@
+;*********************BEGIN INTEL PLATFORM.REG ADDITIONS************************
+
+;***MERGE this into your platform.reg file***
+
+; Intel(R) GbE Registry configuration, if enabled
+IF CEPB_INTELGBE_PCIE
+
+;Create registry information for Intel(R) Miniport Driver
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\State\Suspend\{98C5250D-C29A-4985-AE5F-AFE5367E5006}]
+    "Default"=dword:4           ; D4
+
+[HKEY_LOCAL_MACHINE\Comm\E1E51CE5]
+   "DisplayName"="Intel(R) Gigabit Ethernet Controller"
+   "Group"="NDIS"
+   "ImagePath"="E1E51CE5.dll"
+
+
+;Create registry information for template (will be copied to ALL instances of
+;adapters using the Intel Miniport Driver
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\PCI\Template\E1E51CE5]
+;PCI Bus Enumeration Information
+   "Class"=dword:02
+   "SubClass"=dword:00
+   "ProgIF"=dword:0
+   "VendorID"=multi_sz:"8086","8086","8086","8086","8086","8086","8086","8086","8086","8086","8086","8086","8086","8086","8086","8086"
+   "DeviceID"=multi_sz:"10BD","294C","108B","108C","109A","105E","105F","107D","107E","1049","104A","104B","104D","10B9","10BA","10A4"
+   "Prefix"="NDS"
+   "Dll"="NDIS.dll"
+   "Entry"="NdisPCIBusDeviceInit"
+   "MiniPort"="E1E51CE5"
+
+[HKEY_LOCAL_MACHINE\COMM\PCI\E1E51CE51\PARMS]
+    ; Tx and Rx descriptors optimized for vPRO first instance of a device in the above group
+    ; May need to be modified for Portage Bay.
+    ; Note 100h == 256(decimal) descriptors
+    "NumTxDescriptors"=dword:100
+    "NumRxDescriptors"=dword:100
+    "ChecksumTxIp"=dword:0
+    "ChecksumRxIp"=dword:0
+    "ChecksumTxTcp"=dword:0
+    "ChecksumRxTcp"=dword:0
+    "DeviceNumber"=dword:1
+    "CeEnableRxMemoryCacheAlignment"=dword:1
+    "CeRxMemoryAttributes"=dword:EF
+
+;Settings for DHCP IP Configuration, if enabled
+IF DHCP
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\PCI\Template\E1E51CE5\TCPIP]
+   "EnableDHCP"=dword:1
+   ; This should be MULTI_SZ
+   "DefaultGateway"=""
+   ; Use zero for broadcast address? (or 255.255.255.255)
+   "UseZeroBroadcast"=dword:0
+   ; This should be MULTI_SZ, the IP address list
+   "IpAddress"="0.0.0.0"
+   ; This should be MULTI_SZ, the subnet masks for the above IP addresses
+   "Subnetmask"="0.0.0.0"
+ENDIF ;//DHCP
+
+;Settings for static IP configuration, if enabled
+IF STATIC_IP
+[HKEY_LOCAL_MACHINE\COMM\PCI\E1E51CE51\Parms\TcpIp]
+   "EnableDHCP"=dword:0
+   ; This should be MULTI_SZ
+   "DefaultGateway"="1.2.3.0"
+   ; Use zero for broadcast address? (or 255.255.255.255)
+   "UseZeroBroadcast"=dword:0
+   ; This should be MULTI_SZ, the IP address list
+   "IpAddress"="1.2.3.4"
+   ; This should be MULTI_SZ, the subnet masks for the above IP addresses
+   "Subnetmask"="255.0.0.0"
+ENDIF ;//Static IP
+
+
+;Add settings for supported 10/100 Phys
+
+[HKEY_LOCAL_MACHINE\Comm\E1E51CE5]
+   "DisplayName"="Intel(R) Gigabit Ethernet Controller"
+   "Group"="NDIS"
+   "ImagePath"="E1E51CE5.dll"
+
+
+;Create registry information for template (will be copied to ALL instances of
+;adapters using the Intel Miniport Driver
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\PCI\Template\E1E51CE5B]
+;PCI Bus Enumeration Information
+   "Class"=dword:02
+   "SubClass"=dword:00
+   "ProgIF"=dword:0
+   "VendorID"=multi_sz:"8086","8086","8086"
+   "DeviceID"=multi_sz:"104C","10C4","10C5"
+   "Prefix"="NDS"
+   "Dll"="NDIS.dll"
+   "Entry"="NdisPCIBusDeviceInit"
+
+;Settings for DHCP IP Configuration, if enabled
+IF DHCP
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\PCI\Template\E1E51CE5B\TCPIP]
+   "EnableDHCP"=dword:1
+   ; This should be MULTI_SZ
+   "DefaultGateway"=""
+   ; Use zero for broadcast address? (or 255.255.255.255)
+   "UseZeroBroadcast"=dword:0
+   ; This should be MULTI_SZ, the IP address list
+   "IpAddress"="0.0.0.0"
+   ; This should be MULTI_SZ, the subnet masks for the above IP addresses
+   "Subnetmask"="0.0.0.0"
+ENDIF ;//DHCP
+
+;Settings for static IP configuration, if enabled
+IF STATIC_IP
+[HKEY_LOCAL_MACHINE\COMM\PCI\E1E51CE5B1\Parms\TcpIp]
+   "EnableDHCP"=dword:0
+   ; This should be MULTI_SZ
+   "DefaultGateway"="1.2.3.0"
+   ; Use zero for broadcast address? (or 255.255.255.255)
+   "UseZeroBroadcast"=dword:0
+   ; This should be MULTI_SZ, the IP address list
+   "IpAddress"="1.2.3.4"
+   ; This should be MULTI_SZ, the subnet masks for the above IP addresses
+   "Subnetmask"="255.0.0.0"
+ENDIF ;//Static IP
+
+ENDIF ;//Intel(R) miniport registry additions
+
+;*********************END INTEL PLATFORM.REG ADDITIONS************************

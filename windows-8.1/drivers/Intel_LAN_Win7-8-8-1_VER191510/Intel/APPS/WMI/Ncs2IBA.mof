@@ -1,0 +1,419 @@
+ /************************************************************************
+*                                                                       *
+*               INTEL CORPORATION PROPRIETARY INFORMATION               *
+*  This software is supplied under the terms of a license agreement or  *
+*  nondisclosure agreement with Intel Corporation and may not be copied *
+*   or disclosed except in accordance with the terms of that agreement. *
+*        Copyright (c) 2008 Intel Corporation. All Rights Reserved.     *
+*                                                                       *
+************************************************************************/
+/***********************************************************************\
+*
+* NAME:	Ncs2IBA.mof	
+* 
+* DESCRIPTION: Master MOF file with class definitions for the 
+*			   Intel PRO Network Adapter Boot Agent (802.3 schema).
+*
+* PREREQUISITE: Ncs2Cm.mof and Ncs2ICr.mof  [In that order]
+*
+* NOTE:	This file generates language neutral MOF for IntelNcs2 namespace.
+*		This file also generates ENU language specific MFL. 
+*
+\***********************************************************************/
+
+#pragma namespace ("\\\\.\\Root\\IntelNcs2")
+
+
+//**************************************************************************
+//* Class: IANet_BootAgent
+//* Derived from: CIM_BootService
+//**************************************************************************
+		[Description (
+		 "IANet_BootAgent encapsulates the parameters and settings of "
+		 " a NIC's PXE functionality."):Amended,  LOCALE(0x409)
+		 :  ToInstance ToSubClass, Dynamic, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll")]
+class IANet_BootAgent : CIM_BootService
+{
+	[read, Description (
+	"InvalidImageSignature is set true if boot agent has corrupted "
+	"flash image." ) : Amended 
+	]
+	boolean InvalidImageSignature;
+		
+	[read, Description (
+	"String describing boot agent version. e.g. 4.1.04"):Amended
+	]
+	string Version;
+
+	[read, Description (
+	"Boot agent version in the format 4.1.04"):Amended
+	]
+	uint32 VersionNumber; 
+
+	[read, Description (
+	"Indicates if install or upgrade to boot agent software is available."):Amended
+	]
+	boolean UpdateAvailable;
+
+	[read, Description (
+		"Boot Agent Flash Image type."):Amended,
+    		ValueMap {"0", "1", "3", "4", "5", "6", "7", "255"} : Amended, 
+    		Values {"PXE", "PXE_EFI", "EFI","DISABLED", "BLANK", "MISSING", "iSCSI", "Unknown"}: Amended
+	]
+	uint32 FlashImageType; 
+	
+	[read, Description (
+		"Boot Agent flash types that are currently installed in the ROM."):Amended,
+    		ValueMap {"1", "2", "4", "255"} : Amended, 
+    		Values {"PXE", "EFI", "iSCSI", "Unknown"}: Amended
+	]
+	uint32 InstalledFlashImageTypes;
+	
+	[read, Description (
+		"Boot Agent iSCSI status."):Amended,
+    		ValueMap {"0", "1", "2", "255"} : Amended, 
+    		Values {"iSCSI_PRIMARY", "iSCSI_SECONDARY", "iSCSI_DISABLED", "Unknown"}: Amended
+	]
+	uint32 iSCSI_Status;
+
+	[Description (
+	"ProgramFlash will update the Flash ROM on the NIC.  This will cause "
+	"the NIC to stop communicating with the network while the flash is " 
+	"updated."):Amended, implemented
+	]
+	uint32 ProgramFlash( 
+		[IN,
+	       ValueMap {"0","1"}: Amended , 
+           Values {"Check Version", "Write Flash"}: Amended
+		] 
+		uint32 Action,
+		[IN]
+		uint8 NewFlashData[],
+		[OUT,
+            ValueMap {"0", "1", "2", "3", "4", "5", "6", "7", "16", "32", "64", "128", "256", "512", "1024", "2048"}: Amended,
+            Values {"FoundImage", "UnsupportedImageFileType", "IncorrectChecksum",
+                    "InvalidChecksum", "NoFlashImage", "InvalidNicFile",
+                    "InvalidFlashImage", "OlderVersion", "AdapterNotSupportiSCSI",
+                    "OS_NotSupportiSCSI", "iSCSI_OverwiteIBA", 
+                    "IBA_OverwriteiSCSI", "Multi_ROM", "RPL Not Supported",
+                    "Combined overwrite with PXE", "Combined overwrite with EFI"}: Amended
+		]
+		uint32 FlashRetCode
+		);
+		
+	[Description (
+	"ProgramFlashEx will update the Flash ROM on the NIC.  This will cause "
+	"the NIC to stop communicating with the network while the flash is being updated.  This version "
+	"of the Program Flash function is compatible with FLB and FLB+ images."):Amended, implemented]
+	uint32 ProgramFlashEx
+	( 	
+		[IN]
+		uint8 NewFlashData[],
+		[IN]
+		string ImageType[],
+		[OUT]
+		uint32 FlashRetCode
+	);
+
+	[Description ("ReadImageFile will read the data passed in and return a array of the image types in the data file and "
+		      "and the version number of the images."):Amended, implemented]
+	uint32 ReadImageFile
+	( 
+		[IN]
+		uint8 FlashData[],
+		[OUT]
+		string ImageType[],
+		[OUT]
+		string ImageVersionNumber[],
+		[OUT]
+		uint32 ImageGroupNumber[],
+		[OUT]
+		boolean ImageGrouped[],
+		[OUT]
+		uint32 ImageExposeLevel[],
+		[OUT]
+		string Description[],
+		[OUT]
+		string Reserved2[],
+		[OUT]
+		uint32 FlashRetCode
+	);
+	
+	[Description ("VerifyImageType will determine if the image type the user has selected to be written to the flash is supported by the adapter."):Amended, implemented]
+	uint32 VerifyImageType
+	( 
+		[IN]
+		uint8 FlashData[],
+		[IN]
+		string ImageType[],
+		[OUT]
+		uint32 FlashRetCode
+	);
+
+	[Description (
+	"ReadFlash will read the Flash ROM on the NIC."):Amended, implemented
+	]
+	uint32 ReadFlash( [OUT] uint8 FlashData[] );
+
+	[Description (
+	"CanFlashBeUpdated will determine if the Flash ROM can be updated on the NIC."):Amended, implemented
+	]
+	uint32 CanFlashBeUpdated( [out] boolean bCanBeUpdated);
+
+	[Description (
+	"EnableFlash will enable Flash ROM on the NIC."):Amended, implemented
+	]
+	uint32 EnableFlash([IN] boolean bEnableFlash);
+
+
+};
+
+//**************************************************************************
+//* Class: IANet_BootAgent_iSCSI_Adapters
+//* Derived from: CIM_BootService
+//**************************************************************************
+		[Description (
+		 "IANet_BootAgent_iSCSI_Adapters lists all the adapters on the system "
+		 " that support the iSCSI Boot feature."):Amended,  LOCALE(0x409)
+		 :  ToInstance ToSubClass, Dynamic, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll")]
+class IANet_BootAgent_iSCSI_Adapters : CIM_BootService
+{
+	
+	[read, Description (
+		"Boot Agent iSCSI Status."):Amended,
+    		ValueMap {"0", "1", "2", "255"} : Amended, 
+    		Values {"iSCSI_PRIMARY", "iSCSI_SECONDARY", "iSCSI_DISABLED", "Unknown"}: Amended
+	]
+	uint32 iSCSI_Status;
+	
+	[read, Description ("Friendly name of the adapter."):Amended]
+	string AdapterName;
+
+	[Description (
+	"SetiSCSI_Status will update the status of the adapters that support iSCSI Boot. "
+	"The function only takes the primary and secondary adapter IDs and sets them accordingly. " 
+	"The remaining adapters are set to disabled."):Amended, implemented
+	]
+	uint32 SetiSCSI_Status
+	( 
+		[IN,
+	       		ValueMap {"0", "1", "2"}: Amended , 
+           		Values {"Primary", "Secondary", "Disabled"}: Amended
+		] 
+		uint32 iSCSI_State,
+		[OUT,
+            		ValueMap {"0", "1"}: Amended,
+            		Values {"Success", "Failure"}: Amended
+		]
+		uint32 RetCode
+	);
+
+
+
+};
+
+// ===================================================================
+// IANet_DeviceBootServiceImplementation 
+// ===================================================================
+   [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll"), Association,
+    Description (
+       "An association between a Service and how it is implemented. "
+       "The cardinality of this association is many-to-many. "
+       "A Service may be provided by more than one Logical"
+       "Device, operating in conjunction.  And, any Device may "
+       "provide more than one Service.  When multiple Devices are "
+       "associated with a single Service, it is assumed that these "
+       "elements operate in conjunction to provide the Service.  If "
+       "different implementations of a Service exist, each of these "
+       "implementations would result in individual instantiations "
+       "of the Service object.  These individual instantiations "
+       "would then have associations to the unique implementations."):Amended,  LOCALE(0x409)
+   ]
+class IANet_DeviceBootServiceImplementation  : CIM_Dependency
+{
+      [Override ("Antecedent"),
+       Description ("The LogicalDevice."):Amended
+      ]
+   IANet_PhysicalEthernetAdapter REF Antecedent;
+      [Override ("Dependent"),
+       Description ("The Service implemented using the LogicalDevice."):Amended
+      ]
+   IANet_BootAgent REF Dependent;
+};
+
+// ============================================================================
+// Intel IANet_BootAgentSetting Abstract Base Class
+// ============================================================================
+		[Abstract, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll"),
+		 Description("IANet_BootAgentSetting objectifies BootAgent instance related "
+		 "driver and network device settings. IANet_BootAgentSetting is an "
+		 "Abstract superclass for a set of concrete classes of different "
+		 "types.  This set of classes allows open ended usage of a variable "
+		 "number of settings." 
+		):Amended,  LOCALE(0x409)
+		]
+class IANet_BootAgentSetting : IANet_Setting
+{
+
+};
+
+// ============================================================================
+//  BootAgent Setting Enum Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll"),   
+		 Description("IANet_BootAgentSettingEnum objectifies BootAgent related "
+		 "driver and network device settings. IANet_BootAgentSettingEnum " 
+		 "specifically handles Enumeration settings"):Amended,  LOCALE(0x409)
+		]
+class IANet_BootAgentSettingEnum : IANet_BootAgentSetting
+{
+		[Description(
+		 "PossibleValues is an array of the possible values allowed for the enum."):Amended
+		]	
+	sint64 PossibleValues[];
+		
+		[Description(
+		 "DescriptionMap describes what each value means."):Amended
+		]	
+	string DescriptionMap[];
+		
+		[write, Description(
+		 "CurrentValue is the current setting for this parameter."):Amended
+		]	 
+	sint64 CurrentValue;
+	
+	[write, Description(
+		 "RegistryValue is the current setting for this parameter."):Amended
+		]	 
+	sint64 RegistryValue;
+		
+		[Description(
+		 "DefaultValue is the initial setting for this value."):Amended
+		]
+	sint64 DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+};
+
+// ============================================================================
+//  BootAgent Setting Int Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll"),   
+		 Description("IANet_BootAgentSettingInt objectifies BootAgent related "
+		 "driver and network device settings. IANet_BootAgentSettingInt " 
+		 "specifically handles Integer settings"):Amended,  LOCALE(0x409)
+		]
+class IANet_BootAgentSettingInt : IANet_BootAgentSetting
+{
+		[Description(
+		 "Min is the minimum value that the integer can take."):Amended]
+	sint64 min;
+
+		[Description(
+		 "Max is the maximum value that the integer can take."):Amended]
+	sint64 max;
+
+		[Description(
+		 "Step is the granularity of the integer value."):Amended]
+	sint64 step;
+
+		[Description(
+		 "Base is the root from which the integer value may take values. i.e. "
+		 " CurrentValue - base is a multiple of step."):Amended]
+	uint64 base;
+
+		[Description(
+		 "DefaultValue is the initial value of the parameter."):Amended]	
+	sint64 DefaultValue;
+
+		[Write, Description(
+		 "CurrentValue is the actual value of the parameter - this is the only attribute that "
+		 "the user can change."):Amended]	
+	sint64 CurrentValue;
+
+	[Description(
+		 "RegistryValue is the actual value of the parameter in the registry "):Amended]	
+	sint64 RegistryValue;
+
+		[Description(
+		 "Scale is unit of measurement to set or estimate series of marks "
+		 "or points at known intervals to measure value of the parameter."):Amended]	
+	sint64 Scale;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+};
+
+// ============================================================================
+//  BootAgent Setting String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll"),   
+		 Description("IANet_BootAgentSettingString objectifies BootAgent related "
+		 "driver and network device settings. IANet_BootAgentSettingString " 
+		 "specifically handles Integer settings"):Amended,  LOCALE(0x409)
+		]
+class IANet_BootAgentSettingString : IANet_BootAgentSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+		[write, Description("CurrentValue is the current value for the parameter."):Amended] 
+	string  CurrentValue;
+
+		[Description("RegistryValue is the current value for the parameter."):Amended] 
+	string  RegistryValue;
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+};
+
+// ============================================================================
+//  BootAgent Setting Multi String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Boot.dll"),  
+		 Description("IANet_BootAgentSettingMultiString objectifies Boot Agent related "
+		 "driver and network device settings. IANet_BootAgentSettingMultiString " 
+		 "specifically handles Multi String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_BootAgentSettingMultiString : IANet_BootAgentSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+		[write, Description("CurrentValues is the current values for the parameter."):Amended] 
+	string  CurrentValues[];
+
+		[Description("RegistryValue is the current values for the parameter."):Amended] 
+	string  RegistryValue[];
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue[];
+};
+
+// ============================================================================
+// IANet_BootAgentToSettingAssoc class
+// ============================================================================
+[   Association, Description("This class associates Intel NICs with their respective settings.")
+                :Amended,  LOCALE(0x409),
+    Dynamic,
+    provider("Ncs2"), IANet_ModuleIdentifier("NCS2Boot.dll")
+]
+class IANet_BootAgentToBootAgentSettingAssoc  : CIM_ElementSetting
+{
+   [  Override("Element"),
+      Description ("The BootAgent to which the Setting object belongs."):Amended
+   ]
+   IANet_BootAgent REF Element = NULL;
+   [  Override("Setting"),
+      Description ("The Setting belonging to the BootAgent."):Amended
+   ]
+   IANet_BootAgentSetting REF Setting = NULL;
+};
+

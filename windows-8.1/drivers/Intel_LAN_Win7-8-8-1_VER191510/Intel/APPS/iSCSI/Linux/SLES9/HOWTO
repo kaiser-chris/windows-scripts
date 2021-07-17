@@ -1,0 +1,242 @@
+############################################################################### 
+# This HOWTO describes how to install SLES9-SP3 onto a hard drive so that the  
+# disk is bootable using an Intel iSCSI Boot-capable adapter. There are two  
+# methods to accomplish this: 
+
+# Installing directly to a hard drive in an iSCSI storage array (Remote  
+# Install). Installing to a local disk drive and then transferring this disk  
+# drive or OS image to an iSCSI Target (Local Install). 
+
+# For more information on SCSI device enumeration, refer to Appendix A at the  
+# end of this document.                                                                            
+###############################################################################
+
+NOTE: Users who wish to have the easiest experience when installing Linux onto 
+an iSCSI target should use SLES10 or greater. SLES10 provides native support for 
+iSCSI booting and installing. This means that there are no additional steps 
+outside of the installer that are necessary to install to an iSCSI target using 
+an Intel Gigabit PCI-Express Server Adapter. Please refer to the SLES10 
+documentation for instructions on how to install to an iSCSI LU.
+
+NOTE: The following instruction are for SLES9-SP3. 
+-------------------------------------------------------------------------------
+Prerequsites:
+	1) A host system to install Linux on.
+	2) A driver disk compatible with the host system and the diskless target 
+        (either USB key or floppy disk).
+	3) The SLES9-SP3 install CDs.
+	4) linux-iscsi files (this requirement will be satisfied by Section I)
+		a) iscsi.ko
+		b) iscsid
+		c) initiatorname.iscsi
+		d) iscsi.conf
+
+NOTE: Some newer network device drivers are not included in SLES9. To enable these 
+devices, the user will need to get the correct driver and load the driver before 
+discovery is attempted when following the preinstall instructions.
+
+-------------------------------------------------------------------------------
+    Section I :  Creating the linux-iscsi driver disk
+-------------------------------------------------------------------------------
+This is the recommended method for creating the driver disk.
+
+1) On the system running SLES9-SP3 insert and mount the media to be used as the 
+   driver disk.
+2) YaST -> Add/Remove Software.
+3) Search: "kernel"
+4) Select: "kernel-default" and install the package.
+5) Search: "iscsi"
+6) Select: "linux-iscsi" and install the package.
+7) Copy the following files to the mounted media
+	a) /lib/modules/2.6.5-7.244-default/extra/iscsi.ko
+	b) /sbin/iscsid
+	c) /etc/initiatorname.iscsi
+	d) /etc/iscsi.conf
+
+NOTE: Configure the initiatorname.iscsi and iscsi.conf files according to your Target 
+configuration. For more information, read the README provided by the linux-iscsi source 
+code. You must at least configure the DiscoveryAddress in the iscsi.conf.
+
+NOTE: If your target supports advanced features such as CHAP, make sure that the 
+iscsi.conf and initiatorname.iscsi match your target configuration. These files will 
+be used throughout the install and boot process.
+
+NOTE: Alternatively, you may create the driver disk using a different host machine other 
+than SLES9-SP3. Compile the iscsi.ko and iscsid using the 2.6.5-7.244-default kernel. 
+For more information, read the READEME provided with the linux-iscsi source code.
+-----------------------------------------------------------------------------------------
+    Section II :  Installing to the iscsi target
+-----------------------------------------------------------------------------------------
+Note: You need an Intel(R) iSCSI Boot capable adapter to connect and boot the OS from the 
+iSCSI Target Disk.
+
+Requirements:
+1) Diskless host compatible with the driver disk.
+1) The driver disk created in Section I.
+2) The full set of CDs for both SLES9 and SLES9-SP3. 
+
+Procedure:
+1) Boot from SLES9-SP3 installation CD1.
+	a) Select "installation", but before pressing "enter", please enter the following 
+         boot option. 
+		DiscoveryAddress=<IP of target> InitiatorName=<initiator iqn> netsetup=1
+
+2) When you are prompted for CD1, insert SLES9 CD1.
+
+3) When you are prompted to accept the license agreement, press Ctrl-Alt-F2 to switch to 
+   the console.
+	a) mount the driver disk
+	b) copy the following files to /etc
+		i)  initiatorname.iscsi
+		ii) iscsi.conf
+	c) copy the following files to /tmp
+		i) iscsi.ko
+		ii) iscsid
+	d) unmount the driver disk and remove the driver disk
+	e) cd /tmp
+	f) insmod iscsi.ko
+	g) execute iscsid
+
+4) Verify connection to the target
+	Ctrl-Alt-F4 will display something along the lines of
+       "iSCSI target bus 0 target 0 = iqn.XYZ"
+		"Attached scsi disk ..." 
+
+5) Press Alt-F7 or Ctrl+Alt+F7 to go back and continue installation. Accept the license 
+   agreement and continue until you reach the "Installation Settings" Dialog.
+
+NOTE: When partitioning the iSCSI LUs, ensure that your boot partition is not distributed 
+across physical partitions on different iSCSI LUs. The Intel iSCSI Option ROM will only 
+expose one iSCSI LU and if /boot is distributed across multiple LUs it will not be visible 
+during the boot process.
+
+6) Select the Software packages to install
+	a) Click "Software".
+	b) Choose the software you wish to install.
+	c) Select "Detailed selection". Change the value of the "Filter" drop-down box to 
+         "search".
+	d) Search for "iSCSI".
+	e) Make sure the "linux-iscsi" checkbox is selected.
+	f) Make sure the "Autocheck" checkbox is selected.
+	g) Click "accept" and "continue" if prompted.
+
+7) Change some of the Booting options
+	a) Click "Booting"
+	b) Select "Disk Order"
+	c) Ensure that the disk that you are installing the OS on is the top disk in the 
+         list.
+
+8) When the installation completes the user is warned that a reboot will occur, it is 
+   accompanied by a 10 second countdown. Press "Stop" to stop the system reboot.
+
+9) Press Ctrl-Alt-F2 to go to console
+	a) Run "chroot /mnt"
+	b) Edit line 10 of the file /etc/sysconfig/kernel. Append "e1000" & "iscsi" driver 
+         to INITRD_MODULES variable.
+		Example: INITRD_MODULES="...  e1000 iscsi".
+	c) If your target requires CHAP authentication add the follow to /sbin/mkinitrd at line 1901
+		echo Username=<CHAP username> >> /etc/iscsi.conf
+		echo Password=<CHAP password> >> /etc/iscsi.conf
+	d) mkinitrd -D ethX
+	e) Press Ctrl-D
+
+10) Modify three configuration files so that they have the correct device node listed. Refer
+    to Appendix A for more information on SCSI device enumeration.
+	a) Edit /mnt/boot/grub/menu.1st so that root= points to the correct root partition. 
+	 For example,
+	
+		root=/dev/sda3
+
+	b) Edit /mnt/boot/grub/device.map so that grub knows which hard drive it should use.
+	 For example,
+
+		(hd0)	<SCSI device node for Boot LUN>
+
+	c) Edit /mnt/etc/fstab so that the partitions of your iSCSI LU are mounted to the 
+	 correct mount points. Only change the device nodes, not the FS type, attributes
+	or major/minor numbers. For example,
+
+		/dev/sda2	/		reiserfs	ac1,user_xattr	1 1
+		/dev/sda1	/boot		ext2		ac1,user_xattr	1 2
+
+11) Press Alt-F7 (Alt-F1 if using text mode installation) to return to the installation 
+    screen.
+	a) Select "OK" to reboot.
+	b) Remove the install CD.
+
+12) After the reboot, YaST will step you through various configurations.
+
+NOTE: After this first reboot YaST may ask you to configure your network devices. Skip this step 
+as it will reset the network interface that the iSCSI traffic is on.
+
+12) When you have booted to your iSCSI LU please edit /etc/rc.d/network. Add the 
+    following line to the script to prevent it from trying to reset the iscsi-ethernet 
+    interface. Please add carefully 
+               test "$a" = ethX && continue;
+    immediately after line number 169 where ethX is the ethernet interface used for iSCSI 
+    communication.
+
+NOTE: After the system has booted iscsid will be running. The user may want to add 
+something like "kill `pidof iscsid`" to an init script. iscsid is only needed for discovery 
+and can be killed in this way without problems. 
+
+
+Appendix A
+==========
+The iSCSI LUs are discovered as SCSI device nodes. The enumeration of SCSI devices 
+is dynamic. The SCSI subsystem creates device nodes in the order that they are 
+discovered, starting with /dev/sda and incrementing alphabetically. In the case of 
+iSCSI LU enumeration, local SCSI devices such as disks or USB devices affect this 
+process. If a device node is created for a USB device before iSCSI discovery occurs 
+the USB device will be represented by /dev/sda and the iSCSI LUs will begin with 
+/dev/sdb. However, if you were to reboot this system without the USB device the 
+iSCSI LUs will begin with /dev/sda. It is important to configure grub correctly to 
+point to the correct device node in order to boot from an iSCSI hard drive.
+
+It is often the case when installing to an iSCSI LU that a device driven by the SCSI
+subsystem is used for the install media. For example, using a USB flash drive 
+for the DUM. As stated above this will affect how grub should be configured 
+when installing.
+
+Here is an example of how iSCSI device node mappings might differ between
+installation and booting.
+
+In this example the user is using a USB flash drive as a DUM. Since this 
+device is being used to copy files onto the system it is present before iSCSI 
+discovery occurs. However, when booting from the iSCSI Boot Disk no USB flash 
+drive is necessary and therefore it isn't attached.
+
+Remote Installation:
+USB flash drive or USB floppy                         /dev/sda
+LUN 0                                                 /dev/sdb
+LUN 1                                                 /dev/sdc
+
+Booting:
+LUN 0                                                 /dev/sda
+LUN 1                                                 /dev/sdb
+
+If the USB device is attached after booting, it will be enumerated as such,
+USB flash drive or USB floppy                         /dev/sdc
+
+It is also possible that there are other USB devices on the system, it is
+users responsibility to find out if these will interfere with the device node 
+mapping during boot.
+
+Appendix B
+Crash Dump for Linux:
+
+SUSE Linux Enterprise Server: Netconsole utility can be used to dump the disk 
+image when the system crashes. 
+ 
+ 
+
+Support
+=======
+
+For general information, go to the Intel support website at:
+
+    www.intel.com/support/
+
+or the Intel Wired Networking project hosted by Sourceforge at:
+
+    http://sourceforge.net/projects/e1000

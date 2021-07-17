@@ -1,0 +1,296 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Troubleshooting</h1>
+
+<p>The table below lists problems that can possibly occur when using Intel&reg; 
+Ethernet iSCSI  Boot. For each problem a possible cause and resolution are provided.<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+  
+  <tr>
+<td WIDTH="30%" VALIGN="TOP"><p align="center"><font size="3"><b>Problem</b></font></p></td>
+<td VALIGN="TOP"><p align="center"><font size="3"><b>Resolution</b></font></p></td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Intel&reg; Ethernet iSCSI  Boot does not load on system startup and the sign-on banner is not displayed.</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>While the system logon screen may display for a longer time 
+during system startup, Intel Ethernet iSCSI  Boot may not be displayed during POST. It may be 
+necessary to disable a system BIOS feature in order to 
+display messages from Intel iSCSI Remote Boot. From the system BIOS Menu, 
+disable any quiet boot or quick boot options. Also disable any BIOS splash 
+screens. These options may be suppressing output from Intel iSCSI Remote Boot.</li>
+<li>Intel Ethernet iSCSI Remote Boot has not been installed on the adapter or the adapter's 
+flash ROM is disabled.
+Update the network adapter using the latest version of BootUtil as 
+described in the <a href="iscsi_install_overview.htm">&quot;Installation and Setup&quot;</a> section of this document. If 
+BootUtil reports the flash ROM is disabled, use the <code>&quot;BOOTUTIL -flashenable&quot;</code>
+command to enable the flash ROM and update the adapter.</li>
+<li>The system BIOS may be suppressing output from Intel Ethernet iSCSI  Boot. </li>
+<li>Sufficient system BIOS memory may not be available to load Intel Ethernet iSCSI  Boot. Attempt to disable unused disk controllers and 
+devices in the system BIOS setup menu. SCSI controllers, RAID 
+controller, PXE enabled network connections, and shadowing of system BIOS all 
+reduce the memory area available to Intel Ethernet iSCSI  Boot. Disable these 
+devices and reboot the system to see if Intel iSCSI  Boot is able to 
+initialize. If disabling the devices in the system BIOS menu does not resolve the 
+problem then attempt to remove unused disk devices or disk controllers 
+from the system. Some system manufacturers allow unused devices to 
+be disabled by jumper settings.</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>After installing Intel Ethernet iSCSI  Boot, the system will not boot to a local disk or network boot device. The system becomes unresponsive after Intel Ethernet
+iSCSI  Boot displays the sign-on banner or after connecting to the iSCSI target.</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>A critical system error has occurred during iSCSI Remote Boot initialization. Power on the system and press the 's' key or 'ESC' key before Intel 
+iSCSI Remote Boot initializes. This will bypass the Intel Ethernet iSCSI  Boot initialization process and allow the system to boot to a local drive. Use the 
+BootUtil utility to update to the latest version of Intel Ethernet
+iSCSI Remote Boot. If the problem persists, use<br>
+<code>&quot;BOOTUTIL -flashdisable&quot</code> to disable Intel iSCSI Remote 
+Boot.</p>
+</li>
+<li>
+<p>Updating the system BIOS may be a solution.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p><code>&quot;Intel&reg; iSCSI Remote Boot&quot;</code> does not show up as a boot device in the system BIOS 
+boot device menu.</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>The system BIOS may not support Intel Ethernet iSCSI  Boot. Update the system BIOS with the most recent version available from the 
+system vendor. </li>
+<li>A conflict may exist with another installed device. Attempt to disable unused 
+disk and network controllers. Some SCSI and RAID controllers are known to cause 
+compatibility problems with Intel iSCSI Remote Boot.</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;Failed to detect link&quot;</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>Intel Ethernet iSCSI  Boot was unable to detect link on the network port. Check the link 
+detection light on the back of the network connection. The link light 
+should illuminate green when link is established with the link partner. 
+If the link light is illuminated but the error message still displays 
+then attempt to run the Intel link and cable diagnostics tests using <code>DIAGS.EXE</code> 
+for DOS or Intel PROSet for Windows.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;DHCP Server not found!&quot;</p>
+<p></p>
+</td>
+<td VALIGN="TOP" align="left">
+<p>iSCSI was configured to retrieve an IP address from DHCP but no DHCP server responded to the DHCP discovery request. This issue can have multiple causes:</p>
+<ul>
+<li>The DHCP server may have used up all available IP address reservations.</li>
+<li>The client iSCSI system may require static IP address assignment on the 
+connected network.</li>
+<li>There may not be a DHCP server present on the network.</li>
+<li>Spanning Tree Protocol (STP) on the network switch may be preventing the Intel 
+iSCSI Remote Boot port from contacting the DHCP server. Refer to your network switch documentation on how to disable Spanning Tree Protocol.</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;PnP Check Structure is invalid!&quot;</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>Intel Ethernet iSCSI  Boot was not able to detect a valid PnP PCI BIOS. If this message displays Intel Ethernet
+iSCSI  Boot cannot run on the system in question. A fully PnP compliant PCI BIOS is required to run Intel 
+iSCSI Remote Boot.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;Invalid iSCSI connection information&quot;</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>The iSCSI configuration information received from DHCP or statically configured in the setup menu is incomplete and an attempt to login to the iSCSI target system could not be made. Verify that the iSCSI initiator name, iSCSI target name, target 
+IP address, and target port number are configured properly in the iSCSI setup menu (for static configuration) or on the DHCP server (for dynamic BOOTP configuration).</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;Unsupported SCSI disk block size!&quot;</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>The iSCSI target system is configured to use a disk block size that is not supported by Intel 
+Ethernet iSCSI  Boot. Configure the iSCSI target system to use a disk block size of 
+512 bytes.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;ERROR: Could not establish TCP/IP connection with iSCSI target system.&quot;</p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>Intel Ethernet iSCSI  Boot was unable to establish a TCP/IP connection with the iSCSI target system. Verify that the initiator and target IP address, subnet mask, port and gateway settings 
+are configured properly. Verify the settings on the DHCP server if 
+applicable. Check that the iSCSI target system is connected to a network 
+accessible to the Intel iSCSI Remote Boot initiator. Verify that the connection is not 
+being blocked by a firewall.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;ERROR: CHAP authentication with target failed.&quot;</p>
+<p></p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>The CHAP user name or secret does not match the CHAP configuration on the iSCSI target system. Verify the CHAP configuration on the Intel 
+iSCSI Remote Boot port matches the iSCSI target system CHAP 
+configuration. Disable CHAP in the iSCSI Remote Boot setup menu if it is not enabled on the target.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+<p>Error message displayed:<br> &quot;ERROR: Login request rejected by iSCSI target 
+system.&quot;</p>
+<p></p>
+</td>
+<td VALIGN="TOP" align="left">
+<ul>
+<li>
+<p>A login request was sent to the iSCSI target system but the login request was rejected. Verify the iSCSI 
+initiator name, target name, LUN number, and CHAP authentication 
+settings match the settings on the iSCSI target system. Verify that the 
+target is configured to allow the Intel iSCSI Remote Boot initiator access to a LUN.</p>
+</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+  <p>When installing Linux to Net App Filer, after a successful target disk 
+    discovery, error messages may be seen similar to those listed below.</p>
+  <p>Iscsi-sfnet:hostx: Connect failed with rc -113: No route to host<br>
+    Iscsi-sfnet:hostx: establish_session failed. Could not connect to target</p></td>
+<td VALIGN="TOP" align="left">
+<ul>
+	<li>If these error messages are seen, unused iscsi interfaces on Net App 
+	filer should be disabled. </li>
+	<li>Continuous=no should be added to the iscsi.conf file</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+Error message displayed.<br>&quot;ERROR: iSCSI target not found.&quot;</td>
+<td VALIGN="TOP" align="left">
+<ul>
+	<li>A TCP/IP connection was successfully made to the target IP address, 
+	however an iSCSI target with the specified iSCSI target name could not be 
+	found on the target system. Verify that the configured iSCSI target name and 
+	initiator name match the settings on the iSCSI target.</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+Error message displayed.<br>&quot;ERROR: iSCSI target can not accept any more 
+connections.&quot;</td>
+<td VALIGN="TOP" align="left">
+<ul>
+	<li>The iSCSI target cannot accept any new connections. This error could be 
+	caused by a configured limit on the iSCSI target or a limitation of 
+	resources (no disks available).</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+Error message displayed.<br>&quot;ERROR: iSCSI target has reported an error.&quot;</td>
+<td VALIGN="TOP" align="left">
+<ul>
+	<li>An error has occurred on the iSCSI target. Inspect the iSCSI target to 
+	determine the source of the error and ensure it is configured properly.</li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td WIDTH="30%" VALIGN="TOP" align="left">
+Error message displayed.<p>ERROR: There is an IP address conflict with another system on the network.</td>
+<td VALIGN="TOP" align="left">
+<ul>
+	<li>A system on the network was found using the same IP address as the iSCSI 
+		Option ROM client.</li>
+	<li>If using a static IP address assignment, attempt to change the IP 
+		address to something which is not being used by another client on the 
+		network.</li>
+	<li>If using an IP address assigned by a DHCP server, make sure there are no 
+	clients on the network which are using an IP address which conflicts with 
+	the IP address range used by the DHCP server.</li>
+</ul>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

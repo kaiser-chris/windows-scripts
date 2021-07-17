@@ -1,0 +1,179 @@
+<html>
+
+<head>
+
+<meta name="keywords" contents="Boot Agent, installation, install, hardware, WfM, IBAUtil">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Client Computer Hardware Installation</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>
+Client Computer Hardware Installation</h1>
+<P>
+Before you install the Intel<i>&reg;</i>
+Boot Agent, make sure the client computer's hardware is 
+installed properly. To do this, make sure that a compatible network adapter is 
+installed and the Intel Boot Agent software image resides within the network adapter's 
+flash ROM. The following topics guide you through the hardware installation 
+process:</P>
+
+<p class="contents"><a href="#setup">Setup for a Known Configuration</a></p>
+<p class="contents"><a href="#identify_config">Identifying the Client Computer Configuration</a><br>
+
+</p>
+
+<hr>
+
+<h2><a name="setup"></a>Setup for a Known Configuration</h2>
+<P>If you have an Intel Desktop adapter installed in your client 
+computer, the flash ROM device is already available in your adapter, and no 
+further installation steps are necessary. </P>
+<table class="note">
+  <tr>
+    <td valign="top"><img border="0" src="note.gif" width="28" height="21"></td>
+    <td valign="top"><strong>NOTE:</strong> 
+      For Intel server adapters, the flash ROM can be enabled using
+      <a href="boot_util.htm">BootUtil</a>.</td>
+  </tr>
+</table>
+
+<p>Some adapters ship with flash ROM disabled. To enable, refer to the 
+<a href="boot_util.htm">BootUtil</a> 
+documentation.</p>
+<ul>
+	<li>
+	<p class="numlst"><a href="ba_install_FW_image.htm#install_dos">DOS</a></li>
+	<li>
+	<p class="numlst"><a href="ba_install_FW_image.htm#install_windows">Windows</a></li>
+</ul>
+
+<P>
+You can use the
+hardware configuration information to determine proper installation through the
+steps indicated in the Intel Boot Agent Installation Procedures table below.
+</P>
+
+<h3 align="left"><a name="install_procedures"></a>Intel Boot Agent Installation Procedures</h3>
+
+<ol>
+	<li>Install adapter into your machine.</li>
+	<li>Use BootUtil to verify.<br></li>
+</ol>
+
+<hr>
+
+<h2>
+<a name="identify_config"></a>Identifying the Client Computer Configuration</h2>
+<P>
+To determine the hardware configuration of your client computer without removing its cover:</P>
+<ol>
+<LI CLASS="Proc-Step1">
+<p class="numlst">Examine the back panel of the computer to determine if there is a network 
+adapter already installed. The following figure shows the back panel of a
+typical computer and indicates the areas you should examine:</LI>
+</ol>
+
+<p align="center" style="margin-top: 0; margin-bottom: 0">
+<img border="0" src="computer_back.gif" width="321" height="182">
+
+<ol start="2">
+  <li>
+    <p class="numlst">As shown in the figure, the network connector is an RJ-45 connector. 
+    If there is a network connector in the back panel cluster only, it is possible that the 
+    computer motherboard incorporates compatible LAN on motherboard
+    (<a href="ba_glossary.htm#LOM">LOM</a>) hardware. Contact the motherboard manufacturer to 
+    verify this information. If your motherboard is equipped with LOM hardware, perform either 
+    of the following:</li>
+</ol>
+<blockquote>
+  <ol type="a">
+    <li>
+      <p class="numlst">Follow the motherboard manufacturer's instructions to check if your computer's
+      <a href="ba_glossary.htm#BIOS"> BIOS</a> already handles Intel Boot Agent capability. Otherwise, ask 
+      your manufacturer for a new BIOS upgrade for your system.</li>
+  </ol>
+</blockquote>
+<ol start="3">
+  <li>
+    <p CLASS="numlst">If there is no network connector at the back of your 
+	computer, you must install a network adapter. Refer to the installation 
+	procedures for the adapter for any setup requirements.</li>
+  <li>
+    <p CLASS="numlst">If there is a network connector in one of the add-in board slots, there might 
+    be a compatible network adapter already installed in the computer. Perform the following  steps 
+    to identify all compatible network adapters already installed in your computer:</li>
+</ol>
+<blockquote>
+  <ol type="a">
+    <li>
+      <p class="numlst">Boot your computer to DOS (a DOS Command Prompt window will not work).</li>
+    <li>
+      <p class="numlst">From the drive or directory containing the Intel Boot 
+		Agent software, type
+      <code>BOOTUTIL</code> and then press <b>Enter</b>.</li>
+      <p class="numlst">If there is no flash ROM device installed, BootUtil
+      displays the following type of information:</p>
+  		<table border="0" cellspacing="0" cellpadding="4">
+    	  <tr>
+      		<td align="center"><code>===</code></td>
+      		<td align="center"><code>=================</code></td>
+      		<td align="center"><code>======</code></td>
+      		<td align="center"><code>=====</code></td>
+      		<td align="center"><code>============</code></td>
+      		<td align="center"><code>==================</code></td>
+      		<td align="center"><code>====</code></td>
+      		<td align="center"><code>====</code></td>
+    	  </tr>
+    	  <tr>
+      		<td align="center"><code>NIC</code></td>
+      		<td align="center"><code>Network Address</code></td>
+      		<td align="center"><code>Series</code></td>
+      		<td align="center"><code>WOL</code></td>
+      		<td align="center"><code>Boot Agent</code></td>
+      		<td align="center"><code>FLASH Memory</code></td>
+      		<td align="center"><code>Size</code></td>
+      		<td align="center"><code>Valid</code></td>
+    	  </tr>
+    	  <tr>
+      		<td align="center"><code>===</code></td>
+      		<td align="center"><code>=================</code></td>
+      		<td align="center"><code>======</code></td>
+      		<td align="center"><code>=====</code></td>
+      		<td align="center"><code>============</code></td>
+      		<td align="center"><code>==================</code></td>
+      		<td align="center"><code>====</code></td>
+      		<td align="center"><code>====</code></td>
+    	  </tr>
+    	  <tr>
+      		<td align="center"><code>1</code></td>
+      		<td align="center"><code>xxxxxxxxxxxx</code></td>
+      		<td align="center"><code>xxxx</code></td>
+      		<td align="center"><code>No</code></td>
+      		<td align="center"><code>x.x.xx</code></td>
+      		<td align="center"><code>Unknown [8282]</code></td>
+      		<td align="center"><code>1024</code></td>
+      		<td align="center"><code>Yes</code></td>
+    		</tr>
+  		</table>
+		<br>
+		<table class="note">
+  		  <tr>
+    		<td valign="top"><img border="0" src="note.gif" width="28" height="21"></td>
+    		<td valign="top"><strong>NOTE:</strong> 
+			If the flash ROM device installed in the adapter ROM socket is not large enough (64 KB or larger),
+      		BootUtil returns a message stating that the flash is too small, and does not allow you to proceed.</td>
+  		  </tr>
+		</table>
+  		</li>
+  		<br>
+    <li><p class="numlst">Update the flash ROM. See
+    <a href="ba_install_FW_image.htm#install_dos">Installing/Updating in DOS Environments</a> for instructions.</li>
+  </ol>
+</ol>
+</blockquote>
+
+</body>
+</html>

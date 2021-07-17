@@ -1,0 +1,174 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Firmware Setup</h1>
+<p>Intel&reg; Ethernet iSCSI  Boot features a setup menu which allows two network ports in one system to be enabled as 
+iSCSI Boot devices. To configure Intel&reg; iSCSI  Boot, power-on or reset the system and press the 
+Ctrl-D key when the message &quot;<code>Press &lt;Ctrl-D&gt; to run setup...</code>&quot; is displayed. After pressing the 
+Ctrl-D key, you will be taken to the Intel&reg; iSCSI  Boot 
+Port Selection Setup Menu.</p>
+
+<table class="note" >
+	<tr>
+		<td valign="top" width="28">
+		<p style="margin-top: 5px">
+		<img border="0" src="note.gif" width="28" height="21"></td>
+		<td valign="top" style="width: 1197px">
+		<p style="margin-top: 5px"><b>NOTE:</b> When booting an operating 
+		system from a local disk, Intel&reg; Ethernet iSCSI Boot should be disabled for 
+		all network ports.</td>
+	</tr>
+</table>
+
+<hr>
+<h3>Intel&reg; Ethernet iSCSI  Boot Port Selection Menu</h3>
+<p><a name="Boot Port Menu"></a>The first screen of the Intel&reg; iSCSI  Boot Setup Menu displays a list of Intel&reg; 
+iSCSI  Boot-capable adapters. For each adapter port the associated PCI device ID, PCI bus/device/function location, and a field indicating 
+Intel&reg; Ethernet iSCSI  Boot status is displayed. Up to 10 iSCSI Boot-capable ports can be displayed within the 
+Port Selection Menu. If there are more Intel&reg; iSCSI  Boot-capable adapters, these are not listed in the setup menu. </p>
+<p align="center"><img border="0" src="DSCN2576.jpg" width="400" height="257"></p>
+<p>The usage of this menu is described below:</p>
+
+<ul>
+<li>
+    <p>One network port in the system can be selected as the primary boot port by pressing the 'P' key when highlighted. The primary boot port will be the first port used by Intel&reg; Ethernet
+  iSCSI  Boot to connect to the iSCSI target. Only one port may be selected as a primary boot port.</p></li>
+<li>
+    <p>One network port in the system can be selected as the secondary boot port by pressing the 'S' key when highlighted. The secondary boot port will only be used to connect to the iSCSI target disk if the primary boot port fails to establish a connection. Only one port may be selected as a secondary boot port.</p></li>
+<li>
+    <p>Pressing the 'D' key with a network port highlighted will disable Intel&reg; Ethernet iSCSI 
+  Boot on that port.</p></li>
+<li>
+    <p>Pressing the 'B' key with a network port highlighted will blink an LED on 
+	that port.</p></li>
+<li>
+    <p>Press the Esc key to leave the screen.</p></li>
+</ul>
+
+<h3>Intel&reg; Ethernet iSCSI  Boot Port Specific Setup Menu</h3>
+<h3 align="center">
+<img border="0" src="DSCN2591.jpg" width="400" height="355"></h3>
+<p>The port specific iSCSI setup menu has four options:</p>
+
+<ul>
+<li>
+    <p><b>Intel&reg; iSCSI  Boot Configuration</b> - Selecting this option will take you to the     
+	iSCSI  Boot Configuration 
+  Setup Menu.&nbsp; The <a href="#Config Menu">iSCSI  Boot Configuration Menu</a> is described in detail in the section below and will allow you to configure the iSCSI parameters for the selected network port.</p></li>
+<li>
+    <p><b>CHAP Configuration</b> - Selecting this option will take you to the CHAP configuration screen. The 
+	<a href="#Chap">CHAP Configuration 
+	Menu</a> is described in detail in the section below.</p></li>
+<li>
+    <p><b>Discard Changes and Exit</b> - Selecting this option will discard all changes made in the 
+	iSCSI  Boot Configuration and CHAP Configuration setup screens, and return back to the 
+	iSCSI  Boot Port Selection 
+  Menu.</p></li>
+<li>
+    <p><b>Save Changes and Exit</b> - Selecting this option will save all changes made in the 
+	iSCSI  Boot Configuration and CHAP Configuration setup screens. After selecting this option, you will return to the 
+	iSCSI  Boot Port Selection 
+  Menu.</p></li>
+</ul>
+<p align="center">
+<img border="0" src="DSCN2614.jpg" width="400" height="349"></p>
+<h3>Intel&reg; iSCSI  Boot Configuration Menu</h3>
+<p><a name="Config Menu"></a>The Intel&reg; iSCSI  Boot Configuration Menu allows you to configure the 
+iSCSI  Boot and Internet Protocol (IP) parameters for a specific 
+port.&nbsp; The iSCSI settings can be configured manually or retrieved dynamically from a DHCP server.&nbsp; </p>
+<p align="center">
+<img border="0" src="DSCN2606.jpg" width="400" height="374"></p>
+<p>Listed below are the options in the Intel&reg; iSCSI  Boot Configuration 
+Menu:</p>
+
+<ul>
+<li>
+<p><b>Use Dynamic IP Configuration (DHCP)</b>
+- Selecting this checkbox will cause iSCSI  Boot to attempt to get the client IP address, subnet mask, and gateway IP address from a DHCP server. If this checkbox is enabled, these fields will not be visible.</li>
+<li>
+<p><b>Initiator Name</b>
+- Enter the iSCSI initiator name to be used by Intel&reg; iSCSI  Boot when connecting to an iSCSI target. The value entered in this field is global and used by all 
+iSCSI  Boot-enabled ports in the system. This field may be left blank if the <code>&quot;Use DHCP For Target Configuration&quot;</code> checkbox is enabled. For information on how to retrieve the iSCSI initiator name dynamically from a DHCP server see the section <a href="iscsi_dhcp_config.htm">&quot;DHCP Server Configuration&quot;</a>.</li>
+<li>
+<p><b>Initiator IP</b>
+- Enter the client IP address to be used for this port as static IP configuration in this field. This IP address will be used by the port during the entire iSCSI session. This option is visible if DHCP is not enabled.</li>
+<li>
+<p><b>Subnet Mask </b>
+- Enter the IP subnet-mask in this field.&nbsp; This should be the IP subnet mask used on the network which the selected port will be connecting to for iSCSI. This option is visible if DHCP is not enabled.</li>
+<li>
+<p><b>Gateway IP</b>
+- Enter the IP address of the network gateway in this field. This field is necessary if the iSCSI target is located on a different sub-network than the selected Intel&reg; 
+iSCSI  Boot port. This option is visible if DHCP is not enabled.</li>
+<li>
+<p><b>Use DHCP for iSCSI Target Information</b>
+- Selecting this checkbox will cause Intel&reg; iSCSI  Boot to attempt to gather the iSCSI target's IP address, IP port number, iSCSI target name, and SCSI LUN ID from a DHCP server on the network.&nbsp; For information on how to configure the iSCSI target parameters using DHCP see the section <a href="iscsi_dhcp_config.htm">&quot;DHCP Server Configuration&quot;</a>. When this checkbox is enabled, these fields will not be visible.</li>
+<li>
+<p><b>Target Name</b>
+- Enter the IQN name of the iSCSI target in this field. This option is visible if DHCP for iSCSI target is not enabled.</li>
+<li>
+<p><b>Target IP</b>
+- Enter the target IP address of the iSCSI target in this field. This option is visible if DHCP for iSCSI target is not enabled.</li>
+<li>
+<p><b>Target Port </b>- TCP Port Number.</li>
+<li>
+<p><b>Boot LUN - </b>Enter the LUN ID of the boot disk on the iSCSI target in this field. This option is visible if DHCP for iSCSI target is not enabled.</li>
+</ul>
+
+<h3>iSCSI CHAP Configuration</h3>
+<p><a name="Chap"></a>Intel&reg; iSCSI  Boot supports Mutual CHAP MD5 authentication with an iSCSI target. Intel&reg; 
+iSCSI  Boot uses the &quot;MD5 Message Digest Algorithm&quot; developed by RSA Data Security, Inc. 
+</p>
+<p align="center">
+<img border="0" src="DSCN2612.jpg" width="400" height="382"></p>
+<p>The iSCSI CHAP Configuration menu has the following options to enable CHAP authentication:<br>
+</p>
+<ul>
+<li>
+<p><b>Use CHAP</b> - Selecting this checkbox will enable CHAP authentication for 
+this port. CHAP allows the target to authenticate the initiator. After enabling 
+CHAP authentication, a user name and target password must be entered.</li>
+<li>
+<p><b>User Name</b>
+- Enter the CHAP user name in this field. This must be the same as the CHAP user name configured on the iSCSI target.</li>
+<li>
+<p><b>Target Secret</b>
+- Enter the CHAP password in this field.&nbsp; This must be the same as the CHAP password configured on the iSCSI target and must be between 12 and 16 characters in length. 
+This password can not be the same as the <b>Initiator Secret.</b></li>
+<li>
+<b>Use Mutual CHAP </b>– Selecting this checkbox will enable Mutual CHAP 
+	authentication for this port. Mutual CHAP allows the initiator to 
+	authenticate the target.&nbsp; After enabling Mutual CHAP authentication, an 
+	initiator password must be entered.&nbsp; Mutual CHAP can only be selected if Use 
+	CHAP is selected.</li>
+<li><b>Initiator Secret - </b>Enter the Mutual CHAP password in this field.&nbsp; 
+This password must also be configured on the iSCSI target and must be between 12 
+and 16 characters in length.&nbsp; This password can not be the same as the <b>Target 
+Secret.</b></li>
+</ul>
+	
+<p>The CHAP Authentication feature of this product requires the following 
+	acknowledgements:</p>
+<p>This product includes cryptographic software written by 
+	Eric Young (<a title="mailto:eay@cryptsoft.com" href="mailto:eay@cryptsoft.com">eay@cryptsoft.com</a>).&nbsp; 
+	This product includes software written by Tim Hudson (<a title="mailto:tjh@cryptsoft.com" href="mailto:tjh@cryptsoft.com">tjh@cryptsoft.com</a>).</p>
+<p>This product includes software developed by the OpenSSL Project for use 
+	in the OpenSSL Toolkit. (<a href="http://www.openssl.org/">http://www.openssl.org/</a>).<p>A complete licensing statement can be found 
+<a href="license.txt">here</a>.<h3>Intel&reg; PROSet for Windows* Device Manager</h3>
+<p>Many of the functions of the Intel&reg; iSCSI  Boot Port Selection Setup Menu can 
+also be configured or revised using Intel PROSet for Windows Device Manager. 
+Click <a href="windows_command_line_install.htm">here</a> for instructions on 
+installing and using Intel PROSet for Windows Device Manager.</p>
+<h3>Vlan ID</h3>
+<p>The VLAN ID 
+field was grayed out in the Intel&reg; iSCSI  Boot firmware screen because the Microsoft 
+iSCSI Boot Initiator does not support Vlans.</p>
+
+</body>
+</html>

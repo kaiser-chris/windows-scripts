@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>iSCSI Target Configuration</h1>
+<p>For specific information on configuring your iSCSI target system and disk volume, refer to instructions provided by the 3rd party vendor. Listed below are the basic steps necessary to setup Intel&reg; Ethernet iSCSI  Boot to work with most iSCSI target systems. The specific steps will vary from one vendor to another.</p>
+
+<table class="note">
+	<tr>
+		<td valign="top"><img border="0" src="note.gif" width="28" height="21"></td>
+		<td><strong>NOTE:</strong> In order to be able to support iSCSI Boot, the target needs to be able to 
+	support multiple sessions from the same initiator. Both the iSCSI Boot 
+	firmware initiator and the OS High Initiator need to establish an iSCSI 
+	session at the same time. Both these initiators use the same Initiator Name 
+	and IP Address to connect and access the OS disk but these two initiators 
+	will establish a different iSCSI session. In order for the target to support 
+		iSCSI Boot, the target must be capable of supporting multiple sessions and 
+	client logins.</td>
+	</tr>
+</table>
+
+<ol>
+<li>
+<p>Configure a disk volume on your iSCSI target system. Note the LUN ID of this volume for use when configuring in Intel&reg; 
+Ethernet iSCSI Boot firmware setup.</p>
+</li>
+
+<li>
+<p>Note the iSCSI Qualified Name (IQN) of the iSCSI target, which will likely look like:</p>
+<p><code>iqn.1986-03.com.intel:target1</code></p>
+<p>This value will be used as the iSCSI target name when configuring in Intel® 
+Ethernet iSCSI Boot firmware setup.</p>
+</li>
+
+<li>
+<p>Configure the iSCSI target system to accept the iSCSI connection from the iSCSI initiator. This usually requires listing the initiator's IQN name or MAC address for permitting the initiator to access to the disk volume. See the section <a href="iscsi_firmware_setup.htm">&quot;Firmware Setup&quot;</a> for information on how to set the iSCSI initiator name.</p>
+</li>
+
+<li>
+  <p>One-way authentication protocol can be enabled optionally for secure communications. Challenge-Handshake Authentication Protocol (CHAP) is enabled by configuring username/password on iSCSI target system.  For setting up CHAP on the iSCSI initiator, refer to the section <a href="iscsi_firmware_setup.htm">&quot;Firmware Setup&quot;</a> for information.</p>
+</li>
+</ol>
+<h2>Booting from Targets Larger than 2TB</h2>
+<p>You can connect and boot from a target LUN that is larger than 2 Terabytes with the following restrictions:</p>
+<ul>
+  <li>The block size on the target must be 512 bytes</li>
+  <li> The following operating systems are supported:
+    <ul>
+      <li>VMware* ESX 5.0, or later</li>
+      <li>Red Hat* Enterprise Linux* 6.3, or later</li>
+      <li>SUSE* Enterprise Linux 11SP2, or later</li>
+      <li>Microsoft* Windows Server* 2012, or later</li>
+    </ul>
+  </li>
+  <li>You may be able to access data only within the first 2 TB.</li>
+</ul>
+
+
+<table class="note">
+	<tr>
+		<td valign="top"><img border="0" src="note.gif" width="28" height="21"></td>
+		<td><strong>NOTE:</strong>  The  Crash Dump driver does not support target LUNs larger than 2TB.</td>
+	</tr>
+</table>
+
+</body>
+</html>

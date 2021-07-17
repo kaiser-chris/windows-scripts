@@ -1,0 +1,620 @@
+/************************************************************************
+*                                                                       *
+*               INTEL CORPORATION PROPRIETARY INFORMATION               *
+*  This software is supplied under the terms of a license agreement or  *
+*  nondisclosure agreement with Intel Corporation and may not be copied *
+*  or disclosed except in accordance with the terms of that agreement.  *
+*  Copyright (c) 2008-2013 Intel Corporation. All Rights Reserved.      *
+*                                                                       *
+************************************************************************/
+/***********************************************************************\
+*
+* NAME:	Ncs2IVL.mof	
+* 
+* DESCRIPTION: Master MOF file with class definitions for the 
+*			   Intel PRO Network VLANs (802.3 schema).
+*
+* PREREQUISITE: Ncs2Cm.mof and Ncs2ICr.mof [In that order]
+*
+* NOTE:	This file generates language neutral MOF for IntelNcs2 namespace.
+*		This file also generates ENU language specific MFL. 
+*
+\***********************************************************************/
+
+#pragma namespace ("\\\\.\\Root\\IntelNcs2")
+
+
+// ============================================================================
+// VLAN class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+		 Description("IANet_VLAN objectifies "
+		 "the properties of a VLAN.  All of the needed properties "
+		 "of the VLAN object are inherited from CIM_VLAN."):Amended,  LOCALE(0x409)
+		]
+class IANet_VLAN : CIM_VLAN
+{
+	[Description ("VLANName is the name of the VLAN as chosen by the user."):Amended]
+	string VLANName;
+
+	[Description ("Specifies the identifying number of the VLAN."):Amended]
+	string VLANID;
+
+	[Description ("Specifies the name of the device or team that the VLAN is associated."): Amended]
+	string Parent;
+
+	[Description ("Specifies the name of the device that the VLAN is associated with, including prefix, if applicable."): Amended]
+    	string ParentName;
+
+	[Description ("Contains the VLAN's parent device ID."): Amended]
+    	string ParentID;
+
+	[Description (
+	"Contains the VLAN's parent device type."):Amended,
+	ValueMap{"0", "1", "2"}:Amended,
+	Values {"Adapter", "Team", "Unknown"} : Amended
+	]
+    uint16 ParentType;
+	
+	[Description (
+		"Indicates the current status of the VLAN."):Amended,
+		ValueMap{"0", "1", "2", "3"}:Amended,
+		Values {"Disabled", "Link Up", "Link Down", "Not Present"} : Amended
+	]
+    uint16 DeviceStatus;
+
+	[Description("Specifies the current status of the vlan."):Amended] 	
+        string DeviceStatusString;	
+
+	[Description (
+        "The StatusInfo property indicates whether the Logical"
+        "Device is in an enabled (value = 3), disabled (value = "
+        "4) or some other (1) or unknown (2) state. If this "
+        "property does not apply to the LogicalDevice, the value, "
+        "5 (\"Not Applicable\"), should be used.  "
+        "If a Device is (\"Enabled\")(value=3), it has been "
+        "powered up, and is configured and operational.  The Device "
+        "may or may not be functionally active, depending on whether "
+        "its Availability (or AdditionalAvailability) indicate that "
+        "it is (\"Running/Full Power\")(value=3) or (\"Off line\")"
+        "(value=8). In an enabled but offline mode, a Device may be "
+        "performing out-of-band requests, such as running Diagnostics.  "
+        "If (\"Disabled\") StatusInfo value=4), a Device can only be " 
+        "\"enabled\" or powered off.  In a personal computer environment, "
+        "(\"Disabled\") means that the Device's driver is not "
+        "available in the stack. In other environments, a Device can "
+        "be disabled by removing its configuration file. A disabled "
+        "device is physically present in a System and consuming "
+        "resources, but cannot be communicated with until a load "
+        "of a driver, a load of a configuration file or some other "
+        "\"enabling\" activity has occurred."): Amended,
+       ValueMap {"1", "2", "3", "4", "5"}: Amended,
+       Values {"Other", "Unknown", "Enabled",
+               "Disabled", "Not Applicable"}: Amended
+	]
+       
+   uint16 StatusInfo;
+
+   [Description (
+	"ValidateSetting validates the vlan settings. The 1st input parameter Adapter "
+	"is a reference to an IANet_PhysicalEthernetAdapter for which the setting is "
+	"validated. Value is the setting value. SettingName is the vlan setting. "
+	"ValResult is the validated result."
+	):Amended, implemented
+	]
+	uint32 ValidateSetting(
+		[IN]	string SettingName,
+		[IN]	sint64 Value,
+		[OUT]	WarningMessageObj WarningMessages[]
+	);
+
+	[Description ("The ValidateSetting method returns information related to changing the vlan setting. The SettingName parameter specifies the name of the VLAN setting.  The Value parameter specifies the new" 
+	              "value of the VLAN setting.  The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateSettingEx
+	(
+		[IN]	string SettingName,
+		[IN]	string DisplayValue,
+		[OUT]	WarningMessageObj WarningMessages[]
+	);
+
+	 [Description (
+	"ValidateUpdate validates that the vlan name and number can be updated."
+	):Amended, implemented
+	]
+	uint32 ValidateUpdate(
+		[IN] string VLANName,
+		[IN] sint64 VLANNumber,
+		[OUT] WarningMessageObj WarningMessages[]
+	);
+
+
+};
+
+// ============================================================================
+// 802.1Q VLAN Service Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  Description (
+         "If the NIC supports 802.1Q, an instance of this class will "
+         "be instantiated"):Amended,  LOCALE(0x409) ]
+class IANet_802dot1QVLANService : CIM_802dot1QVLANService
+{
+		[write, Description(
+		 "GVRP (GARP VLAN Registration Protocol) is used by workstations and "
+		 "switches to dynamically create, change and remove VLANs from across "
+		 "a network.  This protocol allows VLAN switches which support GVRP "
+		 "to determine which VLANs are active and to identify their switch ports. "
+		 "The GVRPEnabled value indicates the GARP VLAN Registration Protocol active status."):Amended
+		]
+	boolean GVRPEnabled;
+		
+		[write, Description(
+		 "GVRP (GARP VLAN Registration Protocol) is used by workstations and "
+		 "switches to dynamically create, change and remove VLANs from across "
+		 "a network.  This protocol allows VLAN switches which support GVRP "
+		 "to determine which VLANs are active and to identify their switch ports. "
+		 "GVRPJoin time sets the frequency of messages issued when a new port "
+		 "has been added to the VLAN."):Amended,
+		
+		  ValueMap { "100", "150", "200", "250", "300", "350", "400", "450",
+				   "500",  "550", "600", "650", "700", "750", "800", "850",
+				   "900",  "950", "1000" }:Amended,
+
+
+		  Values { "100 ms", "150 ms", "200 ms", "250 ms", "300 ms", "350 ms", "400 ms", "450 ms",
+				   "500 ms",  "550 ms", "600 ms", "650 ms", "700 ms", "750 ms ", "800 ms", "850 ms",
+				   "900 ms",  "950 ms", "1000 ms" }:Amended ]
+	uint32 GVRPJoinTime;
+
+		[Description(
+		 "CreateVLAN is used to create a new VLAN for this service."):Amended,
+		 implemented
+		]
+
+	uint16 CreateVLAN( [in] uint32 VLANNumber, [in] string Name,
+					   [out] IANet_VLAN REF VLANpath );
+
+	[Description(
+		 "ValidateCreateVLAN is used to validate a new VLAN can be created for this service."):Amended,
+		 implemented
+		]
+	uint16 ValidateCreateVLAN([in] string VLANNumbers, [in] string Name,
+					   [OUT] WarningMessageObj WarningMessages[] );
+
+	[Description(
+		 "CreateMultipleVLANs is used to create multiple VLANs for this service."):Amended,
+		 implemented
+		]
+	uint16 CreateMultipleVLANs( [in] string VLANNumbers, 
+					   [out] IANet_VLAN REF VLANpath [] );
+
+
+};
+
+// ===================================================================
+// IANet_Device802dot1QVVLANServiceImplementation
+// ===================================================================
+   [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"), Association,
+    Description (
+       "An association between a Service and how it is implemented. "
+       "The cardinality of this association is many-to-many. "
+       "A Service may be provided by more than one Logical"
+       "Device, operating in conjunction.  And, any Device may "
+       "provide more than one Service.  When multiple Devices are "
+       "associated with a single Service, it is assumed that these "
+       "elements operate in conjunction to provide the Service.  If "
+       "different implementations of a Service exist, each of these "
+       "implementations would result in individual instantiations "
+       "of the Service object.  These individual instantiations "
+       "would then have associations to the unique implementations."):Amended,  LOCALE(0x409)
+   ]
+class IANet_Device802dot1QVLANServiceImplementation : CIM_Dependency
+{
+      [Override ("Antecedent"),
+       Description ("The LogicalDevice."):Amended
+      ]
+   IANet_EthernetAdapter REF Antecedent;
+      [Override ("Dependent"),
+       Description ("The Service implemented using the LogicalDevice."):Amended
+      ]
+   IANet_802dot1QVLANService REF Dependent;
+};
+
+// ============================================================================
+// VLAN For class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  Association, Description(
+		 "The  IANet_VLAN used by the IANet_802dot1QVLANService."):Amended,  LOCALE(0x409) ]
+class IANet_VLANFor : CIM_VLANFor
+{
+};
+
+// ============================================================================
+// Device Service Implementation class
+// ============================================================================
+		[Association,dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"), 
+		 Description (
+         "An association between a Service and how it is implemented. "
+         "The cardinality of this association is many-to-many. "
+         "A Service may be provided by more than one Logical"
+         "Device, operating in conjunction.  And, any Device may "
+         "provide more than one Service.  When multiple Devices are "
+         "associated with a single Service, it is assumed that these "
+         "elements operate in conjunction to provide the Service.  If "
+         "different implementations of a Service exist, each of these "
+         "implementations would result in individual instantiations "
+         "of the Service object.  These individual instantiations "
+         "would then have associations to the unique implementations."):Amended,  LOCALE(0x409)
+		]
+class IANet_Device802dot1QVLANServiceImplementation : CIM_DeviceServiceImplementation
+{
+	[Override ("Antecedent"),
+       Description ("The LogicalDevice."): ToSubclass Amended
+      ]
+    IANet_EthernetAdapter REF Antecedent;
+      [Override ("Dependent"),
+       Description ("The Service implemented using the LogicalDevice."): ToSubclass Amended
+      ]
+    IANet_802dot1QVLANService REF Dependent;
+	
+};
+
+
+
+
+// ============================================================================
+// Intel IANet_VLANSetting Abstract Base Class
+// ============================================================================
+		[Abstract, IANet_ModuleIdentifier("Ncs2Vlan.dll"),
+		 Description("IANet_VLANSetting objectifies VLAN instance related "
+		 "driver and network device settings. IANet_VLANSetting is an "
+		 "Abstract superclass for a set of concrete classes of different "
+		 "types.  This set of classes allows open ended usage of a variable "
+		 "number of settings." 
+		):Amended,  LOCALE(0x409)
+		]
+class IANet_VLANSetting : IANet_Setting
+{
+	[Description ("Specifies the identifying number of the VLAN the setting is associated with."):Amended]
+	string VLANID;
+
+	[Description ("Specifies the name of the VLAN the setting is associated with."): Amended]
+    string VLANName;
+
+	[Description ("Specifies the name of the device that the VLAN is associated with."): Amended]
+    string ParentName;
+};
+
+
+// ============================================================================
+// VLANSetting Int Class
+// ============================================================================
+
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+		 Description("IANet_VLANSettingInt objectifies VLAN related "
+		 "driver and network device settings. IANet_VLANSettingInt " 
+		 "specifically handles Integer settings. The following "
+		 "constraints are placed on the CurrentValue and default value:\n"
+		 "	min <= CurrentValue <= max\n"
+		 "	( CurrentValue - base ) is a multiple of step\n"):Amended,  LOCALE(0x409)]
+class IANet_VLANSettingInt : IANet_VLANSetting
+{
+		[Description(
+		 "Min is the minimum value that the integer can take."):Amended]
+	sint64 min;
+
+		[Description(
+		 "Max is the maximum value that the integer can take."):Amended]
+	sint64 max;
+
+		[Description(
+		 "Step is the granularity of the integer value."):Amended]
+	sint64 step;
+
+		[Description(
+		 "Base is the root from which the integer value may take values. i.e. "
+		 " CurrentValue - base is a multiple of step."):Amended]
+	uint64 base;
+
+		[Description(
+		 "DefaultValue is the initial value of the parameter."):Amended]	
+	sint64 DefaultValue;
+
+		[Write, Description(
+		 "CurrentValue is the actual value of the parameter - this is the only attribute that "
+		 "the user can change."):Amended]	
+	sint64 CurrentValue;
+
+	[Write, Description("RegistryValue is the actual value of the parameter."):Amended]	
+	sint64 RegistryValue;
+
+		[Description(
+		 "Scale is unit of measurement to set or estimate series of marks "
+		 "or points at known intervals to measure value of the parameter."):Amended]	
+	sint64 Scale;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+	
+};
+
+// ============================================================================
+//  VLAN Setting Enum Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+		 Description("IANet_VLANSettingEnum objectifies VLAN related "
+		 "driver and network device settings. IANet_VLANSettingEnum " 
+		 "specifically handles Enumeration settings"):Amended,  LOCALE(0x409)
+		]
+class IANet_VLANSettingEnum : IANet_VLANSetting
+{
+		[Description(
+		 "PossibleValues is an array of the possible values allowed for the enum."):Amended
+		]	
+	sint64 PossibleValues[];
+		
+		[Description(
+		 "DescriptionMap describes what each value means."):Amended
+		]	
+	string DescriptionMap[];
+		
+		[write, Description(
+		 "CurrentValue is the current setting for this parameter."):Amended
+		]	 
+	sint64 CurrentValue;
+
+	[write, Description("RegistryValue is the current setting for this parameter."):Amended]	 
+	sint64 RegistryValue;
+		
+		[Description(
+		 "DefaultValue is the initial setting for this value."):Amended
+		]
+	sint64 DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  VLAN Setting Slider Class
+// ============================================================================
+    [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+    Description("IANet_VLANSettingSlider objectifies VLAN related "
+    "driver and network device settings. IANet_VLANSettingSlider " 
+    "specifically handles Slider settings"):Amended,  LOCALE(0x409)
+    ]
+class IANet_VLANSettingSlider : IANet_VLANSetting
+{
+		[Description(
+		 "PossibleValues is an array of all the possible values.  The values "
+		 "should be arranged with the first value on the left of the slider and "
+		 "the last value on the right. "):Amended
+		]
+	sint64 PossibleValues[];
+		[write, Description(
+		 "CurrentValue is the current setting for this parameter."):Amended
+		] 
+	sint64 CurrentValue;
+
+		[Description(
+		 "DefaultValue is the initial setting for this parameter."):Amended
+		]
+	sint64 DefaultValue;
+		
+		[Description(
+		 "FirstLabel is the label that should be displayed on the left of the slider."):Amended
+		]
+	string FirstLabel;
+		[Description(
+		 "LastLabel is the label that should be displayed on the right of the slider."):Amended
+		]
+	string LastLabel;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateSettingModification
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  VLAN Setting Multi Selection Class
+// ============================================================================
+    [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+    Description("IANet_VLANSettingMultiSelection objectifies VLAN related "
+    "driver and network device settings. IANet_VLANSettingMultiSelection " 
+    "specifically handles Multi Selection settings."):Amended,  LOCALE(0x409)
+    ]
+
+class IANet_VLANSettingMultiSelection : IANet_VLANSetting
+{
+		[Description(
+		 "PossibleValues is an array of all the possible selections."):Amended
+		]
+	sint64 PossibleValues[];
+		[Description(
+		 "DescriptionMap is an array of descriptions of the possible selections."):Amended
+		]
+	string DescriptionMap[];
+		[write, Description(
+		 "Current value is a bit-wise OR of the currently chosen options from the "
+		 "possible values."):Amended
+		] 
+	sint64 CurrentValue;
+
+		[write, Description(
+		 "Default value is a bit-wise OR of the default options from the "
+		 "possible values."):Amended	
+		] 
+	sint64 DefaultValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();	
+};
+
+// ============================================================================
+//  VLAN Setting String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+		 Description("IANet_VLANSettingString objectifies VLAN related "
+		 "driver and network device settings. IANet_VLANSettingString " 
+		 "specifically handles String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_VLANSettingString : IANet_VLANSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+		[write, Description("CurrentString is the current value for the parameter."):Amended] 
+	string  CurrentValue;
+
+	[write, Description("RegistryValue is the current value for the parameter."):Amended] 
+	string  RegistryValue;
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] string CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  VLAN Setting Multi-String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll"),  
+		 Description("IANet_VLANSettingMultiString objectifies MultiVLAN related "
+		 "driver and network device settings. IANet_VLANSettingString " 
+		 "specifically handles multi-String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_VLANSettingMultiString : IANet_VLANSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+		[write, Description("CurrentString is the current values for the parameter."):Amended] 
+	string  CurrentValues[];
+
+	[write, Description("RegistryValue are the current values for the parameter."):Amended] 
+	string  RegistryValue[];
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue[];
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] string CurrentValues [], 
+		[IN] string DisplayValues [], 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+
+// ============================================================================
+// IANet_VLANToSettingAssoc class
+// ============================================================================
+[   Association, Description("This class associates Intel NICs with their respective settings.")
+                :Amended,  LOCALE(0x409),
+    Dynamic,
+    Provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Vlan.dll")
+]
+class IANet_VLANToVLANSettingAssoc  : CIM_ElementSetting
+{
+   [  Override("Element"),
+      Description ("The VLAN to which the Setting object belongs."):Amended
+   ]
+   IANet_VLAN REF Element = NULL;
+   [  Override("Setting"),
+      Description ("The Setting belonging to the VLAN."):Amended
+   ]
+   IANet_VLANSetting REF Setting = NULL;
+};
+
+
+
+

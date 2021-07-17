@@ -1,0 +1,22 @@
+
+Image versions in BootIMG.FLB
+
+    Combo Image Version Name 1.808.0
+
+    Combo Rules                    v3.67.00
+    Clp-Loader Option ROM          v3.0.09
+    40G Interface Module           v0.4.02
+    iSCSI Option ROM               v3.0.23
+    iSCSI Setup Option ROM         v3.0.23
+    FCoE Option ROM                v1.8.17
+    Intel(R) Boot Agent FE         v4.2.08
+    Intel(R) Boot Agent GE         v1.5.53
+    Intel(R) Boot Agent XE         v2.3.24
+    UEFI x64 PCI gigabit driver    v3.5.22
+    UEFI x64 PCI-E gigabit driver  v6.2.08
+    UEFI x64 10 gigabit driver     v4.4.11
+    UEFI IA64 PCI gigabit driver   v3.5.22
+    UEFI IA64 PCI-E gigabit driver v6.2.08
+    UEFI IA64 10 gigabit driver    v4.4.11
+    OCD Option ROM                 v0.9.01
+    UEFI x64 FCoE Driver           v1.0.00

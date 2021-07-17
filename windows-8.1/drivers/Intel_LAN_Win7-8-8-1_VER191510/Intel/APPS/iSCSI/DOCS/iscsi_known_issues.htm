@@ -1,0 +1,268 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Known Issues</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Known Issues</h1>
+<h3>Windows Known Issues</h3>
+
+
+<ul>	
+
+  <li>
+	<h4>Microsoft Initiator does not boot without link on 
+	boot port: </h4>
+	<p>After setting up the system for Intel&reg; Ethernet iSCSI  Boot with two 
+    ports connected to a target and successfully booting the system, if you 
+    later try to boot the system with only the secondary boot port connected to 
+    the target, Microsoft Initiator will continuously reboot the system.</p>
+    <p>To work around this limitation follow these steps:</p>
+	<ol>
+	  <li>Using Registry Editor, expand the following registry key:<br />
+      &nbsp;&nbsp;&nbsp;HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Tcpip\Parameters</li>
+	  <li>Create a DWORD value called DisableDHCPMediaSense and set the value to 0.</li>
+	</ol>
+
+  <li>
+	<h4>Moving iSCSI adapter to a different slot:</h4>
+	<p>In a Windows* installation, if you move the iSCSI adapter to a PCI slot 
+    other than the one that it occupied when the drivers and MS iSCSI Remote Boot
+     Initiator were installed, then a System Error may occur during the middle
+     of the Windows Splash Screen. This issue goes away if you return the adapter 
+     to its original PCI slot. We recommend not moving the adapter used for 
+     iSCSI boot installation. This is a known OS issue.</p>
+	<p>If you have to move the adapter to another slot, then perform the
+    following:</p>
+	<ol>
+		<li> Boot the operating system and  remove the old adapter</li>
+		<li>Install a new adapter into another slot</li>
+		<li>Setup the new adapter for iSCSI  Boot</li>
+		<li>Perform iSCSI boot to the OS via the original adapter</li>
+		<li>Make the new adapter iSCSI-bootable to the OS</li>
+		<li>Reboot</li>
+		<li>Move the old adapter into another slot</li>
+		<li>Repeat steps 2 - 5 for the old adapter you have just moved</li>
+	</ol>
+  </li>
+
+	<li>
+	<h4>Uninstalling Driver can cause blue screen</h4>
+	<p>If the driver for the device in use for iSCSI  Boot is 
+	uninstalled via Device Manager, Windows will blue screen on reboot and the 
+	OS will have to be re-installed. This is a known Windows issue.</p>
+  </li>
+  
+	<li>
+	<h4>Adapters flashed with iSCSI image are not removed from the Device 
+	Manager during uninstall </h4>
+	<p>During uninstallation all other Intel Network Connection Software is 
+  	removed, but drivers for iSCSI  Boot adapters that have boot priority. </p>
+  </li>
+  
+	<li>
+	<h4>I/OAT Offload may stop with Intel&reg; Ethernet iSCSI  Boot or 
+	with Microsoft Initiator installed </h4>
+	<p>A workaround for this issue is to change the following registry value 
+		to &quot;0&quot;:</p>
+	<p>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\IOATDMA\Start</p>
+	<p>Only change the registry value if iSCSI  Boot is enabled and if you 
+		want I/OAT offloading. A blue screen will occur if this setting is 
+		changed to &quot;0&quot; when iSCSI  Boot is not enabled. It must 
+        be set back to &quot;3&quot; if iSCSI  Boot is disabled or a blue 
+        screen will occur on reboot.</p>
+	</li>
+    
+  <li>
+    <h4>NDIS Driver May Not Load During iSCSI Boot F6 Install With Intel&reg; 
+	PRO/1000 PT Server Adapter</h4>
+	<p>If you are using two Intel&reg; PRO/1000 PT Server Adapters in two PCI 
+  	Express x8 slots of a rack mounted Xeon system, Windows installation 
+  	can be done only via a local HDD procedure. </p>
+  </li>
+    
+	<li>
+	<h4>Invalid CHAP Settings May Cause Windows&reg; Server 2008 to Blue Screen</h4>
+	<p>If an iSCSI Boot port CHAP user name and secret do not match the target 
+	CHAP user name and secret, Windows Server 2008 may blue screen or reboot 
+	during installation or boot. Ensure that all CHAP settings match those set 
+	on the target(s).</p>
+	</li>
+
+	<li>
+	<h4>F6 Driver Does Not Support Standby Mode. </h4>
+	<p>If you are performing an F6 Windows without a Local Disk installation, do 
+	not use Standby Mode.</p>
+    </li>
+    
+	<li>
+	<h4>Microsoft* Windows Server* 2008 Installation When Performing a WDS Installation</h4>
+	<p>If you perform a WDS installation and attempt to manually update drivers during 
+	the installation, the drivers load but the iSCSI Target LUN does not display 
+	in the installation location list. This is a known WDS limitation with no 
+	current fix. You must therefore either perform the installation from a DVD 
+	or USB media or inject the drivers on the WDS WinPE image.</p>
+	<p>Microsoft has published a knowledge base case explaining the limitation 
+	in loading drivers when installing with iSCSI Boot via a WDS server.<br />
+	http://support.microsoft.com/kb/960924</p>
+	</li>
+    
+  <li>
+	<h4>iSCSI Boot and Teaming in Windows</h4>
+	<p>Teaming is not supported with iSCSI Boot. Creating a team 
+		using the primary and secondary iSCSI adapters and selecting that team 
+		during the Microsoft initiator installation may fail with constant 
+		reboots. Do not select a team for iSCSI Boot, even if it is available 
+	  for selection during initiator installation. </p>
+  	<p>For load balancing and failover support, you can use MSFT MPIO 
+	  instead. Check the Microsoft Initiator User Guide on how to setup MPIO.</p>
+  </li>
+
+	<li>
+	  <h4>Setting LAA (Locally Administered Address) on an iSCSI Boot-Enabled Port 
+	    Will Cause System Failure on Next Reboot</h4>
+	  <p>Do not set LAA on ports with iSCSI Boot enabled.</p>
+    </li>
+	
+
+	<li>
+	<h4>F6 installation may fail with some EMC targets</h4>
+	<p>An F6 installation may fail during the reboot in step 
+	  10 of “Installing Windows 2003 without a Local Disk” because of a conflict 
+ 	 between the Intel F6 driver, the Microsoft iSCSI Initiator and the following 
+ 	 EMC target model firmware versions:</p>
+	
+    <blockquote>
+    	AX4-5 arrays:&nbsp; 02.23.050.5.705 or higher<br />
+		CX300, CX500, CX700, and CX-3 Series arrays:&nbsp; 03.26.020.5.021 or higher.<br />
+		CX-4 Series arrays: 04.28.000.5.701 or higher, including all 
+        04.29.000.5.xxx revisions.
+	</blockquote>
+    
+	<p>To avoid the failure, ensure that the secondary iSCSI 
+	port cannot reach the target during the reboot in step 10.</p>
+  </li>
+  
+  <li>
+    <h4>With high iSCSI traffic on Microsoft* Windows 2003 Server* R2, link 
+    flaps can occur with 82598-based silicon</h4>
+	<p>This issue is caused by the limited support for Large Send Offload (LSO) 
+  	in this Operating System. Please note that if ISCSI traffic is required for 
+  	Windows 2003 Server R2, LSO will be disabled.</p>
+  </li>
+  
+  <li>
+    <h4>Intel&reg; Ethernet iSCSI Boot version does not match between 
+	displayed verions on DMIX and the scrolling 
+	text during boot</h4>
+    <p>If a device is not set to primary but is enumerated first, the BIOS will 
+    	still use that device's version of iSCSI Boot.
+	Therefore the user may end up using an earlier version of Intel&reg; Ethernet 
+	iSCSI Boot than expected. The solution is that all devices in the system 
+    	must have the same version of iSCSI Boot. 
+	To do this the user should go to the Boot Options Tab and update the 
+	devices' flash to the latest version.</p>
+  </li>
+
+</ul>
+
+<ul>
+  <li><h4>IPv6 iSCSI login to Dell EqualLogic arrays using jumbo frames</h4>
+<p>To establish an iSCSI session using IPv6 and jumbo frames with Dell EqualLogic arrays, TCP/UDP checksum offloads on the Intel iSCSI adapter should be disabled.</p></li>
+</ul>
+
+<h3>iSCSI/DCB Known Issues</h3>
+
+<ul>
+  <li>
+	<h4>iSCSI over DCB using Microsoft* Windows Server* 2012</h4>
+        <p>iSCSI over DCB (priority tagging) is not possible on the port on which 
+  	VMSwitch is created. This is is by design in Microsoft* Windows Server* 2012.</p>
+  </li>
+
+	<li><h4>Automatic creation of iSCSI traffic filters for DCB is only supported on 
+	networks which make use of IPv4 addressing</h4>
+	<p>The iSCSI for Data Center Bridging (DCB) feature uses Quality of Service 
+  	(QOS) traffic filters to tag outgoing packets with a priority. The Intel 
+  	iSCSI Agent dynamically creates these traffic filters as needed on networks 
+  	using IPv4 addressing. </p>
+	</li>
+
+  <li><h4>Automatic creation of iSCSI traffic filters for DCB, using Virtual Adapters 
+	created by Hyper-V, is only supported on Microsoft* Windows Server* 2008 
+	releases R2 and later.</h4>
+    <p>The iSCSI for Data Center Bridging (DCB) feature uses Quality of Service 
+	(QOS) traffic filters to tag outgoing packets with a priority. The Intel 
+	iSCSI Agent dynamically creates these traffic filters as needed for Windows 
+  	Server 2008 R2 and later.</p>
+  </li>
+  <li>
+        <h4>IPv6 iSCSI login to Dell EqualLogic arrays using jumbo frames</h4>
+        <p>To establish an iSCSI session using IPv6 and jumbo frames with Dell EqualLogic arrays, TCP/UDP checksum                 offloads on the Intel iSCSI adapter should be disabled.</p>
+  </li>
+</ul>
+
+<h3>Linux Known Issues</h3>
+  <ul>
+	<li>
+	  <h4>Authentications errors on EqualLogic target may show up in dmesg 
+      when running Red Hat* Enterprise Linux 4 </h4>
+	<p>These error messages do not indicate a block in login or booting and may 
+    safely be ignored.</p>
+    </li>
+
+	<li>
+  		<h4>Channel Bonding </h4>
+		<p>Linux Channel Bonding has basic compatibility issues with iSCSI 
+        Boot and should not be used.</p>
+    </li>
+	
+    <li>
+	<h4>iBFT System using RHEL 5.2</h4>
+	<p>In an iBFT system using RHEL 5.2, Anaconda does not automatically start 
+	networking upon installation. The user has to manually bring up networking 
+	through a console. Please refer to the RedHat documentation for details on 
+	how to manually force up the network.</p>	
+    </li>
+
+	<li>
+	<h4>CHAP Support with RHEL 5.2</h4>
+	<p>RHEL 5.2 does not support CHAP during installation time. If you use CHAP 
+	authentication on the target, please disable CHAP during installation and 
+	enable it after the installation is complete.</p>
+    </li>
+	
+	<li>
+	<h4>RHEL 5.1</h4>
+	<p>On RHEL5.1 systems, the wrong network interface is brought up on the 
+	first iSCSI Boot after installation. This causes the system to hang and 
+	requires a reinstallation at the very least. The workaround for this issue 
+	is to edit the init script soon after installation and change the interface 
+	you wish to bring up. We strongly encourage our users to use RHEL5.2 to 
+	avoid this issue.</p>
+	</li>
+
+   	<li>
+	<h4>LRO and iSCSI Incompatibility</h4>
+	<p>LRO (Large Receive Offload) is incompatible with iSCSI target or initiator 
+	traffic. A panic may occur when iSCSI traffic is received through the ixgbe 
+	driver with LRO enabled. To workaround this, the driver should be built and 
+	installed with:</p>
+	<blockquote># make CFLAGS_EXTRA=-DIXGBE_NO_LRO install</blockquote>
+	</li>
+
+	<li><h4>RHEL 5.X </h4>
+	<p>From a remote LUN, iSCSI boot only works on the same port 
+	that was used to install to the remote LUN. You cannot boot from an 
+	alternate LAN port after iSCSI is install.</p>
+        </li>
+  </ul>
+
+</body>
+</html>

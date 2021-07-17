@@ -1,0 +1,1979 @@
+-- /*****************************************************************************
+-- **                                                                          **
+-- **  Copyright 2007 2013 Intel Corporation All Rights Reserved.              **
+-- **                                                                          **
+-- **  The material contained or described herein and all documents related    **
+-- **  to such material ("Material") is owned by Intel Corporation or its      **
+-- **  suppliers or licensors, and title to such Material remains with Intel   **
+-- **  Corporation or its suppliers or licensors. The Material contains        **
+-- **  proprietary information of Intel or its suppliers and licensors. The    **
+-- **  Material is protected by worldwide copyright laws and treaty            **
+-- **  provisions. No part of the Material may be used, copied, reproduced,    **
+-- **  modified, published, uploaded, posted, transmitted, distributed or      **
+-- **  disclosed in any way without Intel's prior express written permission.  **
+-- **  No license under any patent, copyright or other intellectual property   **
+-- **  rights in the Material is granted to or conferred upon you, either      **
+-- **  expressly, by implication, inducement, estoppel or otherwise. Any       **
+-- **  license under such intellectual property rights must be express and     **
+-- **  approved by Intel in writing.                                           **
+-- **                                                                          **
+-- **  Unless otherwise agreed by Intel in writing, you may not remove or      **
+-- **  alter this notice or any other notice embedded in Materials by Intel    **
+-- **  or Intel’s suppliers or licensors in any way.                           **
+-- *****************************************************************************/
+
+-- FILE: INTELDCB.MIB
+-- MIB Version = 1.15.0.0
+--
+-- For general information and support, go to the Intel support website at:
+-- <http://support.intel.com>
+--
+
+INTEL-DCB-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+
+    enterprises
+        FROM RFC1155-SMI
+    MODULE-IDENTITY,
+    OBJECT-TYPE,
+    NOTIFICATION-TYPE,
+    Counter64,
+    Integer32
+        FROM SNMPv2-SMI
+    TEXTUAL-CONVENTION,
+    DisplayString
+        FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP,
+    NOTIFICATION-GROUP
+        FROM SNMPv2-CONF
+    physicalAdapterIndex
+        FROM INTEL-LAN-ADAPTERS-MIB
+        ;
+
+
+inteldcblan   MODULE-IDENTITY
+  LAST-UPDATED "201302110000Z"  -- Feb 11, 2013
+  ORGANIZATION "Intel Corp"
+  CONTACT-INFO
+         "Intel Corp
+          http://www.intel.com/"
+  DESCRIPTION
+          "The MIB module for Intel DCB SNMP agent."
+
+  REVISION    "201302110000Z"   -- Feb 11, 2013
+  DESCRIPTION
+          "Version 1.15.0
+           Correct DcbVersion ranges"
+
+  REVISION    "201210310000Z"   -- Oct 31, 2012
+  DESCRIPTION
+          "Version 1.14.0
+           Corrected Enterprise ID"
+
+  REVISION    "201206150000Z"   -- Jun 15, 2012
+  DESCRIPTION
+          "Version 1.12.0
+           Corrected DISPLAY-HINTS for OCTET STRINGS"
+
+  ::= { enterprises 3183 }
+
+
+-- Categories
+
+intel               OBJECT IDENTIFIER ::= { enterprises 343 }
+products            OBJECT IDENTIFIER ::= { intel 2 }
+nic-products        OBJECT IDENTIFIER ::= { products 7 }
+intel-lan-adapters  OBJECT IDENTIFIER ::= { nic-products 2 }
+intel-dcb           OBJECT IDENTIFIER ::= { nic-products 3 }
+
+
+InterfaceIndex ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "d"
+    STATUS       current
+    DESCRIPTION
+            "A unique value, greater than zero, for each interface or
+            interface sub-layer in the managed system.  It is
+            recommended that values are assigned contiguously starting
+            from 1.  The value for each interface sub-layer must remain
+            constant at least from one re-initialization of the entity's
+            network management system to the next re-initialization."
+    SYNTAX       Integer32 (1..2147483647)
+
+Ables ::= TEXTUAL-CONVENTION
+    STATUS       current
+    DESCRIPTION
+            "A value defining disable or enable"
+    SYNTAX       INTEGER {disable(0), enable(1)}
+
+DcbPgFormat	::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "1x"
+    STATUS       current
+    DESCRIPTION
+         "A structure of 40 octets representing the Priority Group (PG) settings.
+          - The first 8 octets represent the % (0..100) of link bandwidth assigned
+            to the 8 Bandwidth Groups (BWG) (0..7).  The index into the 8 octets is the
+            BWG ID.
+          - The other 32 octets represent an array of eight 4-octet elements.  The
+            index into the array is the User Priority (UP) (0..7).
+            The four octets in each array element represent the following:
+            Octet 1 is the Traffic Class (0..7) mapping of the UP.
+            Octet 2 is the BWG ID (0..7) of the UP.
+            Octet 3 is the % (0..100) of the BWG bandwidth assigned to the UP.
+            Octet 4 is the strict priority setting of the UP. Which can be:
+              0 - normal
+              1 - group strict (SubType 1 only)
+              2 - link strict
+          - NOTE: Octet 3 is only supported by DCBX protocol SubType 1. In SubType
+             2 all UPs assigned to a given BWG ID will be assigned an equal %."
+    SYNTAX       OCTET STRING ( SIZE (40) )
+
+DcbPfcFormat	::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "1x"
+    STATUS       current
+    DESCRIPTION
+        "An array of 8 octets representing the Priority Flow
+         Control (PFC) settings for the 8 User Priorities.
+         Each octet can take on the values:
+                    disabled (0x0),
+                    enabled (0x1)
+         The index into the 8 octets is User Priority."
+    SYNTAX       OCTET STRING ( SIZE (8) )
+    
+DcbMapFormat	::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "1x"
+    STATUS       current
+    DESCRIPTION
+        "An array of 8 octets representing the Traffic Class 
+         mapping for the 8 User Priorities.
+         Each octet can take on the values:
+                    (0x00) through enabled (0x08)
+         The index into the 8 octets is User Priority."
+    SYNTAX       OCTET STRING ( SIZE (8) )
+
+DcbUpAbleFormat	::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "1x"
+    STATUS       current
+    DESCRIPTION
+        "An array of 8 octets representing feature enablement
+         for the 8 User Priorities.
+         Each octet can take on the values:
+                    disabled (0x0),
+                    enabled  (0x1)
+         The index into the 8 octets is User Priority."
+    SYNTAX       OCTET STRING ( SIZE (8) )
+
+-- ****************************************
+-- Data Center Bridging Attr Tables
+-- ****************************************
+dcbTables OBJECT IDENTIFIER ::= { intel-dcb 1 }
+
+dcbConfigTables OBJECT IDENTIFIER ::= { dcbTables 1 }
+
+-- *********************************************************************
+-- Data Center Bridging Attr Tables - DcbConfig
+-- DCB Configuration
+-- *********************************************************************
+dcbConfigTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "General configuration parameters for DCB for all ports."
+    ::= { dcbConfigTables 1 }
+
+dcbConfigEntry OBJECT-TYPE
+    SYNTAX		DcbConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "DCB attributes common to all physical adapters.
+        There is one 'entry' for each adapter."
+    INDEX		{ physicalAdapterIndex }
+    ::= { dcbConfigTable 1 }
+
+DcbConfigEntry ::= SEQUENCE {
+    dcbConfigEnable                   Ables,
+    dcbVersion                        Integer32,
+    dcbOsControlledEnable             Ables
+}
+
+dcbConfigEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the DCB on the associated physical adapter."
+    ::= { dcbConfigEntry 1 }
+
+dcbVersion  OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 3)
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Specifies the DCBX TLV version to be transmitted and processed by DCBX
+         0 - Enables version detection and support for CEE and IEEE DCBX
+         1 - Enables Pre-CEE DCBX TLVs
+		 2 - Enables CEE DCBX TLVs
+		 3 - Enables IEEE DCBX TLVs
+		"
+    ::= { dcbConfigEntry 2 }
+
+dcbOsControlledEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the ability for the OS to Control DCB configuration."
+    ::= { dcbConfigEntry 3 }
+
+-- *********************************************************************
+-- Data Center Bridging Attr Tables - PgConfig
+-- Priority Groups Configuration
+-- *********************************************************************
+dcbPgConfigTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPgConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Configuration parameters for the Priority Groups DCB feature
+         for all ports."
+    ::= { dcbConfigTables 2 }
+
+dcbPgConfigEntry OBJECT-TYPE
+    SYNTAX		DcbPgConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Groups attributes common to all physical adapters.
+        There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbPgConfigTable 1 }
+
+DcbPgConfigEntry ::= SEQUENCE {
+    dcbPgConfigEnable                   Ables,
+    dcbPgConfigWilling                  Ables,
+    dcbPgConfigAdvertise                Ables,
+    dcbPgConfigBandwidths               DcbPgFormat,
+    dcbPgConfigNumTCs                   Integer32,
+    dcbPgConfigRecBandwidths            DcbPgFormat,
+    dcbPgConfigRecEnable                Ables
+}
+
+dcbPgConfigEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the Priority Group feature."
+    ::= { dcbPgConfigEntry 1 }
+
+dcbPgConfigWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the Willing parameter for the Priority
+         Group feature.  Enabled indicates that the local port will
+         accept Priority Group parameters from a not Willing (disabled)
+         peer port."
+    ::= { dcbPgConfigEntry 2 }
+
+dcbPgConfigAdvertise OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables Priority Group parameter exchange via DCB
+         Capabilities Exchange protocol."
+    ::= { dcbPgConfigEntry 3 }
+
+dcbPgConfigBandwidths OBJECT-TYPE
+    SYNTAX		DcbPgFormat
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+         "A structure of 40 octets representing the Priority Group (PG) settings.
+          - The first 8 octets represent the % (0..100) of link bandwidth assigned
+            to the 8 Bandwidth Groups (BWG) (0..7).  The index into the 8 octets is the
+            BWG ID.
+          - The other 32 octets represent an array of eight 4-octet elements.  The
+            index into the array is the User Priority (UP) (0..7).
+            The four octets in each array element represent the following:
+            Octet 1 is the Traffic Class (0..7) mapping of the UP.
+            Octet 2 is the BWG ID (0..7) of the UP. Use BWG ID 15 to assign UP to link strict group.
+            Octet 3 is the % (0..100) of the BWG bandwidth assigned to the UP.
+            Octet 4 is the strict priority setting of the UP. Which can be:
+              0 - normal
+              1 - group strict (SubType 1 only)
+              2 - link strict
+          - NOTE: Octet 3 is only supported by DCBX protocol SubType 1. In SubType
+             2 all UPs assigned to a given BWG ID will be assigned an equal %."
+    ::= { dcbPgConfigEntry 4 }
+
+dcbPgConfigNumTCs  OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 32)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of TCs capable of supporting PG."
+    ::= { dcbPgConfigEntry 5 }
+    
+dcbPgConfigRecBandwidths OBJECT-TYPE
+    SYNTAX		DcbPgFormat
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "A structure of 40 octets representing the remote Recommended Priority Group (PG) settings.
+         (Supported only in IEEE operation)
+          - The first 8 octets represent the % (0..100) of link bandwidth assigned
+            to the 8 Bandwidth Groups (BWG) (0..7).  The index into the 8 octets is the
+            BWG ID.
+          - The other 32 octets represent an array of eight 4-octet elements.  The
+            index into the array is the User Priority (UP) (0..7).
+            The four octets in each array element represent the following:
+            Octet 1 is the Traffic Class (0..7) mapping of the UP.
+            Octet 2 is the BWG ID (0..7) of the UP. Use BWG ID 15 to assign UP to link strict group.
+            Octet 3 is unused.
+            Octet 4 is the strict priority setting of the UP. Which can be:
+              0 - normal
+              2 - link strict
+		"
+    ::= { dcbPgConfigEntry 6 }
+
+dcbPgConfigRecEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the remote Priority Group Recommended TLV.
+         (Supported only in IEEE operation)
+		"
+    ::= { dcbPgConfigEntry 7 }
+
+-- *********************************************************************
+-- Data Center Bridging Attr Tables - PgBwgConfig
+-- Priority Groups Bandwidth Group Configuration
+-- *********************************************************************
+dcbPgBwgNameTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPgBwgNameEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "The user supplied name associated with each bandwidth group."
+    ::= { dcbConfigTables 3 }
+
+dcbPgBwgNameEntry OBJECT-TYPE
+    SYNTAX		DcbPgBwgNameEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Bandwidth group names per port.
+        There is one 'entry' for each interface."
+    INDEX		{physicalAdapterIndex, dcbPgBwgId}
+    ::= { dcbPgBwgNameTable 1 }
+
+DcbPgBwgNameEntry ::= SEQUENCE {
+    dcbPgBwgId                          Integer32,
+    dcbPgBwgName                        DisplayString
+}
+
+dcbPgBwgId  OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 7)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The Bandwidth Group ID number."
+    ::= { dcbPgBwgNameEntry 1 }
+
+dcbPgBwgName	 OBJECT-TYPE
+    SYNTAX		DisplayString
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "The user supplied name for the Bandwidth Group."
+    ::= { dcbPgBwgNameEntry 2 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - PfcConfig
+-- Priority Flow Control Configuration
+-- ************************************************************************
+dcbPfcConfigTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPfcConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control (PFC) attributes of DCB capable physical
+         adapters."
+    ::= { dcbConfigTables 4 }
+
+dcbPfcConfigEntry OBJECT-TYPE
+    SYNTAX		DcbPfcConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control (PFC) settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbPfcConfigTable 1 }
+
+DcbPfcConfigEntry ::= SEQUENCE {
+    dcbPfcConfigEnable             Ables,
+    dcbPfcConfigWilling            Ables,
+    dcbPfcConfigAdvertise          Ables,
+    dcbPfcConfigSettings           DcbPfcFormat,
+    dcbPfcConfigNumTCs             Integer32
+}
+
+dcbPfcConfigEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the Priority Flow Control feature."
+    ::= { dcbPfcConfigEntry 1 }
+
+dcbPfcConfigWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the Willing parameter for the Priority
+         Flow Control feature.  Enabled indicates that the local port will
+         accept Priority Flow Control parameters from a not Willing (disabled)
+         peer port."
+    ::= { dcbPfcConfigEntry 2 }
+
+dcbPfcConfigAdvertise OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the advertising Priority Flow Control
+         parameters for this port to the peer via the protocol."
+    ::= { dcbPfcConfigEntry 3 }
+
+dcbPfcConfigSettings OBJECT-TYPE
+    SYNTAX		DcbPfcFormat
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "The administrative Priority Flow Control (PFC) settings.
+         An array of 8 octets representing the PFC settings for the 8
+         User Priorities.  Each octet can take on the values:
+                    disabled (0x0),
+                    enabled (0x1)
+         The index into the 8 octets is User Priority.
+         "
+    ::= { dcbPfcConfigEntry 4 }
+
+dcbPfcConfigNumTCs  OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 32)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of TCs capable of supporting PFC."
+    ::= { dcbPfcConfigEntry 5 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - FcoeConfig
+-- FCoE Application Configuration
+-- ************************************************************************
+dcbFcoeConfigTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbFcoeConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "FCoE Application attributes of DCB capable physical adapters."
+    ::= { dcbConfigTables 5 }
+
+dcbFcoeConfigEntry OBJECT-TYPE
+    SYNTAX		DcbFcoeConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, dcbFcoeSubType}
+    ::= { dcbFcoeConfigTable 1 }
+
+DcbFcoeConfigEntry ::= SEQUENCE {
+    dcbFcoeConfigEnable             Ables,
+    dcbFcoeConfigWilling            Ables,
+    dcbFcoeConfigAdvertise          Ables,
+    dcbFcoeConfigData               OCTET STRING,
+    dcbFcoeConfigSelector           Integer32,
+    dcbFcoeConfigIdentifier         OCTET STRING
+}
+
+dcbFcoeConfigEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the FCoE Application feature."
+    ::= { dcbFcoeConfigEntry 1 }
+
+dcbFcoeConfigWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the Willing parameter for the FCoE
+         Application feature.  Enabled indicates that the local
+         port will accept FCoE Application parameters from a not
+         Willing (disabled) peer port."
+    ::= { dcbFcoeConfigEntry 2 }
+
+dcbFcoeConfigAdvertise OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the advertising FCoE Application
+         parameters for this port to the peer via the protocol."
+    ::= { dcbFcoeConfigEntry 3 }
+
+dcbFcoeConfigData OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (1) )
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "FCoE Application specific configuration."
+    ::= { dcbFcoeConfigEntry 4 }
+
+dcbFcoeConfigSelector OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 4)
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "The local selector to specify the method of identifying  FCoE traffic.
+         (Supported only in IEEE operation)
+             0x01 - Ethertype
+             0x02 - Well Known Port number over TCP, SCTP
+             0x03 - Well Known Port number over UDP, DCCP
+             0x04 - Well Known Port number over TCP, SCTP, UDP, DCCP
+         "
+    ::= { dcbFcoeConfigEntry 5 }
+    
+dcbFcoeConfigIdentifier OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (2) )
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "The local traffic identifier for the FCoE Application feature.
+         (Supported only in IEEE operation)
+         "
+    ::= { dcbFcoeConfigEntry 6 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - iScsiFcoeConfig
+-- iSCSI Application Configuration
+-- ************************************************************************
+
+dcbiScsiConfigTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbiScsiConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "iSCSI Application attributes of DCB capable physical adapters."
+    ::= { dcbConfigTables 7 }
+
+dcbiScsiConfigEntry OBJECT-TYPE
+    SYNTAX		DcbiScsiConfigEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, dcbiScsiSubType}
+    ::= { dcbiScsiConfigTable 1 }
+
+DcbiScsiConfigEntry ::= SEQUENCE {
+    dcbiScsiConfigEnable             Ables,
+    dcbiScsiConfigWilling            Ables,
+    dcbiScsiConfigAdvertise          Ables,
+    dcbiScsiConfigData               OCTET STRING,
+    dcbiScsiConfigSelector           Integer32,
+    dcbiScsiConfigIdentifier         OCTET STRING
+}
+
+dcbiScsiConfigEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the iSCSI Application feature."
+    ::= { dcbiScsiConfigEntry 1 }
+
+dcbiScsiConfigWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the Willing parameter for the iSCSI
+         Application feature.  Enabled indicates that the local
+         port will accept iSCSI Application parameters from a not
+         Willing (disabled) peer port."
+    ::= { dcbiScsiConfigEntry 2 }
+
+dcbiScsiConfigAdvertise OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enables or Disables the advertising iSCSI Application
+         parameters for this port to the peer via the protocol."
+    ::= { dcbiScsiConfigEntry 3 }
+
+dcbiScsiConfigData OBJECT-TYPE
+    SYNTAX		OCTET STRING  ( SIZE (1) )
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "iSCSI Application specific configuration.
+         "
+    ::= { dcbiScsiConfigEntry 4 }
+
+dcbiScsiConfigSelector OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 4)
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "The local selector to specify the method of identifying  iSCSI traffic.
+         (Supported only in IEEE operation)
+             0x01 - Ethertype
+             0x02 - Well Known Port number over TCP, SCTP
+             0x03 - Well Known Port number over UDP, DCCP
+             0x04 - Well Known Port number over TCP, SCTP, UDP, DCCP
+         "
+    ::= { dcbiScsiConfigEntry 5 }
+    
+dcbiScsiConfigIdentifier OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (2) )
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "The local traffic identifier for the iSCSI Application feature.
+         (Supported only in IEEE operation)
+         "
+    ::= { dcbiScsiConfigEntry 6 }
+
+-- *********************************************************************
+-- Data Center Bridging Attr Tables - Operational Status
+-- *********************************************************************
+dcbOperTables OBJECT IDENTIFIER ::= { dcbTables 2 }
+
+-- ************************************************************************
+-- Data Center Bridging Operational Attr Tables - PgOper
+-- Priority Groups Operational Status
+-- ************************************************************************
+dcbPgOperTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPgOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Configuration parameters for the Priority Groups DCB feature
+         for all ports."
+    ::= { dcbOperTables 1 }
+
+dcbPgOperEntry OBJECT-TYPE
+    SYNTAX		DcbPgOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Groups attributes common to all physical adapters.
+        There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbPgOperTable 1 }
+
+DcbPgOperEntry ::= SEQUENCE {
+    dcbPgOperVersion                Integer32,
+    dcbPgOperMaxVersion             Integer32,
+    dcbPgOperError                  Integer32,
+    dcbPgOperMode                   Ables,
+    dcbPgOperSyncd                  Integer32,
+    dcbPgOperBandwidths             DcbPgFormat,
+    dcbPgOperMappingUPtoTC          DcbMapFormat
+}
+
+dcbPgOperVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational protocol version of the Priority Groups feature."
+    ::= { dcbPgOperEntry 1 }
+
+dcbPgOperMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The highest protocol version supported by the
+         implementation of the Priority Groups feature."
+    ::= { dcbPgOperEntry 2 }
+
+dcbPgOperError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Current error status of the Priority Groups feature.  Bits in the
+         Error value are defined as:
+             0x00 - no error
+             0x01 - feature mismatch with peer
+             0x02 - error setting feature configuration
+             0x04 - multiple feature TLVs received from peer
+             0x08 - peer error
+             0x10 - multiple LLDP neighbors present
+             0x20 - feature not present in peer tlv
+         "
+    ::= { dcbPgOperEntry 3 }
+
+dcbPgOperMode OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Operational status of the Priority Group feature.
+         "
+    ::= { dcbPgOperEntry 4 }
+
+dcbPgOperSyncd OBJECT-TYPE
+    SYNTAX		Integer32 (0..1)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Indicates the current synced state of the feature relative to
+         the peer device.
+         "
+    ::= { dcbPgOperEntry 5 }
+
+dcbPgOperBandwidths OBJECT-TYPE
+    SYNTAX		DcbPgFormat
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+         "A structure of 40 octets representing the Priority Group (PG) settings.
+          - The first 8 octets represent the % (0..100) of link bandwidth assigned
+            to the 8 Bandwidth Groups (BWG) (0..7).  The index into the 8 octets is the
+            BWG ID.
+          - The other 32 octets represent an array of eight 4-octet elements.  The
+            index into the array is the User Priority (UP) (0..7).
+            The four octets in each array element represent the following:
+            Octet 1 is the Traffic Class (0..7) mapping of the UP.
+            Octet 2 is the BWG ID (0..7) of the UP.
+            Octet 3 is the % (0..100) of the BWG bandwidth assigned to the UP.
+            Octet 4 is the strict priority setting of the UP. Which can be:
+              0 - normal
+              1 - group strict (SubType 1 only)
+              2 - link strict
+          - NOTE: Octet 3 is only supported by DCBX protocol SubType 1. In SubType
+             2 all UPs assigned to a given BWG ID will be assigned an equal %."
+    ::= { dcbPgOperEntry 6 }
+    
+dcbPgOperMappingUPtoTC OBJECT-TYPE
+    SYNTAX		DcbMapFormat
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+         "This field contains the operational mapping of UP to TC."
+    ::= { dcbPgOperEntry 7 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - PfcOper
+-- Priority Flow Control Operational Status
+-- ************************************************************************
+dcbPfcOperTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPfcOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control (PFC) attributes of DCB capable physical
+         adapters."
+    ::= { dcbOperTables 2 }
+
+dcbPfcOperEntry OBJECT-TYPE
+    SYNTAX		DcbPfcOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control (PFC) settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbPfcOperTable 1 }
+
+DcbPfcOperEntry ::= SEQUENCE {
+    dcbPfcOperVersion            Integer32,
+    dcbPfcOperMaxVersion         Integer32,
+    dcbPfcOperError              Integer32,
+    dcbPfcOperMode               Ables,
+    dcbPfcOperSyncd              Integer32,
+    dcbPfcOperSettings           DcbPfcFormat
+}
+
+dcbPfcOperVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational protocol version of the Priority Flow Control
+         feature."
+    ::= { dcbPfcOperEntry 1 }
+
+dcbPfcOperMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The highest protocol version supported by the
+         implementation of the Priority Flow Control feature."
+    ::= { dcbPfcOperEntry 2 }
+
+dcbPfcOperError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Current error status of the Priority Flow Control feature.  Bits in the
+         Error value are defined as:
+             0x00 - no error
+             0x01 - feature mismatch with peer
+             0x02 - error setting feature configuration
+             0x04 - multiple feature TLVs received from peer
+             0x08 - peer error
+             0x10 - multiple LLDP neighbors present
+             0x20 - feature not present in peer tlv"
+    ::= { dcbPfcOperEntry 3 }
+
+dcbPfcOperMode OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Operational status of the Priority Flow Control feature."
+    ::= { dcbPfcOperEntry 4 }
+
+dcbPfcOperSyncd OBJECT-TYPE
+    SYNTAX		Integer32 (0..1)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Indicates the current synced state of the feature relative to
+         the peer device."
+    ::= { dcbPfcOperEntry 5 }
+
+dcbPfcOperSettings OBJECT-TYPE
+    SYNTAX		DcbPfcFormat
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The administrative Priority Flow Control (PFC) settings.
+         An array of 8 octets representing the PFC settings for the 8
+         User Priorities.  Each octet can take on the values:
+                    disabled (0x0),
+                    enabled (0x1)
+         The index into the 8 octets is User Priority.
+         "
+    ::= { dcbPfcOperEntry 6 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - FcoeOper
+-- Application Operational Status
+-- ************************************************************************
+dcbFcoeOperTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbFcoeOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "FCoE Application attributes of DCB capable physical
+         adapters."
+    ::= { dcbOperTables 3 }
+
+dcbFcoeOperEntry OBJECT-TYPE
+    SYNTAX		DcbFcoeOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "FCoE Application settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, dcbFcoeSubType}
+    ::= { dcbFcoeOperTable 1 }
+
+DcbFcoeOperEntry ::= SEQUENCE {
+    dcbFcoeOperVersion            Integer32,
+    dcbFcoeOperMaxVersion         Integer32,
+    dcbFcoeOperError              Integer32,
+    dcbFcoeOperMode               Ables,
+    dcbFcoeOperSyncd              Integer32,
+    dcbFcoeOperData               OCTET STRING,
+    dcbFcoeSubType                Integer32,
+    dcbFcoeOperSelector           Integer32,
+    dcbFcoeOperIdentifier         OCTET STRING
+}
+
+dcbFcoeOperVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational protocol version of the FCoE
+         Application:subtype feature."
+    ::= { dcbFcoeOperEntry 1 }
+
+dcbFcoeOperMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The highest protocol version supported by the
+         implementation of the FCoE Application:subtype
+         feature."
+    ::= { dcbFcoeOperEntry 2 }
+
+dcbFcoeOperError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Current error status of the FCoE Application:subtype
+         feature.  Bits in the Error value are defined as:
+             0x00 - no error
+             0x01 - feature mismatch with peer
+             0x02 - error setting feature configuration
+             0x04 - multiple feature TLVs received from peer
+             0x08 - peer error
+             0x10 - multiple LLDP neighbors present
+             0x20 - feature not present in peer tlv"
+    ::= { dcbFcoeOperEntry 3 }
+
+dcbFcoeOperMode OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Operational status of the FCoE Application:subtype
+         feature."
+    ::= { dcbFcoeOperEntry 4 }
+
+dcbFcoeOperSyncd OBJECT-TYPE
+    SYNTAX		Integer32 (0..1)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Indicates the current synced state of the FCoE
+         Application feature relative to the peer device."
+    ::= { dcbFcoeOperEntry 5 }
+
+dcbFcoeOperData OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (1) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational FCoE Application specific configuration."
+    ::= { dcbFcoeOperEntry 6 }
+
+dcbFcoeSubType OBJECT-TYPE
+    SYNTAX		Integer32 (0..1)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Indicates the SubType of the FCoE Application feature."
+    ::= { dcbFcoeOperEntry 7 }
+
+dcbFcoeOperSelector OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 4)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational selector to specify the method of identifying  FCoE traffic.
+         (Supported only in IEEE operation)
+             0x01 - Ethertype
+             0x02 - Well Known Port number over TCP, SCTP
+             0x03 - Well Known Port number over UDP, DCCP
+             0x04 - Well Known Port number over TCP, SCTP, UDP, DCCP
+         "
+    ::= { dcbFcoeOperEntry 8 }
+    
+dcbFcoeOperIdentifier OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (2) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational traffic identifier for the FCoE Application feature.
+         (Supported only in IEEE operation)
+         "
+    ::= { dcbFcoeOperEntry 9 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - iScsiFcoeOper
+-- iSCSI Application Operational Status
+-- ************************************************************************
+dcbiScsiOperTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbiScsiOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "iSCSI Application attributes of DCB capable physical
+         adapters."
+    ::= { dcbOperTables 5 }
+
+dcbiScsiOperEntry OBJECT-TYPE
+    SYNTAX		DcbiScsiOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "iSCSI Application settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, dcbiScsiSubType}
+    ::= { dcbiScsiOperTable 1 }
+
+DcbiScsiOperEntry ::= SEQUENCE {
+    dcbiScsiOperVersion            Integer32,
+    dcbiScsiOperMaxVersion         Integer32,
+    dcbiScsiOperError              Integer32,
+    dcbiScsiOperMode               Ables,
+    dcbiScsiOperSyncd              Integer32,
+    dcbiScsiOperData               OCTET STRING,
+    dcbiScsiSubType                Integer32,
+    dcbiScsiOperSelector           Integer32,
+    dcbiScsiOperIdentifier         OCTET STRING
+}
+
+dcbiScsiOperVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational protocol version of the iSCSI
+         Application:subtype feature."
+    ::= { dcbiScsiOperEntry 1 }
+
+dcbiScsiOperMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The highest protocol version supported by the
+         implementation of the iSCSI Application:subtype
+         feature."
+    ::= { dcbiScsiOperEntry 2 }
+
+dcbiScsiOperError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Current error status of the iSCSI Application:subtype
+         feature.  Bits in the Error value are defined as:
+             0x00 - no error
+             0x01 - feature mismatch with peer
+             0x02 - error setting feature configuration
+             0x04 - multiple feature TLVs received from peer
+             0x08 - peer error
+             0x10 - multiple LLDP neighbors present
+             0x20 - feature not present in peer tlv"
+    ::= { dcbiScsiOperEntry 3 }
+
+dcbiScsiOperMode OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Operational status of the iSCSI Application:subtype
+         feature."
+    ::= { dcbiScsiOperEntry 4 }
+
+dcbiScsiOperSyncd OBJECT-TYPE
+    SYNTAX		Integer32 (0..1)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Indicates the current synced state of the iSCSI
+         Application feature relative to the peer device.
+         "
+    ::= { dcbiScsiOperEntry 5 }
+
+dcbiScsiOperData OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (1) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational iSCSI Application specific configuration."
+    ::= { dcbiScsiOperEntry 6 }
+
+dcbiScsiSubType OBJECT-TYPE
+    SYNTAX		Integer32 (0..1)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Indicates the SubType of the iSCSI Application feature."
+    ::= { dcbiScsiOperEntry 7 }
+
+dcbiScsiOperSelector OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 4)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational selector to specify the method of identifying  iSCSI traffic.
+         (Supported only in IEEE operation)
+             0x01 - Ethertype
+             0x02 - Well Known Port number over TCP, SCTP
+             0x03 - Well Known Port number over UDP, DCCP
+             0x04 - Well Known Port number over TCP, SCTP, UDP, DCCP
+         "
+    ::= { dcbiScsiOperEntry 8 }
+    
+dcbiScsiOperIdentifier OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (2) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The operational traffic identifier for the iSCSI Application feature.
+         (Supported only in IEEE operation)
+         "
+    ::= { dcbiScsiOperEntry 9 }
+
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - DcbOper
+-- DCB Operational Status
+-- ************************************************************************
+dcbOperTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "General configuration parameters for DCB for all physical adapters."
+    ::= { dcbOperTables 6 }
+
+dcbOperEntry OBJECT-TYPE
+    SYNTAX		DcbOperEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "DCB attributes common to all physical adapters.
+        There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbOperTable 1 }
+
+DcbOperEntry ::= SEQUENCE {
+    dcbOperVersion           Integer32
+}
+
+dcbOperVersion OBJECT-TYPE
+    SYNTAX		Integer32 (1..3)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The DCBX TLV version currently transmitted by DCBX
+         1 - Pre-CEE DCBX TLVs
+		 2 - CEE DCBX TLVs
+		 3 - IEEE DCBX TLVs
+		"
+    ::= { dcbOperEntry 1 }
+
+
+-- *********************************************************************
+-- Data Center Bridging Attr Tables - Peer Status
+-- *********************************************************************
+dcbPeerTables OBJECT IDENTIFIER ::= { dcbTables 3 }
+
+-- ************************************************************************
+-- Data Center Bridging Peer Attr Tables - PgPeer
+-- Priority Groups Peer Status
+-- ************************************************************************
+
+dcbPgPeerTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPgPeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Configuration parameters for the Priority Groups DCB feature
+         for all ports."
+    ::= { dcbPeerTables 1 }
+
+dcbPgPeerEntry OBJECT-TYPE
+    SYNTAX		DcbPgPeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Groups attributes common to all physical adapters.
+        There is one entry for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbPgPeerTable 1 }
+
+DcbPgPeerEntry ::= SEQUENCE {
+    dcbPgPeerEnable                 Ables,
+    dcbPgPeerWilling                Ables,
+    dcbPgPeerVersion                Integer32,
+    dcbPgPeerMaxVersion             Integer32,
+    dcbPgPeerError                  Integer32,
+    dcbPgPeerBandwidths             DcbPgFormat,
+    dcbPgPeerNumTCs                 Integer32
+}
+
+dcbPgPeerEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Enable state of the peer's Priority Group feature."
+    ::= { dcbPgPeerEntry 1 }
+
+dcbPgPeerWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Willing state of the peer's Priority Group feature."
+    ::= { dcbPgPeerEntry 2 }
+
+dcbPgPeerVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's operational protocol version of the Priority Groups feature."
+    ::= { dcbPgPeerEntry 3 }
+
+dcbPgPeerMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's highest protocol version supported by the
+         implementation of the Priority Groups feature."
+    ::= { dcbPgPeerEntry 4 }
+
+dcbPgPeerError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's error flag for the Priority Groups feature.
+         "
+    ::= { dcbPgPeerEntry 5 }
+
+dcbPgPeerBandwidths OBJECT-TYPE
+    SYNTAX		DcbPgFormat
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+         "A structure of 40 octets representing the Priority Group (PG) settings.
+          - The first 8 octets represent the % (0..100) of link bandwidth assigned
+            to the 8 Bandwidth Groups (BWG) (0..7).  The index into the 8 octets is the
+            BWG ID.
+          - The other 32 octets represent an array of eight 4-octet elements.  The
+            index into the array is the User Priority (UP) (0..7).
+            The four octets in each array element represent the following:
+            Octet 1 is undefined.
+            Octet 2 is the BWG ID (0..7) of the UP.
+            Octet 3 is the % (0..100) of the BWG bandwidth assigned to the UP.
+            Octet 4 is the strict priority setting of the UP. Which can be:
+              0 - normal
+              1 - group strict (SubType 1 only)
+              2 - link strict
+          - NOTE: Octet 3 is only supported by DCBX protocol SubType 1. In SubType
+             2 all UPs assigned to a given BWG ID will be assigned an equal %."
+    ::= { dcbPgPeerEntry 6 }
+
+dcbPgPeerNumTCs  OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 32)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of TCs capable of supporting PG."
+    ::= { dcbPgPeerEntry 7 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - PfcPeer
+-- Priority Flow Control Configuration
+-- ************************************************************************
+dcbPfcPeerTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPfcPeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control (PFC) attributes of DCB capable physical
+         adapters."
+    ::= { dcbPeerTables 2 }
+
+dcbPfcPeerEntry OBJECT-TYPE
+    SYNTAX		DcbPfcPeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control (PFC) settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex}
+    ::= { dcbPfcPeerTable 1 }
+
+DcbPfcPeerEntry ::= SEQUENCE {
+    dcbPfcPeerEnable                 Ables,
+    dcbPfcPeerWilling                Ables,
+    dcbPfcPeerVersion                Integer32,
+    dcbPfcPeerMaxVersion             Integer32,
+    dcbPfcPeerError                  Integer32,
+    dcbPfcPeerSettings               DcbPfcFormat,
+    dcbPfcPeerNumTCs                 Integer32
+}
+
+dcbPfcPeerEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Enable state of the peer's Priority Flow Control feature."
+    ::= { dcbPfcPeerEntry 1 }
+
+dcbPfcPeerWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Willing state of the peer's Priority Flow Control feature."
+    ::= { dcbPfcPeerEntry 2 }
+
+dcbPfcPeerVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's operational protocol version of the Priority Flow Control feature."
+    ::= { dcbPfcPeerEntry 3 }
+
+dcbPfcPeerMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's highest protocol version supported by the
+         implementation of the Priority Flow Control feature."
+    ::= { dcbPfcPeerEntry 4 }
+
+dcbPfcPeerError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's error flag for the Priority Flow Control feature.
+         "
+    ::= { dcbPfcPeerEntry 5 }
+
+dcbPfcPeerSettings OBJECT-TYPE
+    SYNTAX		DcbPfcFormat
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's Priority Flow Control (PFC) settings.
+         An array of 8 octets representing the PFC settings for the 8
+         User Priorities.  Each octet can take on the values:
+                    disabled (0x0),
+                    enabled (0x1)
+         The index into the 8 octets is User Priority.
+         "
+    ::= { dcbPfcPeerEntry 6 }
+
+dcbPfcPeerNumTCs  OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 32)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of TCs capable of supporting PFC."
+    ::= { dcbPfcPeerEntry 7 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - FcoePeer
+-- Application Configuration
+-- ************************************************************************
+dcbFcoePeerTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbFcoePeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Application attributes of DCB capable physical
+         adapters."
+    ::= { dcbPeerTables 3 }
+
+dcbFcoePeerEntry OBJECT-TYPE
+    SYNTAX		DcbFcoePeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "FCoE Application settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, dcbFcoeSubType}
+    ::= { dcbFcoePeerTable 1 }
+
+DcbFcoePeerEntry ::= SEQUENCE {
+    dcbFcoePeerEnable                 Ables,
+    dcbFcoePeerWilling                Ables,
+    dcbFcoePeerVersion                Integer32,
+    dcbFcoePeerMaxVersion             Integer32,
+    dcbFcoePeerError                  Integer32,
+    dcbFcoePeerData                   OCTET STRING,
+    dcbFcoePeerSelector				  Integer32,
+    dcbFcoePeerIdentifier			  OCTET STRING
+}
+
+dcbFcoePeerEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Enable state of the peer's FCoE Application feature."
+    ::= { dcbFcoePeerEntry 1 }
+
+dcbFcoePeerWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Willing state of the peer's FCoE Application feature.
+		 (Not valid in IEEE operation)"
+    ::= { dcbFcoePeerEntry 2 }
+
+dcbFcoePeerVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's operational protocol version of the FCoE
+         Application feature."
+    ::= { dcbFcoePeerEntry 3 }
+
+dcbFcoePeerMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's highest protocol version supported by the
+         implementation of the FCoE Application feature."
+    ::= { dcbFcoePeerEntry 4 }
+
+dcbFcoePeerError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's error flag for the FCoE Application feature."
+    ::= { dcbFcoePeerEntry 5 }
+
+dcbFcoePeerData OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (1) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's operational FCoE Application specific
+         configuration."
+    ::= { dcbFcoePeerEntry 6 }
+
+dcbFcoePeerSelector OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 4)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's selector to specify the method of identifying  FCoE traffic.
+         (Supported only in IEEE operation)
+             0x01 - Ethertype
+             0x02 - Well Known Port number over TCP, SCTP
+             0x03 - Well Known Port number over UDP, DCCP
+             0x04 - Well Known Port number over TCP, SCTP, UDP, DCCP
+         "
+    ::= { dcbFcoePeerEntry 7 }
+    
+dcbFcoePeerIdentifier OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (2) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's traffic identifier for the FCoE Application feature.
+         (Supported only in IEEE operation)
+         "
+    ::= { dcbFcoePeerEntry 8 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - iScsiFcoePeer
+-- iSCSI Application Configuration
+-- ************************************************************************
+dcbiScsiPeerTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbiScsiPeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "iSCSI Application attributes of DCB capable physical
+         adapters."
+    ::= { dcbPeerTables 5 }
+
+dcbiScsiPeerEntry OBJECT-TYPE
+    SYNTAX		DcbiScsiPeerEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "iSCSI Application settings for all User Priorities per
+         port.  There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, dcbiScsiSubType}
+    ::= { dcbiScsiPeerTable 1 }
+
+DcbiScsiPeerEntry ::= SEQUENCE {
+    dcbiScsiPeerEnable                 Ables,
+    dcbiScsiPeerWilling                Ables,
+    dcbiScsiPeerVersion                Integer32,
+    dcbiScsiPeerMaxVersion             Integer32,
+    dcbiScsiPeerError                  Integer32,
+    dcbiScsiPeerData                   OCTET STRING,
+    dcbiScsiPeerSelector               Integer32,
+    dcbiScsiPeerIdentifier             OCTET STRING
+}
+
+dcbiScsiPeerEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Enable state of the peer's iSCSI Application feature."
+    ::= { dcbiScsiPeerEntry 1 }
+
+dcbiScsiPeerWilling OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Willing state of the peer's iSCSI Application feature.
+		 (Not valid in IEEE operation)"
+    ::= { dcbiScsiPeerEntry 2 }
+
+dcbiScsiPeerVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's operational protocol version of the iSCSI
+         Application feature."
+    ::= { dcbiScsiPeerEntry 3 }
+
+dcbiScsiPeerMaxVersion OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's highest protocol version supported by the
+         implementation of the iSCSI Application feature."
+    ::= { dcbiScsiPeerEntry 4 }
+
+dcbiScsiPeerError OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's error flag for the iSCSI Application feature."
+    ::= { dcbiScsiPeerEntry 5 }
+
+dcbiScsiPeerData OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (1) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's iSCSI Application specific configuration."
+    ::= { dcbiScsiPeerEntry 6 }
+
+dcbiScsiPeerSelector OBJECT-TYPE
+    SYNTAX		Integer32 (0 .. 4)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's selector to specify the method of identifying  iSCSI traffic.
+         (Supported only in IEEE operation)
+             0x01 - Ethertype
+             0x02 - Well Known Port number over TCP, SCTP
+             0x03 - Well Known Port number over UDP, DCCP
+             0x04 - Well Known Port number over TCP, SCTP, UDP, DCCP
+         "
+    ::= { dcbiScsiPeerEntry 7 }
+    
+dcbiScsiPeerIdentifier OBJECT-TYPE
+    SYNTAX		OCTET STRING ( SIZE (2) )
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "The peer's traffic identifier for the iSCSI Application feature.
+         (Supported only in IEEE operation)
+         "
+    ::= { dcbiScsiPeerEntry 8 }
+
+-- *********************************************************************
+-- Data Center Bridging Attr Tables - StatisticsTables
+-- *********************************************************************
+dcbStatisticsTables OBJECT IDENTIFIER ::= { dcbTables 4 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - PgStats
+-- ************************************************************************
+dcbPgStatsTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPgStatsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Statistics entry for DCB Priority Grouping feature."
+    ::= { dcbStatisticsTables 1 }
+
+dcbPgStatsEntry OBJECT-TYPE
+    SYNTAX		DcbPgStatsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Group statistics common to all Physical Adapters.
+        There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, pgTrafficClassIndex}
+    ::= { dcbPgStatsTable 1 }
+
+DcbPgStatsEntry ::= SEQUENCE {
+    dcbPgStatsInFrames                          Counter64,
+    dcbPgStatsOutFrames                         Counter64,
+    dcbPgStatsOutFrmOverflowDiscards     Counter64,
+    dcbPgStatsInFrmOverflowDiscards      Counter64,
+    dcbPgStatsInOctets                          Counter64,
+    dcbPgStatsOutOctets                         Counter64,
+    pgTrafficClassIndex                         Integer32
+}
+
+dcbPgStatsInFrames OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of packets received for this class"
+    ::= { dcbPgStatsEntry 1 }
+
+dcbPgStatsOutFrames OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of packets transmitted for this class"
+    ::= { dcbPgStatsEntry 2 }
+
+dcbPgStatsOutFrmOverflowDiscards OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of transmitted frames discarded at this class due
+         resource overflow (congestion - Q, buffer overflow)"
+    ::= { dcbPgStatsEntry 3 }
+
+dcbPgStatsInFrmOverflowDiscards OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of received frames discarded at this class due
+         resource overflow (congestion - Q, buffer overflow)"
+    ::= { dcbPgStatsEntry 4 }
+
+dcbPgStatsInOctets OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of octets received for this class"
+    ::= { dcbPgStatsEntry 5 }
+
+dcbPgStatsOutOctets OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of octets transmitted for this class"
+    ::= { dcbPgStatsEntry 6 }
+
+pgTrafficClassIndex OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Traffic Class"
+    ::= { dcbPgStatsEntry 7 }
+
+-- ************************************************************************
+-- Data Center Bridging Attr Tables - PfcStats
+-- ************************************************************************
+dcbPfcStatsTable OBJECT-TYPE
+    SYNTAX		SEQUENCE OF DcbPfcStatsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Statistics table for DCB Priority Flow Control feature."
+    ::= { dcbStatisticsTables 2 }
+
+dcbPfcStatsEntry OBJECT-TYPE
+    SYNTAX		DcbPfcStatsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+        "Priority Flow Control statistics common to all Physical Adapters.
+        There is one 'entry' for each adapter."
+    INDEX		{physicalAdapterIndex, pfcUserPriorityIndex}
+    ::= { dcbPfcStatsTable 1 }
+
+DcbPfcStatsEntry ::= SEQUENCE {
+    dcbPfcStatsInXoffFrames         Counter64,
+    dcbPfcStatsInXonFrames          Counter64,
+    dcbPfcStatsOutXoffFrames        Counter64,
+    dcbPfcStatsOutXonFrames         Counter64,
+    dcbPfcStatsXonToXoffs           Counter64,
+    pfcUserPriorityIndex            Integer32
+}
+
+dcbPfcStatsInXoffFrames OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of Priority Flow Control Xoff frames received"
+    ::= { dcbPfcStatsEntry 1 }
+
+dcbPfcStatsInXonFrames OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of Priority Flow Control Xon frames received"
+    ::= { dcbPfcStatsEntry 2 }
+
+dcbPfcStatsOutXoffFrames OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of Priority Flow Control Xoff frames transmitted"
+    ::= { dcbPfcStatsEntry 3 }
+
+dcbPfcStatsOutXonFrames OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of Priority Flow Control Xon frames transmitted"
+    ::= { dcbPfcStatsEntry 4 }
+
+dcbPfcStatsXonToXoffs OBJECT-TYPE
+    SYNTAX		Counter64
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "Number of times status has transitioned from 'not paused'
+         to 'paused'."
+    ::= { dcbPfcStatsEntry 5 }
+
+pfcUserPriorityIndex OBJECT-TYPE
+    SYNTAX		Integer32 (0..255)
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+        "User Priority"
+    ::= { dcbPfcStatsEntry 6 }
+
+-- ******
+-- events
+-- ******
+
+events OBJECT IDENTIFIER ::= { intel-dcb 2 }
+
+-- **********************
+-- DCB Events
+-- **********************
+dcbEvents OBJECT IDENTIFIER ::= { events 5 }
+
+dcbTraps OBJECT IDENTIFIER ::= { dcbEvents 1 }
+
+dcbPgOperStatusChangedTrap 	NOTIFICATION-TYPE
+    OBJECTS		{ physicalAdapterIndex, dcbPgOperMode, dcbPgOperBandwidths, dcbPgOperMappingUPtoTC}
+    STATUS		current
+    DESCRIPTION
+        "The Priority Groups operational mode
+         or operational configuration for the adapter has changed."
+    ::= { dcbTraps 1 }
+
+dcbPfcOperStatusChangedTrap NOTIFICATION-TYPE
+    OBJECTS	 	{ physicalAdapterIndex, dcbPfcOperMode, dcbPfcOperSettings }
+    STATUS		current
+    DESCRIPTION
+        "The Priority Flow Control operational mode
+         or operational configuration for the adapter has changed."
+    ::= { dcbTraps 2 }
+
+dcbFcoeOperStatusChangedTrap NOTIFICATION-TYPE
+    OBJECTS	 	{ physicalAdapterIndex, dcbFcoeSubType, dcbFcoeOperMode, dcbFcoeOperData }
+    STATUS		current
+    DESCRIPTION
+        "The FCoE Application:SubType operational mode
+         or operational configuration for the adapter has changed."
+    ::= { dcbTraps 3 }
+
+dcbiScsiOperStatusChangedTrap NOTIFICATION-TYPE
+    OBJECTS	 	{ physicalAdapterIndex, dcbiScsiSubType, dcbiScsiOperMode, dcbiScsiOperData }
+    STATUS		current
+    DESCRIPTION
+        "The iSCSI Application:SubType operational mode or operational configuration for the adapter has changed."
+    ::= { dcbTraps 5 }
+
+dcbPgOperStatusChgTrapEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enable or disable traps for the adapter's Priority
+         Group Oper mode/configuration changed condition.
+         The user can set this value."
+    ::= { dcbEvents 2 }
+
+dcbPfcOperStatusChgTrapEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enable or disable traps for the adapter's Priority Flow
+         Control Oper mode/configuration changed condition.
+         The user can set this value."
+    ::= { dcbEvents 3 }
+
+dcbFcoeOperStatusChgTrapEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enable or disable traps for the adapter's FCoE
+         Application Oper mode/configuration changed condition.
+         The user can set this value."
+    ::= { dcbEvents 4 }
+
+dcbiScsiOperStatusChgTrapEnable OBJECT-TYPE
+    SYNTAX		Ables
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+        "Enable or disable traps for the  adapter's iSCSI
+         Application Oper mode/configuration changed condition.
+         The user can set this value."
+    ::= { dcbEvents 6 }
+
+
+--
+-- Compliance Statements
+--
+
+inteldcblanConformance  OBJECT IDENTIFIER ::= { inteldcblan 1 }
+
+dcbiScsiGroups			OBJECT IDENTIFIER ::= { inteldcblanConformance 5 }
+dcbPgGroups				OBJECT IDENTIFIER ::= { inteldcblanConformance 10 }
+dcbPfcGroups			OBJECT IDENTIFIER ::= { inteldcblanConformance 15 }
+dcbFcoeGroups			OBJECT IDENTIFIER ::= { inteldcblanConformance 20 }
+dcbMiscGroups			OBJECT IDENTIFIER ::= { inteldcblanConformance 25 }
+dcbNotificationGroups   OBJECT IDENTIFIER ::= { inteldcblanConformance 12 }
+inteldcblanCompliances  OBJECT IDENTIFIER ::= { inteldcblanConformance 30 }
+
+inteldcblanCompliance  MODULE-COMPLIANCE
+     STATUS      current
+
+     DESCRIPTION
+       "Compliance statements for the Intel DCB Lan Agent."
+
+     MODULE -- this module
+     MANDATORY-GROUPS { dcbiScsiGroup, dcbPgGroup, dcbPfcGroup, dcbFcoeGroup, dcbMiscGroup, dcbNotificationGroup }
+
+     ::= { inteldcblanCompliances 1 }
+
+dcbiScsiGroup OBJECT-GROUP
+     OBJECTS { dcbiScsiConfigEnable,dcbiScsiConfigWilling,dcbiScsiConfigAdvertise,dcbiScsiConfigData,
+                dcbiScsiConfigSelector, dcbiScsiConfigIdentifier,
+                dcbiScsiOperVersion,dcbiScsiOperMaxVersion,dcbiScsiOperError,
+                dcbiScsiOperMode,dcbiScsiOperSyncd,dcbiScsiSubType,
+                dcbiScsiOperSelector, dcbiScsiOperIdentifier,
+                dcbiScsiPeerEnable,dcbiScsiPeerWilling,dcbiScsiPeerVersion,
+                dcbiScsiPeerMaxVersion,dcbiScsiPeerError,dcbiScsiPeerData,
+                dcbiScsiPeerSelector, dcbiScsiPeerIdentifier,
+                dcbiScsiOperStatusChgTrapEnable
+                }
+      STATUS current
+      DESCRIPTION
+        "A collection for Dcb iSCSI Group"
+       ::= { dcbiScsiGroups 1 }
+
+dcbPgGroup OBJECT-GROUP
+     OBJECTS { dcbPgConfigEnable, dcbPgConfigRecEnable,
+                dcbPgConfigWilling, dcbPgConfigAdvertise, dcbPgConfigBandwidths,
+                dcbPgConfigNumTCs, dcbPgBwgId,
+                dcbPgBwgName, dcbPgConfigRecBandwidths,
+                dcbPgPeerEnable, dcbPgPeerWilling,
+                dcbPgPeerVersion, dcbPgPeerMaxVersion, dcbPgPeerError, dcbPgPeerBandwidths,
+                dcbPgPeerNumTCs, dcbiScsiOperData,
+                dcbPgStatsInFrames, pgTrafficClassIndex, pfcUserPriorityIndex,
+                dcbPgStatsOutFrames, dcbPgStatsOutFrmOverflowDiscards,
+                dcbPgStatsInFrmOverflowDiscards, dcbPgStatsInOctets,
+                dcbPgStatsOutOctets,
+                dcbPgOperStatusChgTrapEnable,
+                dcbPgOperBandwidths, dcbPgOperMappingUPtoTC, dcbPgOperSyncd, dcbPgOperMode, dcbPgOperError,
+                dcbPgOperMaxVersion, dcbPgOperVersion
+                }
+      STATUS current
+      DESCRIPTION
+        "A collection for Dcb Pg Group"
+       ::= { dcbPgGroups 1 }
+
+dcbPfcGroup OBJECT-GROUP
+     OBJECTS { dcbPfcConfigEnable,
+                dcbPfcConfigWilling, dcbPfcConfigAdvertise, dcbPfcConfigSettings, dcbPfcConfigNumTCs,
+                dcbPfcPeerEnable, dcbPfcPeerWilling,
+                dcbPfcPeerVersion, dcbPfcPeerMaxVersion, dcbPfcPeerError, dcbPfcPeerSettings,
+                dcbPfcPeerNumTCs,
+                dcbPfcStatsInXoffFrames, dcbPfcStatsInXonFrames, dcbPfcStatsOutXoffFrames,
+                dcbPfcStatsOutXonFrames, dcbPfcStatsXonToXoffs,
+                dcbPfcOperStatusChgTrapEnable,
+                dcbPfcOperSettings, dcbPfcOperSyncd, dcbPfcOperMode, dcbPfcOperError,
+                dcbPfcOperMaxVersion, dcbPfcOperVersion
+                }
+      STATUS current
+      DESCRIPTION
+        "A collection for Dcb Pfc Group"
+       ::= { dcbPfcGroups 1 }
+
+dcbFcoeGroup OBJECT-GROUP
+     OBJECTS {  dcbFcoeConfigEnable, dcbFcoeConfigSelector, dcbFcoeConfigIdentifier,
+                dcbFcoeConfigWilling, dcbFcoeConfigAdvertise, dcbFcoeConfigData,
+                dcbFcoePeerEnable, dcbFcoePeerSelector, dcbFcoePeerIdentifier,
+                dcbFcoePeerWilling, dcbFcoePeerVersion, dcbFcoePeerMaxVersion,
+                dcbFcoePeerError, dcbFcoePeerData,
+                dcbFcoeOperStatusChgTrapEnable,
+                dcbFcoeSubType, dcbFcoeOperData, dcbFcoeOperSyncd,
+                dcbFcoeOperMode, dcbFcoeOperError, dcbFcoeOperMaxVersion,
+                dcbFcoeOperVersion, dcbFcoeOperSelector, dcbFcoeOperIdentifier
+                }
+      STATUS current
+      DESCRIPTION
+        "A collection for Dcb FCOE Group"
+       ::= { dcbFcoeGroups 1 }
+
+dcbMiscGroup OBJECT-GROUP
+     OBJECTS { dcbConfigEnable, dcbVersion, dcbOperVersion, dcbOsControlledEnable
+                }
+      STATUS current
+      DESCRIPTION
+        "A collection for Dcb Misc Group"
+       ::= { dcbMiscGroups 1 }
+
+dcbNotificationGroup NOTIFICATION-GROUP
+    NOTIFICATIONS  {
+        dcbiScsiOperStatusChangedTrap,
+        dcbPgOperStatusChangedTrap,
+        dcbPfcOperStatusChangedTrap,
+        dcbFcoeOperStatusChangedTrap
+    }
+    STATUS current
+    DESCRIPTION
+        "A collection of notification  for Dcb Group"
+       ::= { dcbNotificationGroups 1 }
+
+-- Compliance statement end
+
+END

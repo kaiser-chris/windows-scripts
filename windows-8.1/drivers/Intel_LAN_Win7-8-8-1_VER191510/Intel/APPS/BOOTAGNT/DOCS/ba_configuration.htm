@@ -1,0 +1,279 @@
+<html>
+
+<head>
+
+<meta name="keywords" contents="Boot Agent, configuration, PXE">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Configuration Setup</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>
+<!--
+span.MsoCommentReference
+	{}
+-->
+</style>
+</head>
+
+<body>
+
+
+<h1>
+Configuration Setup</h1>
+
+<P>
+The Intel&#174 Boot Agent software provides configuration options that allow you to customize 
+the behavior of the Intel Boot Agent software. You can configure the Intel Boot Agent in any of the 
+following environments:
+</P>
+
+<ul>
+  <LI CLASS="Bulleted">
+	<p class="numlst"><a href="#device_manager">A Microsoft* Windows*  Environment</a></LI>
+  <LI CLASS="Bulleted"><p class="numlst"><a href="#dos">A Microsoft* MS-DOS* environment</a></LI>
+  <LI CLASS="Bulleted"><p class="numlst"><a href="#pxe">A pre-boot environment</a> (before operating system is loaded)</LI>
+</ul>
+
+<p>
+The Intel Boot Agent supports PXE in pre-boot, Microsoft Windows*, and DOS environments.&nbsp;In
+each of these environments, a single user interface allows you to configure PXE
+protocols on
+Fast Ethernet, Gigabit, and PXE on 10GbE adapters.
+</p>
+<p>
+To enter the Intel Boot Agent setup menu, press and hold &lt;Ctrl&gt;-S during system 
+start-up.
+</p>
+
+<hr>
+
+<h2><a name="device_manager"></a>Configuring the Intel&#174 Boot Agent in a Microsoft Windows 
+Environment</h2>
+<P>
+If you use  the Windows operating system 
+on your client computer, you can use Intel&reg; PROSet for Windows* 
+Device Manager to configure and update the Intel Boot Agent software. Intel PROSet
+is available through the device manager. Intel PROSet provides a special tab, called the <i> Boot 
+Options</i> tab, 
+used for configuring and updating the Intel Boot Agent software.
+</P>
+<P>
+To access the Boot Options tab:</P>
+<ol>
+	<li>
+	<p class="numlst">Open Intel PROSet for Windows Device Manager by opening the <b>System</b> Control 
+Panel. On the <b>Hardware</b> tab, click <b>Device Manager.</b></li>
+<li>
+<p class="numlst">Select the appropriate adapter and click the <b> Boot Options</b> tab. If the tab does not appear, update your network driver.</li>
+
+  <li>
+	<p CLASS="numlst">The Boot Options tab shows a list of current configuration 
+	parameters and their corresponding values. Corresponding
+	configuration values appear for the selected setting in a drop-down box. A brief
+	description of the setting’s function appears in the Description box below
+	it. See <a href="#settings">Boot Agent Configuration Settings</a> for a list of 
+	configuration parameters, their possible values, and detailed descriptions.</p>
+	</li>
+  <li>
+    <p CLASS="numlst">
+	Select a setting you want to change from the <b> Settings</b> selection box.</p></li>
+  <li>
+    <p CLASS="numlst">
+	Select a value for that setting from the <b> Value</b> drop-down list.
+  	</p></li>
+  <li>
+    <p CLASS="numlst">
+    Repeat the preceding two steps to change any additional settings.
+    </p>
+  </li>
+  <li>
+    <p CLASS="numlst">
+	Once you have completed your changes, click <b>Apply Changes</b> to update 
+	the adapter with the new values.
+	</p>
+  </li>
+</ol>
+
+<hr>
+
+<h2>
+<a name="dos"></a>Configuring the Intel&#174 Boot Agent in an MS-DOS Environment</h2>
+<p>Intel provides a utility, Intel&reg Ethernet Flash Firmware Utility (BootUtil) for installing and configuring the Intel 
+Boot Agent using the DOS environment. BootUtil 
+supports the Intel&reg; PRO/100, Gigabit, and 10GbE family of adapters. See
+<a href="boot_util.htm">BootUtil</a> for more information.</p>
+
+<hr>
+
+<h2><a name="pxe"></a>Configuring the Intel&#174 Boot Agent in a Pre-Boot PXE Environment</h2>
+<TABLE class="note">
+  <tr>
+    <TD valign="top"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong> Intel Boot Agent may be disabled in the 
+	BIOS.&nbsp;
+    </TD>
+  </tr>
+</TABLE>
+
+<P>
+You can customize the behavior of the Intel Boot Agent software through a pre-boot 
+(operating system independent) configuration
+setup program contained within the adapter's flash ROM. You can access this 
+pre-boot configuration setup program each time the client computer cycles through 
+the boot process. The boot process is triggered
+whenever any of the following boot events occur:
+</P>
+
+<ul>
+  <LI CLASS="Bulleted"><p class="numlst">Power on</LI>
+  <LI CLASS="Bulleted"><p class="numlst">Hard reset (Reset button on system, if available)</LI>
+  <LI CLASS="Bulleted"><p class="numlst">Soft reset (<b>Ctrl+Alt+Del</b>)</LI>
+  <LI CLASS="Bulleted"><p class="numlst">Operating system or application-initiated system restart</LI>
+</ul>
+
+<P>
+When the boot process begins, the screen clears and the computer begins its Power 
+On Self Test (POST) sequence. Shortly after completion of the POST, the Intel 
+Boot Agent 
+software stored in flash ROM executes. The Intel Boot Agent then displays an initialization 
+message, similar to the one below, indicating that it is active:
+</P>
+
+<blockquote>
+  <pre>Initializing Intel(R) Boot Agent Version X.X.XX
+PXE 2.0 Build 083</pre>
+</blockquote>
+<TABLE class="note"  >
+  <tr>
+    <TD valign="top" width="28"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong>    
+	This display may be hidden by the manufacturer's splash screen. Consult 
+	your manufacturer's documentation for details.
+    </TD>
+  </tr>
+</TABLE>
+
+<blockquote>
+<P align="center">
+<img border="0" src="ba_pxe_config.gif" width="800" height="444">
+</P>
+<P>
+The configuration setup menu shows a list of configuration settings on the left and their 
+corresponding values on the right. Key descriptions near the bottom of the menu indicate how to change
+values for the configuration settings. For each selected setting, a brief &quot;mini-Help&quot; 
+description of its function appears just above the key descriptions.
+</P>
+</blockquote>
+
+<ol>
+  <li><p CLASS="numlst">Highlight the setting you need to change by using the arrow keys.</li>
+  <li><p CLASS="numlst">Once you have accessed the setting you want to change, press the 
+  	spacebar until the desired value appears.</li>
+  <li><p CLASS="numlst">Once you have completed your changes, press <b>F4</b> to update 
+  	the adapter with the new values. Any changed configuration values are applied as the
+	boot process resumes.&nbsp;</li>
+</ol>
+
+<P>
+The table below provides a list of configuration settings, their possible values, 
+and their detailed descriptions:
+</P>
+
+<h3 align="center"><a name="settings"></a>Intel Boot Agent Configuration Settings</h3>
+<TABLE BORDER="1" cellpadding="4" cellspacing="0"  >
+  <TR>
+	<TH ROWSPAN="1" COLSPAN="1">
+		<h4 style="margin-top: 5; margin-bottom: 5">Configuration Setting</h4></TH>
+	<TH ROWSPAN="1" COLSPAN="1">
+		<h4 style="margin-top: 5; margin-bottom: 5">Possible Values</h4></TH>
+	<TH width="60%">
+		<h4 style="margin-top: 5; margin-bottom: 5">Description</h4></TH>
+  </TR>
+  <TR>
+	<TD COLSPAN="1">
+		<P CLASS="CellBody">Network Boot Protocol</P></TD>
+	<TD COLSPAN="1"><P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">
+		PXE (Preboot eXecution Environment)</P>
+		</TD>
+	<TD width="60%">
+		<p style="margin-top: 6; margin-bottom: 6">
+		Select <a href="ba_glossary.htm#PXE"> PXE</a> for use with 
+		network management programs, such as LANDesk* Management 
+		Suite.
+		<p>
+		<B><I>NOTE</I>:</B> Depending on the configuration of the Intel Boot 
+		Agent, this parameter may not be changeable.</p>
+		</TD>
+  </TR>
+  <TR>
+	<TD COLSPAN="1">
+		<P CLASS="CellBody">Boot Order</P>
+		</TD>
+	<TD COLSPAN="1">
+		<P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">
+		Use BIOS Setup Boot Order</P>
+		<P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">
+		Try network first, then local drives</P>
+		<P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">Try local drives first, then network</P>
+		<P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">
+		Try network only</P>
+		<P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">
+		Try local drives only</P>
+		</TD>
+	<TD width="60%">
+		<P CLASS="CellBody" style="margin-left: 0; margin-top: 6; margin-bottom: 6">
+		Sets the boot order in which devices are selected during boot up if the computer
+		does not have its own control method.&nbsp;</P>
+		<P CLASS="CellBody" style="margin-left: 0; margin-top: 6; margin-bottom: 6">
+ 		If your client computer's <a href="ba_glossary.htm#BIOS"> BIOS</a> supports the BIOS Boot Specification (BBS), or allows
+ 		<a href="ba_glossary.htm#PnP">PnP</a>-compliant selection of the boot order in the BIOS setup program, then this setting will always be
+		<b>Use BIOS Setup Boot Order </b> and cannot be changed. In this case, refer to the BIOS setup manual specific to your
+		client computer to set up boot options.</P>
+		<P CLASS="CellBody" style="margin-top: 6; margin-bottom: 6">
+		If your client computer does not have a BBS- or PnP-compliant BIOS, you can select any one of the
+		other possible values listed for this setting except for <b>Use BIOS Setup Boot Order</b>.</P>
+		</TD>
+  </TR>
+  <TR>
+	<TD COLSPAN="1">
+		<p CLASS="CellBody">Legacy OS 
+		Wakeup Support. (<b>For 82559-based adapters only</b>)</p></TD>
+	<TD COLSPAN="1">
+		<p class="CellBody">0 = Disabled (Default Value)</p>
+		<p class="CellBody">1 = Enabled</p></TD>
+	<TD width="60%">
+		<p class="CellBody" style="margin-top: 6; margin-bottom: 6">If set to 1, the 
+		Intel Boot Agent will enable PME in the 
+		adapter’s PCI configuration space during initialization. This allows 
+		remote wakeup under legacy operating systems that don’t normally support 
+		it. Note that enabling this makes the adapter technically non-compliant 
+		with the ACPI specification, which is why the default is disabled.</p>
+		
+  </TR>
+</TABLE>
+
+<p style="margin-top: 0; margin-bottom: 0">&nbsp;
+</p>
+<TABLE class="note"  >
+  <tr>
+    <TD valign="top" width="28"><img border="0" src="note.gif" width="28" height="21"></TD>
+    <TD valign="top"><strong>NOTE:</strong>     
+      If, during PXE boot, more than one adapter is installed in a computer and you 
+      want to boot from the boot ROM located on a specific adapter, you can do so by removing 
+      the adapter from the BIOS Boot Order or disabling the flash by running
+	<code>BootUtil
+      -FlashDisable</code> on the desired adapter.
+    </TD>
+  </tr>
+</TABLE>
+
+<p>
+While the configuration setup menu is displayed, diagnostics information&nbsp;is also 
+displayed in the lower half of the screen. This information can be helpful 
+during interaction with Intel Customer Support personnel or your IT team 
+members. For more information about how to interpret
+the information displayed, refer to <a href="ba_troubleshooting.htm#diag_pxe">Diagnostics
+Information for Pre-boot PXE Environments</a>.
+</p>
+
+</body>
+</html>

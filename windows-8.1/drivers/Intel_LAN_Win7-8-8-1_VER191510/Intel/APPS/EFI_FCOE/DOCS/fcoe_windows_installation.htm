@@ -1,0 +1,246 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<title>Microsoft* Windows* Installation and Configuration</title>
+</head>
+
+<body>
+
+<h1>Microsoft* Windows* Installation and Configuration for 
+Intel&reg; Ethernet FCoE Protocol Driver</h1>
+<p><a href="fcoe_system_requirements.htm">Software Requirements</a></p>
+<p><a href="fcoe_supported_hw.htm">Hardware Requirements</a></p>
+<p><a href="#Upgrading">Upgrading Windows Drivers on an Intel&reg; Ethernet FCoE-Booted System</a></p>
+<p><a href="#Validation">Validation and Storage Certification</a></p>
+<p><a href="#Installation">New Installation on a Windows Server* 2008 R2 system</a></p>
+
+<p> <a href="#Configuration">Intel&reg; Ethernet FCoE Configuration Using Intel&reg; PROSet for Windows* Device Manager</a></p>
+<blockquote>
+	<p><a href="#Storage Adapter">Storage Adapter Miniport Device's Properties  Tabs</a>
+	<p><a href="#Network Tabs">Network Adapter Miniport Device’s Properties  Tabs</a></p>
+</blockquote>
+
+<hr>
+<h2><a name="Upgrading">Upgrading Windows Drivers on an Intel&reg; Ethernet FCoE-Booted System</a></h2>
+<p> Upgrading an FCoE-booted system can only be done via the Intel&reg; Network Connections Installer. A reboot is required to complete the upgrade. You cannot upgrade a port's  Windows driver and software package if the port is in the  path to the virtual memory paging file and is also part of a Microsoft Server 2012 NIC Team (LBFO Team). To complete the upgrade, remove the port from the LBFO team and restart the upgrade.</p>
+<table class="note">
+  <tr>
+    <td valign="top"><img src="warning.gif" alt="" width="28" height="21" border="0"></td>
+    <td><p><strong>WARNINGS:</strong> </p>
+      <ul>
+        <li><strong>Do not update the  base driver via the 
+          Windows Update method.</strong>
+          <br>
+Doing so may render the 
+        system inoperable, generating a blue screen. The FCoE Stack and base driver 
+        need to be matched. The FCoE stack may get out of sync with the base driver if the 
+    base driver is updated via Windows Update.&nbsp; </li>
+        <li><strong>If you are running Microsoft* Windows Server* 2012 R2, you must install KB2883200.</strong><br>
+        Failure to do so may result in an Error 1719 and a blue screen.</li>
+    </ul></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr>
+<h2><a name="Validation"></a>Validation and Storage Certification</h2>
+<p>The software components for Intel&reg; Ethernet FCoE 
+are comprised of two major components: the Intel&reg; Ethernet base driver and the 
+Intel&reg; Ethernet FCoE Driver. They are 
+developed and validated as an ordered pair. Users are strongly encouraged to 
+avoid scenarios, either through upgrades or Windows update, where the Intel&reg; Ethernet 
+driver version is not the version released with the corresponding Intel&reg; Ethernet FCoE driver. 
+
+For more information, visit the  <a href="http://downloadcenter.intel.com/">download center</a>.</p>
+<table class="note">
+<tr>
+  <td valign="top"><img src="note.gif" alt="" width="28" height="21" border="0"></td>
+				<td><strong>NOTES:</strong>
+				<ul>
+				  <li>Individually upgrading/downgrading 
+				    the Intel&reg; Ethernet FCoE driver will not work and may even cause a blue
+				    screen; the entire FCoE package <u>must</u> be the same 
+				    version. Upgrade the entire FCoE package using Intel&reg; Network 
+				    Connections 
+				    only.</li>
+				  <li>If you uninstalled the Intel&reg; 
+				    Ethernet Virtual Storage Miniport Driver for FCoE component, just find the 
+				    same version that you uninstalled and re-install it; or uninstall and 
+				    then re-install the entire FCoE package.
+				    
+			      </li>
+				  </ul>
+	</td>
+			</tr>
+</table>
+<p>Intel and the storage vendors spend considerable effort ensuring that their 
+respective products operate with each other as expected for every version 
+that we release. However, given the sheer number of releases and 
+each respective organizations' differing schedules, users are <b> <i>strongly 
+encouraged</i></b> to use their storage vendor's support matrix to ensure that the 
+versions that they are deploying for the Intel&reg; Ethernet Protocol Driver, the switch and storage vendor 
+have been tested as an integrated set.</p>
+<hr>
+
+<h2
+><a name="Installation"></a>New Installation on a Windows Server*  system</h2>
+<p>From the Intel CD: Click the <b>FCoE/DCB checkbox</b> to 
+install Intel&reg; Ethernet FCoE Protocol Driver and DCB. The MSI Installer installs all FCoE and DCB components including Base Driver.</p>
+<table class="note">
+<tr>
+	<td valign="top"><img src="note.gif" alt="" width="28" height="21" border="0"></td>
+				<td><strong>NOTES:</strong>
+				<ul>
+				  <li>FCoE is supported on 82599 and X540-based Intel&reg; 
+				    Network Connections.</li>
+				  <li>We recommend installing using the latest Storage Qualified Image.</li>
+				  <li>For current drivers and documentation, visit the <a href="support.htm">Customer Support</a> site.</li>
+				  </ul>
+				</td>
+			</tr>
+</table>
+<h3>Microsoft Hotfixes</h3>
+<p>The following Microsoft hotfixes have been found to be needed for specific 
+use cases:</p>
+<p>Windows  2008 R2</p>
+<ul>
+  <li>KB983554 - High-performance storage devices fix</li>
+  <li>KB2708811 - Data corruption occurs under random write stress
+  </li>
+</ul>
+<p><b>Multipath I/O (MPIO)</b></p>
+<p>Windows 2008 R2</p>
+<ul>
+<li>KB979743 - MPIO - write errors</li>
+	<li>KB981379 - MS DSM - target issues</li>
+</ul>
+<p>Windows 2008 R2 SP1</p>
+<ul>
+	<li>KB2406705<p>Configuring MPIO Timers: &lt;<a href="http://technet.microsoft.com/en-us/library/ee619749(WS.10).aspx">http://technet.microsoft.com/en-us/library/ee619749(WS.10).aspx</a>&gt; 
+	contains additional information about these registry settings.</p>
+	<p>Set the PathRecoveryInterval value to 60</p></li>
+</ul>
+<hr>
+<h2><a name="Configuration"></a>Intel&reg; Ethernet FCoE Configuration Using Intel® PROSet for Windows* Device Manager</h2>
+<p>Many FCoE functions can also be configured or revised using Intel PROSet for Windows* Device Manager, accessed from the <b>FCoE Properties </b>button<b> </b>within the
+<b>Data Center</b> tab. You can use Intel PROSet 
+to perform the following tasks:</p>
+<ul>
+<li>Configure FCoE initiator specific settings</li>
+				<li>Go to the corresponding port driver</li>
+				<li>Review FCoE initiator information</li>
+				<li>Obtain general information</li>
+				<li>Review statistics</li>
+				<li>Obtain information about the initiator</li>
+				<li>Obtain information about attached devices</li>
+				<li>FIP discovered VLANs and status</li>
+</ul>
+<p>In addition, you can find some FCoE RSS  performance settings under the Performance Options of the Advanced tab of the  Network Adapter device properties.&nbsp; For  additional information see the Receive Side Scaling subsection of the Microsoft  Windows Advanced Features section of the Intel(R) 10GbE Adapter Guide.</p>
+<p>Click <a href="windows_command_line_install.htm">here</a> for instructions 
+  on installing and using Intel&reg; PROSet for Windows* Device  Manager.</p>
+<table class="note">
+  <tr>
+    <td valign="top"><img src="note.gif" alt="" width="28" height="21" border="0"></td>
+    <td><strong>NOTES:</strong>
+      <ul>
+        <li>PROSetCL.EXE is used for DCB/FCoE configuration on Microsoft* 
+          Windows* Server 2008 Core and Microsoft* Windows* Server 
+        2008 R2 Core operating systems.</li>
+        <li>From the <strong>Boot Options Tab</strong>, the user will see the <strong>Flash Information Button</strong>. Clicking on  the <strong>Flash Information Button</strong> will open the<strong> Flash Information Dialog</strong>. From the <strong>Flash Information Dialog, </strong>clicking on the <strong>Update Flash</strong> button allows Intel&reg; iSCSI Remote Boot, Intel&reg; Boot 
+          Agent (IBA), Intel&reg; Ethernet FCoE Boot, EFI, and CLP to be written. The 
+          update operation writes a new image to the adapter's Flash and 
+          modifies the EEPROM, which may temporarily disable the operation 
+          of the Windows<a href="legaldis.htm">*</a> network device driver. You might need to reboot the computer 
+          following this operation. </li>
+        <li>You cannot update the flash image of a LOM; this button will be disabled.</li>
+    </ul></td>
+  </tr>
+</table>
+<p><a name="Storage Adapter"></a>Storage Adapter Miniport Device&rsquo;s FCoE Properties  Tabs</p>
+There are two ways to navigate to the FCoE properties: by using the X520 Network adapter properties "Data Center" tab or by using the Intel&reg; "Ethernet Virtual Storage Miniport Driver for FCoE Storage Controllers" properties from  Windows Device Manager.
+<h4><font size="3">Fabric View Tab</font></h4>
+<p>The Fabric View tab displays  FC fabrics, VN2VN fabrics, physical ports, targets,  and LUNs:</p>
+<ul>
+      <li>If <em>FC fabric</em> is selected,  the FCoE GUI    displays the information in the &ldquo;Fabric    Information&rdquo; group box (World Wide Node Name, World Wide Port Name, FCID)</li>
+      <li>If <em>VN2VN</em> <em>fabric</em> is selected, the FCoE GUI    displays the information in the &ldquo;Fabric    Information&rdquo; group box (FC Map).</li>
+      <li>If a  <em>physical port</em> is selected,  the FCoE GUI displays the information    in the &ldquo;Physical Port&rdquo; group    box (World Wide Node Name, World Wide Port Name, FCID).</li>
+      <li>If a  <em>target</em> is selected,  the FCoE GUI displays the information in the &ldquo;Target Information&rdquo; group box (World Wide Node Name, World Wide Port Name).</li>
+      <li>If a  <em>LUN</em> is selected,  the FCoE GUI displays the information in the &ldquo;LUN Information&rdquo; group box (LUN ID, OS Device Name, Capacity, Block Size).</li>
+      </ul>      
+  <p>For general information about VN2VN, see <a href="fcoe_overview.htm">FCoE VN to VN Support</a>.</p>
+
+
+
+<h4><b><font size="3">Virtual Ports Tab</font></b></h4>
+
+<p>A &nbsp;list of the Virtual Ports associated with the HBA has a column for the 
+WWPN and FCID for each Virtual Port. &quot;Not Connected&quot; is displayed in the FCID 
+column if it is not logged in to a target.</p>
+
+<hr>
+<h3><a name="Network Tabs"></a>Network Adapter Miniport Device’s Properties Tabs</h3>
+
+<h4><font size="3">Boot Options Tab</font></h4>
+<p>From the <b>Boot Options</b> tab you can obtain Target information and <b>Update the Flash</b>.</p>
+
+<h4><font size="3">Data Center Tab</font></h4>
+
+<p>From the <strong>Data Center</strong> tab you can enable/disable Data Center Bridging (DCB),  view DCB Feature status, and access the storage adapter miniport device&rsquo;s FCoE properties  tabs.</p>
+<p><em>Options</em></p>
+<p>When <strong>Using  Advanced Settings</strong> is indicated, you have configured Data Center Bridging  (DCB) locally, using a tool like SNMP, in a way which does not match the   Use Switch Settings  template. The  Use Switch Settings template is Enabled, Advertising, and Willing for all DCB  features.</p>
+<p>If you select <strong>Use Switch Settings</strong>, any Advanced configuration is  overwritten.</p>
+<p>&nbsp;</p>
+<table class="note">
+  <tr>
+<td valign="top"><img src="note.gif" alt="" width="28" height="21" border="0"></td>
+        <td>
+          <strong>NOTE:</strong> You cannot disable DCB  while 
+          the system is booted from an FCoE drive or if the system paging file is on an FCoE 
+       drive. The options on the Data Center tab will be grayed out if you try. </td>
+  </tr>
+</table>
+
+
+    
+<p><em> DCB Feature Status</em></p>
+<p>A non-operational status is 
+        most likely to occur when Use 
+        Switch Settings is selected 
+        or Using Advanced Settings
+        is active. This is generally 
+        a result of one or more of the 
+        DCB features not getting 
+        successfully exchanged with the 
+        switch. Possible problems 
+include:</p>
+    
+<ol>
+        <li>One of the 
+          features is not 
+          supported by the 
+          switch. </li>
+        <li>The switch 
+          is not 
+          advertising the 
+          feature. </li>
+        <li>The switch 
+          or host has 
+          disabled the 
+          feature (this 
+          would be an 
+          advanced setting 
+          for the host). </li>
+</ol>
+    
+    <p align="left">The <strong>DCBx Version Numbe</strong>r will be one of the following: </p>
+  <ul>
+    <li>IEEE 802.1Qaz</li>
+    <li>CEE</li>
+    <li>Pre-CEE</li>
+  </ul>
+
+<hr color="#00b0b0" size="1">
+</body>
+</html>

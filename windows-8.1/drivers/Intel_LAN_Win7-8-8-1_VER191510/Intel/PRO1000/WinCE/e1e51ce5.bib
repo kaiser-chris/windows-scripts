@@ -1,0 +1,15 @@
+
+;
+; Image configuration for PRO1000 adapter for WinCE5. These modules must be
+; included in the master PLATFORM.BIB (or one of the other .BIB
+; source files) in the WinCE image.
+;
+
+
+MODULES
+;  Name            Path                                           Memory Type
+;  --------------  ---------------------------------------------  -----------
+
+; Include the Tekoa driver in the image
+   E1E51CE5.dll      $(_FLATRELEASEDIR)\E1E51CE5.dll                NK  SH
+

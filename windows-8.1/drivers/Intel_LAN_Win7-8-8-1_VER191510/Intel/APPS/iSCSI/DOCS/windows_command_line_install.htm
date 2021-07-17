@@ -1,0 +1,343 @@
+<html>
+
+<head>
+<meta name="description" contents="Installing the base drivers and Intel PROSet via the command line." />
+<meta name="keywords" contents="install, driver, PROSet, Base, SetupBD" />
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+
+<title>Unattended Installation</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+
+<style type="text/css">
+<!--
+	.def {padding:3.0pt 3.0pt 3.0pt 3.0pt; vAlign="top";}
+	.prop {valign="top"; padding:3.0pt 3.0pt 3.0pt 3.0pt; font-weight:bold}
+-->
+</style>
+	
+
+</head>
+
+<body>
+
+<h1>Installing the Base Driver and Intel<sup>&reg;</sup> PROSet via the Command Line</h1>
+
+<p class="contents"><a href="#install_methods">Installation Methods</a></p>
+<p class="contents"><a href="#dxsetup">Installing with  DxSetup.exe</a></p>
+<p class="contents"><a href="#install_on_core">Using SetupBD.exe to Install Base Drivers on Windows Server* Core Operating Systems</a></p>
+<p class="contents"><a href="#uninstall">Uninstalling Drivers and Intel PROSet</a></p>
+
+<hr />
+
+<h2> <a name="install_methods"></a> Installation Methods</h2>
+<p>
+ DxSetup.exe is the preferred installation method. You can use it to install the Windows base drivers and
+Intel&reg; PROSet for Windows* Device Manager. DxSetup.exe detects the system's language, searches for the appropriate 
+		transform file, and applies it to MSI package. The transform file 
+		translates the installation instructions to the language associated with 
+your operating system.</p>
+
+<table class="note">
+  <tr>
+    <td valign="top">
+    <img border="0" src="note.gif" width="28" height="21" /></td>
+    <td valign="top"><b>NOTES:</b> 
+	<ul>
+		<li>Intel&reg; 10GbE Network Adapters do not support unattended driver installation.</li>
+		<li>Intel PROSet cannot be installed with 
+		 msiexec.exe. You must use DxSetup.exe.		</li>
+	</ul>
+	</td>
+  </tr>
+</table>
+
+<p>You can use the base driver install utility (SetupBD.exe) to install Microsoft Windows base 
+drivers from a command line. If you use SetupBD.exe to install base drivers, you will not be able to use the advanced features in Intel PROSet.</p>
+<hr />
+
+<h2><a name="dxsetup">Installing with DxSetup.exe</a></h2>
+<p>DxSetup.exe is a setup utility used for installing Intel 
+  PROSet. It detects the system language, searches for the appropriate transform 
+  file in the same folder, and then launches PROSETDX.msi in the language specific 
+  to the operating system. The transform file translates the installation 
+instructions to the language associated with your operating system. </p>
+<p>DxSetup.exe also takes the install options from the command line and applies 
+them to the PROSETDX.msi command line installation. </p>
+<h4>DxSetup.exe command line switches:</h4>
+<table border="1" cellpadding="4" cellspacing="0">
+  <tr>
+    <td valign="top">
+<b>Switch</b>
+    </td>
+    <td valign="top"><b>Description</b></td>
+  </tr>
+  <tr>
+    <td valign="top"><b>/q[r|n]</b></td>
+    <td valign="top"> silent install options.<p>
+    	</p><table border="0" cellpadding="4" cellspacing="0">
+    		<tr>
+    			<td><b>r</b></td>
+    			<td>Reduced GUI Install</td>
+    		</tr>
+    		<tr>
+    			<td><b>n</b></td>
+    			<td>Silent install</td>
+    		</tr>
+    	</table>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top"><b>/l[i|w|e|a]</b>
+ </td>
+    <td valign="top">
+log file option. 
+      <table border="0" cellpadding="4" cellspacing="0">
+        <tr>
+          <td>
+<b>i</b></td>
+          <td> log status messages.</td>
+        </tr>
+        <tr>
+          <td><b>w</b> </td>
+          <td> log non-fatal warnings.</td>
+        </tr>
+        <tr>
+          <td><b>e</b> </td>
+          <td> log error messages.</td>
+        </tr>
+        <tr>
+          <td><b>a</b> </td>
+          <td> log the start of all actions.</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top"><strong>/uninstall<br>
+      /x</strong></td>
+    <td valign="top">uninstalls Intel PROSet and drivers.</td>
+  </tr>
+</table>
+
+<h4>DxSetup.exe Public Properties</h4>
+<table border="1" cellpadding="4" cellspacing="0">
+	<tr>
+		<td valign="top" colspan="3">Property</td>
+		<td valign="top">Definition</td>
+    </tr>
+    
+	<tr>
+		<td class= "prop"  colspan="3">BD </td>
+		<td class= "def" >&quot;0&quot;,  do not install base drivers.
+		  <p><strong>&quot;1&quot;,  install the base drivers (default).</strong></p>
+		  <p><i><b>NOTE</b>: </i>BD should only be set 
+		    to 0 if the Base Drivers have already been installed prior to running DxSetup.exe</p></td>
+	</tr>
+    
+	<tr>
+    <td></td>
+		<td class= "prop"  colspan="2">DMIX</td>
+		<td class= "def">&quot;0&quot;, do not install Intel PROSet.
+		  <p><strong>&quot;1&quot;, install Intel PROSet (default). </strong>The DMIX property requires BD=1.</p></td>
+	</tr>
+	<tr>
+		<td></td><td></td>
+        <td class= "prop">ANS </td>
+		<td class= "def" >&quot;0&quot;, do not install ANS.
+		  <p><strong>&quot;1&quot;, install ANS (default).</strong> The ANS property requires DMIX=1.</p></td>
+	</tr>
+	<tr>
+		<td></td><td></td>
+      <td class= "prop">FCOE</td>
+		<td class= "def" ><strong>&quot;0&quot;, do not install Fibre Channel Over Ethernet (FCoE) using DCB (default).</strong>		  <p>&quot;1&quot;, install FCoE using DCB. The FCOE property requires DMIX=1.</p></td>
+	</tr>
+    <tr>
+		<td></td><td></td>
+        <td class= "prop">ISCSI</td>
+    	<td class= "def" ><strong>&quot;0&quot;,  
+    	  do not install iSCSI  using DCB (default).</strong>    	  <p>&quot;1&quot;, install 
+    	    iSCSI  using DCB. The ISCSI property requires DMIX=1.</p></td>
+  </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td class= "prop">POWERSHELL</td>
+      <td class= "def" ><p><strong>&quot;0&quot;, do not install the IntelNetCmdlets module (default).</strong></p>
+      <p>&quot;1&quot;, install the IntelNetCmdlets module. The POWERSHELL property requires DMIX=1.</p></td>
+    </tr>
+	<tr>
+    <td></td>
+		<td class= "prop"  colspan="2">SNMP</td>
+		<td class= "def" ><strong>&quot;0&quot;, do not install the SNMP Agent (default).</strong>		  <p>&quot;1&quot;, install 
+		    the SNMP Agent. The SNMP property requires BD=1.</p></td>
+	</tr>
+	<tr>
+	  <td class= "prop"  colspan="3">FORCE</td>
+	  <td class= "def" ><p><strong>&quot;0&quot;, check that the installed device   supports a feature (FCOE, iSCSI) and only install the feature if such a device is found (default).</strong></p>
+      <p>&quot;1&quot;, install the specified features regardless of the presence of supporting devices.</p></td>
+  </tr>
+	</table>
+<p>&nbsp;</p>
+<table class="note">
+	<tr>
+		<td valign="top">
+	    <img border="0" src="note.gif" width="28" height="21" /></td>
+		<td valign="top"><b>NOTES:</b>
+        <ul>
+			<li>If you specify a path for the log file, the path must exist. If 
+			you do not specify a complete path, the install log will be created 
+			in the current directory.</li>
+			<li>You do not need to specify default values. To install the base drivers, Intel PROSet, and ANS, the following examples are equivalent:
+            <p><code>DxSetup.exe</code></p>
+            <p><code>DxSetup.exe BD=1 DMIX=1 ANS=1</code></p></li>
+			<li>The ANS property should only be set to ANS=1 if DMIX=1 is set. 
+		  If DMIX=0 and ANS=1, the ANS=1 is ignored and only the base driver will be installed.</li>
+			<li>Even if FCOE=1 is passed, FCoE using DCB will not be installed if the 
+      operating system and installed adapters do not support it. If FORCE=1 is also passed, FCoE will be installed if the operating system supports it.</li>
+			<li>Even if ISCSI=1 is passed, iSCSI using DCB will not  be installed if the 
+      operating system and installed adapters do not support it.  If FORCE=1 is also passed, iSCSI will be installed if the operating system supports it.</li>
+			<li>Public properties are not case sensitive. No white space is allowed between characters. For example:
+		  </li>
+		</ul>
+		<blockquote>
+      <p><code>DxSetup.exe /qn DMIX=1</code></p>
+      <p>Any white space in &quot;DMIX=1&quot; makes the setting invalid.</p></blockquote>
+	  </td>
+	</tr>
+</table>
+<h3>Modify and Upgrade</h3>
+<p>You can use DxSetup.exe to modify or upgrade your drivers and software. If a feature is already installed, the public property for that feature will default to 1 and if a feature is not installed, the public property for that feature will default to 0. Running DxSetup.exe without specifying properties will upgrade all installed software. You can remove installed software (except for base drivers) by setting the property to 0. If you uninstall  PROSet (DMIX=0), all features that rely on PROSet will also be removed.</p>
+<h3>Command line examples</h3>
+<p>You can modify the paths for 
+different operating systems and CD layouts and apply the command line examples.
+</p>
+<ol>
+	<li>
+	<p class="numlst">The following launches a typical install silently:</p>
+<blockquote>
+	<p><code>DxSetup.exe /qn /liew install.log</code></p>
+</blockquote>
+<table class="note" style="margin-left: .5in">
+	<tr>
+		<td valign="top">
+    <img border="0" src="note.gif" width="28" height="21" /></td>
+		<td valign="top"><b>NOTE:</b> 
+		BD, ANS and DMIX are selected by default. </td>
+	</tr>
+</table></li>
+<li><p class="numlst">How to install components but deselect ANS. Set the ANS=0 
+in the command line:</p>
+<blockquote>
+	<p><code>DxSetup.exe /qn ANS=0 /liew install.log</code></p>
+</blockquote></li>
+
+	
+</ol>
+
+<hr />
+
+<h2><a name="install_on_core"></a>Using SetupBD.exe to Install Base Drivers on Windows Server* Core Operating Systems</h2>
+<table class="note">
+  <tr>
+    <td valign="top"><img border="0" src="note.gif" width="28" height="21" /></td>
+    <td valign="top"><b>NOTE:</b> If you want to use prosetcl.exe to configure your adapters, you must use DxSetup.exe to install drivers and Intel PROSet. SetupBD.exe only installs the base drivers.</td>
+  </tr>
+</table>
+
+<h3>Command Line Options</h3>
+<p> SetupBD.exe supports the following command line switches.&nbsp; </p>
+<table class="note">
+  <tr>
+    <td valign="top"><img border="0" src="note.gif" width="28" height="21" /></td>
+    <td valign="top"><b>NOTE:</b> You must include a space between 
+      switches.</td>
+  </tr>
+</table>
+&nbsp;
+<table border="1" cellpadding="4" cellspacing="0"  >
+  <tr>
+    <td><b>Switch</b></td>
+    <td><b>Description</b></td>
+  </tr>
+  <tr>
+    <td><b>/s</b></td>
+    <td>silent install</td>
+  </tr>
+  <tr>
+    <td><b>/r</b></td>
+    <td>force reboot (must be used with the /s switch)</td>
+  </tr>
+  <tr>
+    <td><b>/nr</b></td>
+    <td>no reboot (must be used with the /s switch. This switch is ignored if it 
+      is included with the /r switch)</td>
+  </tr>
+</table>
+<p>Examples:</p>
+<table border="1" cellpadding="4" cellspacing="0"  >
+  <tr>
+    <td><b>Option</b></td>
+    <td><b>Description</b></td>
+  </tr>
+  <tr>
+    <td valign="top">SetupBD</td>
+    <td valign="top"><p> Installs and/or updates the driver(s) and displays the GUI.</p></td>
+  </tr>
+  <tr>
+    <td valign="top">SetupBD /s</td>
+    <td valign="top"> Installs and/or updates the driver(s) silently.</td>
+  </tr>
+  <tr>
+    <td valign="top">SetupBD /s /r</td>
+    <td valign="top">Installs and/or updates the driver(s) silently and forces a reboot.</td>
+  </tr>
+  <tr>
+    <td valign="top">SetupBD /s /r /nr</td>
+    <td valign="top">Installs and/or updates the driver(s) silently and forces a reboot 
+      (/nr is ignored).</td>
+  </tr>
+</table>
+<h3>Other information</h3>
+<table class="note">
+  <tr>
+    <td valign="top"><img border="0" src="note.gif" width="28" height="21" /></td>
+    <td valign="top"><b>NOTES:</b>
+      <ul>
+        <li>If you install drivers on a system based on a server chipset and 
+          BIOS that are Intel I/OAT capable, the <b>/s</b> switch (silent install) forces a reboot without 
+        the <b>/r</b> switch. If you do not want the system to reboot, use the <b>/nr </b>switch.</li>
+        <li>For Intel&reg; I/O Acceleration Technology to function properly, you must reboot 
+          after driver installation.</li>
+      </ul></td>
+  </tr>
+</table>
+<p> You can use the <b>/r</b> and <b>/nr</b> switches only with a silent install 
+  (i.e. with the &quot;/s&quot; option).</p>
+  
+<hr />
+  
+
+<h2><a name="uninstall"></a>Uninstalling Drivers and Intel PROSet</h2>
+<p>Intel recommends you use Add/Remove Programs to uninstall Intel PROSet and the base drivers. If your operating system does not have a GUI installed, you can use  <a href="#dxsetup">DxSetup.exe</a> to uninstall the base drivers and Intel PROSet. </p>
+<p>If you only installed base drivers, you can use the PROUnstl.exe utility to remove them.</p>
+<table class="note">
+  <tr>
+    <td valign="top"><img border="0" src="note.gif" width="28" height="21" /></td>
+    <td valign="top"><b>NOTE:</b> PROUnstl.exe only removes the base drivers. Do not use this utility if Intel PROSet is installed on your system. Removing the base drivers without removing Intel PROSet will result in system instability.</td>
+  </tr>
+</table>
+<p>PROUnstl.exe supports the following command line switch:</p>
+
+<table border="1" cellpadding="4" cellspacing="0">
+  <tr>
+    <td><b>Switch</b></td>
+    <td><b>Description</b></td>
+  </tr>
+  <tr>
+    <td><b>/nogui</b></td>
+    <td>silent uninstall.</td>
+  </tr>
+</table>
+
+</body>
+</html>

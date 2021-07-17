@@ -1,0 +1,696 @@
+ /************************************************************************
+*                                                                       *
+*               INTEL CORPORATION PROPRIETARY INFORMATION               *
+*  This software is supplied under the terms of a license agreement or  *
+*  nondisclosure agreement with Intel Corporation and may not be copied *
+*   or disclosed except in accordance with the terms of that agreement. *
+*        Copyright (c) 2008 Intel Corporation. All Rights Reserved.     *
+*                                                                       *
+************************************************************************/
+/***********************************************************************\
+*
+* NAME:	Ncs2IDg.mof	
+* 
+* DESCRIPTION: Master MOF file with class definitions for the 
+*			   Intel PRO Network Diagnostic WMI Provider (802.3 schema).
+*
+* PREREQUISITE: Ncs2Cm.mof and Ncs2ICr.mof  [In that order]
+*
+* NOTE:	This file generates language neutral MOF for IntelNCS2 namespace.
+*		This file also generates ENU language specific MFL. 
+*
+\***********************************************************************/
+
+#pragma namespace ("\\\\.\\Root\\IntelNCS2")
+
+
+
+// ============================================================================
+// DiagTest class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), 
+Description("IANet_DiagTest  is the Intel Ethernet DiagTest class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticTest."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagTest : CIM_DiagnosticTest
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+   [Override ("Name")]
+   string Name = "Intel Ethernet Adapter Diagnostics";
+	
+   [Description(
+	"Some of the tests are grouped under specific categories."
+	 "Grouped is true if the test is grouped."): Amended
+   ]
+   boolean Grouped;
+
+   [Description(
+	 "Some of the tests are grouped under specific categories."
+	 "This attribute specifies the Id of the group under which this test belongs."
+	): Amended
+   ]
+   uint16 GroupId;
+
+   [Description(
+	  "This attribute specifies the Test Id ."
+	): Amended
+   ]
+   uint16 TestId;
+
+ 
+  //***Class methods
+       [Implemented, Description(
+          "The RunTest method executes this test for the specified "
+          "ManagedSystemElement (defined using the SystemElement input "
+          "parameter). Results of the test are stored in a Diagnostic"
+          "Result object, a reference to which is returned as the Result "
+          "output parameter. How the test should execute, i.e. its "
+          "settings, is defined in a DiagnosticSetting object (or by a "
+          "subclass of DiagnosticSetting). A reference to a Setting "
+          "object is specified using the Setting input parameter.  If a "
+          "reference is not passed into the method, then a default "
+          "DiagnosticSetting may be used. This default Setting is "
+          "associated with the DiagnoticTest using the DefaultSetting "
+          "relationship of the Core Model. \n"
+          "When RunTest starts execution, the settings, which are time sensitive, "
+	  "should be evaluated and captured. This is suggested since the "
+          "DiagnosticSetting object can be modified at any time, and therefore "
+          "the current test settings could be lost. \n"
+	  "The method's return codes are expected to adhere to the XML "
+          "return codes as they are introduced. Currently, the standard "
+          "return values are: \n"
+          "0 = OK (function succeeded, but the test itself may have "
+          "failed) \n"
+	  "1 = Unspecified Error (function failed for unspecified "
+          "reasons) \n"
+	  "2 = Not Implemented (function is not implemented for this "
+          "instance) \n"
+	  "3 = Out Of Resources (component could not allocate required "
+          "resources, e.g. memory, disk space, etc.) \n"
+          "In a subclass, the set of possible return codes could be "
+          "specified, using a ValueMap qualifier on the method. The "
+          "strings to which the ValueMap contents are 'translated' may "
+          "also be specified in the subclass as a Values array qualifier."):Amended
+        ]
+
+    uint32 RunTest([IN] CIM_ManagedSystemElement ref SystemElement,
+          [IN] CIM_DiagnosticSetting ref Setting,
+          [OUT] CIM_DiagnosticResult ref Result);
+        [Implemented, Description(
+          "Execution of this method will delete all instances of the "
+          "DiagnosticResultForMSE object, for this DiagnosticTest "
+          "and the specified ManagedSystemElement (defined using the "
+          "SystemElement input parameter). The DiagnosticResults "
+          "referenced in the DiagnosticResultForMSE instances will be "
+          "deleted.  Also the association DiagnosticResultForTest that "
+          "referees to the DiagnosticResult object, and this test will "
+          " be deleted.\n"
+
+	  "  One output parameter is defined - ResultsNotCleared "
+          "- which is a string array that lists the keys of the "
+          "DiagnosticResults which could not be deleted. This information "
+          "enables those Results to be revisited and either manually "
+          "removed, or other corrective action taken. \n"
+          "The method's return codes are expected to adhere to the XML "
+          "return codes as they are introduced. Currently, the standard "
+          "return values are: \n"
+	    "0 = OK (function succeeded, but the test itself may have "
+          "failed) \n"
+	    "1 = Unspecified Error (function failed for unspecified "
+          "reasons) \n"
+	    "2 = Not Implemented (function is not implemented for this "
+          "instance) \n"
+	    "3 = Out Of Resources (component could not allocate required "
+          "resources, e.g. memory, disk space, etc.) \n"
+          "In a subclass, the set of possible return codes could be "
+          "specified, using a ValueMap qualifier on the method. The "
+          "strings to which the ValueMap contents are 'translated' may "
+          "also be specified in the subclass as a Values array qualifier."):Amended
+        ]
+    uint32 ClearResults([IN] CIM_ManagedSystemElement ref SystemElement,
+          [OUT] String ResultsNotCleared[]);
+        [Implemented, Description (
+          "After invocation of this method and its completion, the "
+          "specified test(s) will be discontinued for the indicated "
+          "ManagedSystemElement (defined by the SystemElement input "
+          "parameter). The test to discontinue is specified using the "
+          "Result input parameter. If all instances of this test should "
+          "be stopped for the SystemElement, then the Result reference "
+          "should be NULL. Upon completion of the method, test status "
+          "and other information (such as PercentComplete) will be "
+          "stored in the DiagnosticResult instance defined by the Result "
+          "input parameter. The output parameter, TestingStopped, is "
+          "used as follows:\n"
+          " Set to TRUE if testing was successfully stopped. \n"
+          " Set to FALSE if the current test(s) can not be stopped. \n"
+          "If set to FALSE, testing will stop when the diagnostic is "
+          "able to do so safely. To determine if/when the testing is "
+          "stopped, check the TestState property in the DiagnosticResult "
+          "instance defined by the Result parameter. TestState will "
+          "change from \"In Progress\" to \"Stopped\" (from 4 to 5). \n"
+          "The method's return codes are expected to adhere to the XML "
+          "return codes as they are introduced. Currently, the standard "
+          "return values are: \n"
+	    "0 = OK (function succeeded, but the test itself may have "
+          "failed) \n"
+	    "1 = Unspecified Error (function failed for unspecified "
+          "reasons) \n"
+	    "2 = Not Implemented (function is not implemented for this "
+          "instance) \n"
+	    "3 = Out Of Resources (component could not allocate required "
+          "resources, e.g. memory, disk space, etc.) \n"
+          "In a subclass, the set of possible return codes could be "
+          "specified, using a ValueMap qualifier on the method. The "
+          "strings to which the ValueMap contents are 'translated' may "
+          "also be specified in the subclass as a Values array qualifier."):Amended
+        ]
+    uint32 DiscontinueTest([IN] CIM_ManagedSystemElement ref SystemElement,
+          [IN] CIM_DiagnosticResult ref Result,
+          [OUT] Boolean TestingStopped);
+};
+
+// ============================================================================
+// DiagSetting class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), 
+Description("IANet_DiagSetting  is the Intel Ethernet DiagSetting class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticSetting."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagSetting : CIM_DiagnosticSetting
+{
+  //***Class properties
+};
+
+// ============================================================================
+// DiagResult class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), 
+Description("IANet_DiagResult  is the Intel Ethernet DiagResult class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticResult."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagResult : CIM_DiagnosticResult
+{
+	//***Class properties
+	[Description (
+	"A textual descriptive name for the test."):Amended]
+    string PackageName;
+
+	//***Class properties
+	[Description (
+	"A textual descriptive name for the test."):Amended]
+    string Title;
+
+	//***Class properties
+	[Description (
+	"A textual descriptive name for the test."):Amended]
+    string Caption;
+
+[Description (
+	"A textual description of the test results"):Amended]
+    string Result;
+
+	[Description (
+	"One or more value/map results from the execution of the test."):Amended,
+	Values {"Passed" , "Failed", "Caution", "Test stopped", "Information", "NA", "Graph Excellent", "Graph Good", "Graph Adequate", "Graph Poor", "Graph Unknown"}:Amended	]
+    uint16 ResultCode;
+
+	[Description (
+	"Textual detail descriptions of the test results."):Amended]
+    string Description;
+
+[Description (
+	"Textual solution description."):Amended]
+    string Solution;
+
+
+	[Description (
+	"TestResultsAttr indicates the type of the result string"):Amended]
+    uint16 TestResultsAttr[];
+	[Description (
+	"TestResultIds indicates the result string Id's"):Amended]
+    uint32 TestResultIds[];
+    
+};
+
+// ============================================================================
+// DiagTestForMSE class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), Association,
+Description("IANet_DiagTestForMSE is the Intel Ethernet DiagTestForMSE class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticTestForMSE."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagTestForMSE : CIM_DiagnosticTestForMSE
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+   [  Override("Antecedent"),
+      Description("The test that may be run against a ManagedSystemElement."):Amended
+   ]
+   IANet_DiagTest REF Antecedent = NULL;
+   [  Override("Dependent"),
+      Description("The ManagedSystemElement that can be tested."):Amended
+   ]
+   IANet_PhysicalEthernetAdapter REF Dependent = NULL;
+};
+
+// ============================================================================
+// DiagResultForMSE class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), Association,
+Description("IANet_DiagResultForMSE is the Intel Ethernet DiagResultForMSE class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticResultForMSE."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagResultForMSE : CIM_DiagnosticResultForMSE
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+   [  Override("Result"),
+      Description("The diagnostic result."):Amended
+   ]
+   IANet_DiagResult REF Result = NULL;
+   [  Override("SystemElement"),
+      Description("The ManagedSystemElement to which the diagnostic result "
+                  "applies."):Amended
+   ]
+   IANet_physicalEthernetAdapter REF SystemElement = NULL;
+};
+
+// ============================================================================
+// DiagResultForTest class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), Association,
+Description("IANet_DiagResultForTest is the Intel Ethernet DiagResultForTest class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticResultForTest."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagResultForTest : CIM_DiagnosticResultForTest
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+   [  Override("DiagnosticResult"),
+      Description ("The result object."):Amended
+   ]
+   IANet_DiagResult REF DiagnosticResult = NULL;
+   [  Override("DiagnosticTest"),
+      Description ("The test that generated the result object."):Amended
+   ]
+   IANet_DiagTest REF DiagnosticTest = NULL;
+};
+
+// ============================================================================
+// DiagSettingForTest class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), Association,
+Description("IANet_DiagSettingForTest is the Intel Ethernet DiagSettingForTest class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticSettingForTest."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagSettingForTest : CIM_DiagnosticSettingForTest
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+   [  Override("Element"),
+      Description ("The Test that can use the Setting object.."):Amended
+   ]
+   IANet_DiagTest REF Element = NULL;
+   [  Override("Setting"),
+      Description ("The test that generated the result object."):Amended
+   ]
+   IANet_DiagSetting REF Setting = NULL;
+};
+
+// ============================================================================
+// DiagResultInPackage class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), 
+Description("IANet_DiagResultInPackage  is the Intel Ethernet DiagSetting class. "
+                "It's a subclass of the abstract base class CIM_DiagnosticSetting."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagResultInPackage : CIM_DiagnosticResultInPackage
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+   [  Override("PackageResult"),
+      Description ("The package result object."):Amended
+   ]
+   IANet_DiagResult REF PackageResult = NULL;
+   [  Override("Result"),
+      Description ("The subtest result object."):Amended
+   ]
+   IANet_DiagResult REF Result = NULL;
+};
+
+// ============================================================================
+// DiagConnectionResultStrings class
+// This class is for NCSProv internal use.
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Diag.dll"), Association,
+Description("DiagConnectionResultStrings is the Intel Ethernet DiagConnectionTestResults class.  This provides localized connection test result strings and is for NCSProv internal use."):Amended,  LOCALE(0x409)
+]
+class IANet_DiagConnectionResultStrings 
+{
+  //***Class properties
+  //*  default values for unspecified parameters...
+//	[Override ("TeamPrefix"), Description (
+//		"Team Prefix contains the prefix for all team names."):Amended, 
+//		ArrayType ("Indexed"),
+//		Values {
+//		/* 0 */ "TEAM : ", 
+//		/* 1 */ "Reserved"
+//		} : Amended]
+//		uint16 TeamPrefix[];
+
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Connection Test", 
+		/* 1 */ "Reserved"
+		} : Amended]
+		uint16 Title;
+    
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Connection test - Using another connection", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 Other;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Connection test passed.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 Passed;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Connection test failed.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 Failed; 
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Connection test in progress.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 InProgress;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Connection test stopped.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 Stopped;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This test is already running.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 ALREADY_RUNNING;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Cannot run the connection test.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 CANNOT_RUN_TEST;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This adapter does not have link.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 HAS_NO_LINK;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Make sure the cable is connected and the speed and duplex settings are configured correctly on the adapter and link partner.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 HAS_NO_LINK_DESC;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "No servers configured.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 NO_SERVERS_CONFIGURED;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This test relies on a response from a gateway, DNS, DHCP or WINS server. If none of these servers are present on your network, the test cannot be run.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 NO_SERVERS_CONFIGURED_DESC;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Cannot run this test because this adapter is included in a team or VLAN.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 BOUND_TO_ANS;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "TCP/IP protocol not configured.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 NOT_BOUND_TO_TCPIP;
+
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "To run this test, this connection must be configured to use the TCP/IP protocol.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 NOT_BOUND_TO_TCPIP_DESC;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Invalid IP address.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 INVALID_STATIC_IP;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "The IP address for this connection is invalid.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 INVALID_STATIC_IP_DESC;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This connection obtained an IP address from a DHCP server.", 
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 USING_DHCP_VALID_ADDRESS; 
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This adapter is configured to obtain an IP address automatically but no DHCP server is present on the network. Windows selected an IP address using Alternate Private IP Addressing.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 USING_APIPA_ADDRESS;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Invalid IP address.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 USING_DHCP_INVALID_ADDRESS;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "The IP address for this connection is invalid.  Possible cause: The system may be waiting for a response from a DHCP server.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 USING_DHCP_INVALID_ADDRESS_DESC;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This connection is configured to use a static IP address.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 STATIC_IP_CONFIG;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "No gateway is available for this connection",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 GATEWAY_NO_SERVER;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping Gateway %1: Passed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 GATEWAY_PING_PASSED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping Gateway %1: Failed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 GATEWAY_PIN_FAILED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "No DNS server is available for this connection",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DNS_NO_SERVER;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping DNS %1: Passed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DNS_PING_PASSED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping DNS %1: Failed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DNS_PIN_FAILED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "No WINS server is available for this connection",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 WINS_NO_SERVER;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping WINS %1: Passed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 WINS_PING_PASSED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping WINS %1: Failed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 WINS_PIN_FAILED;
+    
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "No DHCP server is available for this connection",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DHCP_NO_SERVER;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping DHCP %1: Passed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DHCP_PING_PASSED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Ping DHCP %1: Failed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DHCP_PIN_FAILED;
+    
+	// Online Link Test
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "This adapter is configured to force the speed to a low speed.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 FORCE_LOW_SPEED;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Auto Negotiation is not complete on this adapter.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 AUTONEG_PROGRESS;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "The cable connected to this port is missing pairs needed to connect at 1000 Mbps.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 CAT5_CABLE_NEEDED; 
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "The adapter is configured to negotiate the speed with the link partner, but 1000 Mbps has not been chosen as one of the possible speeds.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 NO_1000_MBPS_CHOSEN; 
+     
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Link speed has been reduced because the Power Saver option is enabled.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 POWER_SAVE_MODE;
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "The adapter is configured to force the speed to a low speed.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 SELF_FORCE_LOW_SPEED; 
+    
+	[ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Link speed: %1Mbps. The link partner is not capable of higher speeds.",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 LINK_PARTNER_NO_1000;
+
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Unknown",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DIAG_TEST_STATUS_UNKNOWN;
+
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Other",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DIAG_TEST_STATUS_OTHER;
+
+
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Passed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DIAG_TEST_STATUS_PASSED;
+
+
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Failed",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DIAG_TEST_STATUS_FAILED;
+
+
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "In Progress",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DIAG_TEST_STATUS_INPROGRESS;
+
+
+    [ArrayType ("Indexed"),
+		Values {
+		/* 0 */ "Stopped",
+		/* 1 */ "Reserved"
+		} : Amended]
+    uint16 DIAG_TEST_STATUS_STOPPED;
+};

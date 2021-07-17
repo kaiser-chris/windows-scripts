@@ -1,0 +1,119 @@
+<html xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css">
+.style1 {
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Overview</h1>
+<p>Intel&reg; Ethernet FCoE (Fibre Channel over Ethernet)&nbsp; is designed for the 
+82599 and X540-based 10 Gigabit family of PCI-Express 
+server adapters. This guide covers hardware and software installation, setup procedures, known issues and troubleshooting tips for installing and booting the system using these adapters.</p>
+<p class="MsoNormal">Fibre Channel over Ethernet (FCoE) is defined as the 
+encapsulation of standard Fibre Channel (FC) protocol frames as data within 
+standard Ethernet frames.<span style="mso-spacerun:yes"> </span>This link-level 
+encapsulation, teamed with an FCoE-aware Ethernet-to-FC gateway, acts to extend 
+an FC fabric to include Ethernet-based host connectivity.<span style="mso-spacerun:yes">&nbsp;
+</span>The FCoE specification focuses on encapsulation of FC frames specific to 
+storage class traffic, as defined by the Fibre Channel FC-4 FCP specification.<span style="mso-spacerun:yes">
+</span>FC is a market-leading technology used to create Storage Area Networks 
+(SANs).<span style="mso-spacerun:yes">&nbsp;</span></p>
+<p class="MsoNormal"><a href="dcb.htm">Data Center Bridging (DCB)</a>  is a collection of standards-based extensions to   classical Ethernet. It provides a lossless data center transport layer that   enables the convergence of LANs and SANs onto a single unified fabric. In   addition to supporting Fibre Channel 
+over Ethernet (FCoE) and iSCSI over DCB, it enhances the   operation of other business-critical traffic.</p>
+<p class="style1"><img alt="" src="FCoE.gif"></p>
+<hr>
+<h2 style="MARGIN-TOP: 5px"><a name="VN2VN"></a>FCoE VN to VN (VN2VN) Support</h2>
+<p><strong>Key Terms</strong></p>
+The following table defines key VN2VN terms:</p>
+<table width="100%" border="1">
+  <tr>
+    <td width="29%">N_Port</td>
+    <td width="71%">A device port  that generates/terminates FC-4 channel  traffic</td>
+  </tr>
+  <tr>
+    <td>ENode (FCoE  Node)</td>
+    <td>A Fiber Channel node (FC-FS-3) that is able to  transmit FCoE frames using one or more ENode MACs</td>
+  </tr>
+  <tr>
+    <td>FCoE_LEP  (FCoE Link End-Point)</td>
+    <td>The data forwarding component of an FCoE Entity that  handles FC frame encapsulation/decapsulation, and transmission/reception of  encapsulated frames through a single Virtual Link</td>
+  </tr>
+  <tr>
+    <td>Lossless Ethernet network</td>
+    <td>An Ethernet  network composed only of full duplex links, Lossless Ethernet MACs, and  Lossless Ethernet bridging elements</td>
+  </tr>
+  <tr>
+    <td>Virtual Link</td>
+    <td>The  logical link connecting two FCoE_LEPs</td>
+  </tr>
+  <tr>
+    <td>VN_Port (Virtual  N_Port)</td>
+    <td>An instance of the FC-2V sublevel of Fibre Channel that operates as an  N_Port (see FC-FS-3) and is dynamically instantiated on successful completion  of a FIP  FLOGI or FIP NPIV  FDISC Exchange</td>
+  </tr>
+  <tr>
+    <td>VN_Port  MAC address</td>
+    <td>The MAC address used by an ENode for a particular VN_Port</td>
+  </tr>
+</table>
+
+<p><strong>What is VN to VN?</strong></p>
+<p>FCoE VN toVN s<span style="MARGIN-TOP: 5px">upport</span>, also called VN2VN, is a   standard  for connecting two end-nodes (ENodes) directly using FCoE. An ENode can create a VN2VN virtual link with another remote ENode by not  connecting to FC or FCoE switches (FCFs) in between, so neither port zoning nor advance  fibre channel services is required. The storage software has to control  the access and security of LUNs using LUN masking. The VN2VN fabric may have a  lossless Ethernet switch  between the ENodes. This will allow multiple ENodes to participate  in creating more than one VN2VN virtual link in the VN2VN fabric.  VN2VN has two  operational modes:  Point to Point S(PT2PT) and Multipoint. </p>
+
+<TABLE class="note">
+  <tr>
+	<TD valign="top" width="28"><img  border="0" src="note.gif" width="28" height="21"></TD>
+	<TD valign="top"><strong>NOTE:</strong> The  mode of operation is  used only during initialization.</TD>
+  </tr>
+</TABLE>
+<p><strong>Point to Point (PT2PT) Mode</strong></p>
+<p>In Point to Point mode, there are only two ENodes, and they are connected either  directly or thru  a lossless Ethernet switch::</p>
+<p><img src="firmware_clip_image_VN2VN_PointToPoint.png" alt="VN2Vn Support - PointToPoint" width="623" height="423"></p>
+<strong>MultiPoint Mode</strong>
+<p>If more than two ENodes are  detected in the VN2VN fabric, then all nodes should operate in Multipoint mode: </p>
+<p><img src="firmware_clip_image_VN2VN_MultiPoint.png" alt="VN2VN Support - MultiPoint" width="624" height="376"></p>
+<h3>Enabling VN2VN in Microsoft Windows</h3>
+<p>To enable VN2VN in Microsoft Windows:</p>
+<ol>
+  <li>Start Windows Device Manager.</li>
+  <li>Open the appropriate FCoE miniport property sheet (generally under Sorage controllers) and click on the Advanced tab.</li>
+  <li>Select the VN2VN setting and choose &quot;Enable.&quot;</li>
+</ol>
+<hr>
+<h2>Installation Overview</h2>
+<p>For information on system requirements see <a href="fcoe_system_requirements.htm">System 
+Requirements</a>.</p>
+<ol>
+	<li>Install FCoE-capable adapters in the system. For a list of supported adapters, see
+	<a href="fcoe_supported_hw.htm">Supported Adapters</a>.</li>
+	<li>After following the installation and configuration procedures, if you are having problems, refer to <span style="text-decoration: none"><a href="fcoe_known_issues.htm">Known Issues</a></span>.</li></ol>
+<h2>FCoE Infrastructure - Installation and Configuration</h2>
+<p>The following is a typical FCoE setup flow:</p>
+<ol>
+	<li>Typical FCoE-Enabled <a href="fcoe_switch_config.htm">Fabric Switch Configuration</a></li>
+	<li>If you want to Boot from an FCoE LUN
+	<ul>
+		<li><a href="installation.htm">Intel&reg; Ethernet FCoE  Boot Configuration</a></li>
+		<li><a href="installation.htm#DMIX">Configure Intel&reg; Ethernet FCoE Boot Options from Intel&reg; Windows* Device Manager</a></li>
+	</ul></li>
+	<li>Install Operating System
+	  <ul>
+		<li><a href="fcoe_linux_installation.htm">Linux Installation and Configuration</a></li>
+		<li><a href="fcoe_windows_installation.htm">Microsoft* Windows Server*  Installation and Configuration</a></li>
+	</ul></li>
+	<li>Configure Intel&reg; Ethernet FCoE/DCBx
+	  <ul>
+		<li>Configure DCBx</li>
+		<li>Configure FCoE<br></li>
+	</ul>
+	</li>
+</ol>
+
+</body>
+</html>

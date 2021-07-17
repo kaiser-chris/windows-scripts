@@ -1,0 +1,14 @@
+IOUtil
+======
+
+IOUtil will allow the adapter to be configured to change whether or not it will request IO map mode access to the device.  
+
+This utility is designed for system integrators. Only use it if your system has a high port density or you know you don’t need IO mapped access to the card.  Disabling IO access will prevent some pre-boot and DOS driver technologies from working.
+
+
+Copyright (C) 2010, Intel Corporation.  All rights reserved.
+
+Intel Corporation assumes no responsibility for errors or omissions in 
+this document. Nor does Intel make any commitment to update the information 
+contained herein.
+

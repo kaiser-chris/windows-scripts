@@ -1,0 +1,717 @@
+/************************************************************************
+*                                                                       *
+*               INTEL CORPORATION PROPRIETARY INFORMATION               *
+*  This software is supplied under the terms of a license agreement or  *
+*  nondisclosure agreement with Intel Corporation and may not be copied *
+*  or disclosed except in accordance with the terms of that agreement.  *
+*  Copyright (c) 2008-2013 Intel Corporation. All Rights Reserved.      *
+*                                                                       *
+************************************************************************/
+/***********************************************************************\
+*
+* NAME:	Ncs2ITm.mof	
+* 
+* DESCRIPTION: Master MOF file with class definitions for the 
+*			   Intel PRO Network Adapter Teams (802.3 schema).
+*
+* PREREQUISITE: Ncs2Cm.mof and Ncs2ICr.mof  [In that order]
+*
+* NOTE:	This file generates language neutral MOF for IntelNCS2 namespace.
+*		This file also generates ENU language specific MFL. 
+*
+\***********************************************************************/
+
+#pragma namespace ("\\\\.\\Root\\IntelNCS2")
+
+
+// ============================================================================
+// Logical Ethernet Adapter Class
+// ============================================================================
+[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+Description("IANet_LogicalEthernetAdapter concrete class objectifies "
+"the general network characteristics of the Intel NIC Team portrayed as a Logical NIC. In this class, "
+"the lower level networking properties are presented."):Amended,  LOCALE(0x409)
+]
+class IANet_LogicalEthernetAdapter : IANet_EthernetAdapter
+{
+
+};
+
+
+// ============================================================================
+// Team of Adapters Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+		 Description("IANet_TeamOfAdapters class objectifies "
+		 "the team properties of an AFT or other team. These are the properties which "
+		 "cannot be attributed to a particular adapter in the team."):Amended,  LOCALE(0x409)
+		]
+class IANet_TeamOfAdapters : CIM_ExtraCapacityGroup
+{
+	[Override ("TeamPrefix"), Description ("Team Prefix contains the prefix for all team names."):Amended, 
+	ArrayType ("Indexed"),
+	Values {
+	/* 0 */ "TEAM : ", 
+	/* 1 */ "Reserved"
+	} : Amended]
+    uint16 TeamPrefix[];
+    
+    [Description (
+		"Indicates the current status of the team."):Amended,
+		ValueMap{"0", "1", "2", "3"}:Amended,
+		Values {"Disabled", "Link Up", "Link Down", "Not Present"} : Amended
+	]
+    uint16 DeviceStatus;
+
+    [Description("Specifies the current status of the team."):Amended] 	
+    string DeviceStatusString;
+	
+	[Description("AdapterCount is the number of adapters currently in this team."):Amended
+	] 	
+ 	uint32 AdapterCount;
+	
+	[Description("Specifies the name of the team, including prefix."):Amended] 	
+ 	string TeamName;
+
+	[Description("Specifies the name of the team."):Amended] 	
+ 	string Team;
+
+	[Description("MaxAdapterCount is the maximum number of adapters that can be placed in this team."):Amended]
+	uint32 MaxAdapterCount;
+
+	[Read, Write, Description("TeamingMode is the type of the current team."):Amended,
+	ValueMap {"0", "1", "2", "4", "5", "6"}:Amended , 
+	Values {"Adapter Fault Tolerance", "Adaptive Load Balancing", "Static Link Aggregation", "IEEE 802.3ad Dynamic Link Aggregation", "Switch Fault Tolerance", "Virtual Machines Load Balancing"}:Amended ] 	 
+    uint32 TeamingMode;
+
+	[Read, Write, Description("Specifies the team mode of the team."):Amended]
+	string TeamMode;
+	
+	[Description("MFOEnabled represents the MFO enabled/disabled in the current team."):Amended]
+	boolean MFOEnabled;
+	
+	[Description("LinksecEnabled is set to true if all the members on the team are LinksecMode enabled."):Amended]
+	boolean LinksecEnabled;
+	
+	[Description("TeamMacAddress is the configured MAC address of this team."):Amended
+	] 	
+ 	string TeamMacAddress;
+ 	
+ 	[Description("BoundToHyperV represents the Hyper-V enabled/disabled in the current team. "):Amended] 	
+ 	boolean BoundToHyperV;
+ 	
+ 	[Description("The property contains the device unique identifier of the device currently set as the primary device on this team, if one has been specified."):Amended] 	
+ 	string PrimaryAdapter;
+
+	[Description("This property contains the device unique identifier of the device currently set as the secondary device on this team, if one has been specified."):Amended] 	
+ 	string SecondaryAdapter;
+
+	[Description("This property contains a list of all the devices that are member of this team."):Amended] 	
+ 	string TeamMembers[];
+
+	[Description("VLANBoundToHyperV represents the Hyper-V enabled/disabled on a VLAN in the current team. "):Amended] 	
+ 	boolean VLANBoundToHyperV;
+
+	[Description (
+	"TestSwitchConfiguration tests the switch configuration to make sure that the team "
+	"is functioning correctly with the switch. This test could be used to ensure that "
+	"link partners i.e. a device that an adapter links to, such as another adapter, "
+	"a hub, a switch, etc. support the chosen adapter teaming mode. For example, if "
+	"the adapter is a member of a Link Aggregation team, this test can verify that "
+	"link partners connected to the adapter support Link Aggregation." 
+	):Amended, implemented 
+	]
+	uint32 TestSwitchConfiguration(
+		   [	IN, 
+                ValueMap {"0","1","2"}:Amended, 
+                Values {"Start", "Cancel", "Results"}: Amended
+           ] 
+           uint32 Cmd,
+ 
+           [	OUT,
+                ValueMap {"0","1","2"}: Amended, 
+                Values {"OK", "Error", "Progress"}: Amended
+           ]
+	   uint32 Status,
+	   [OUT]
+ 	   uint16 CauseMessageId[],
+           [OUT]
+           string strCause[],
+	   [OUT]
+ 	   uint16 SolutionMessageId[],
+           [OUT]
+           string strSolution[]
+
+	);
+
+	[Description (
+	"CreateTeam adds a new Intel NIC Team to the system.  The 1st input parameter Adapters "
+	"is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+	"TeamingMode is the desired mode of the team to be created and TeamName is the unique name "
+	"to be given to the new team."
+	):Amended, implemented, Static
+	]
+	uint32 CreateTeam(
+		[IN]	IANet_PhysicalEthernetAdapter REF Adapters[],
+		[IN, 
+		 ValueMap {"0", "1", "2", "4", "5","6"}:Amended , 
+		 Values {"Adapter Fault Tolerance", "Adaptive Load Balancing", "Static Link Aggregation", "IEEE 802.3ad Dynamic Link Aggregation", "Switch Fault Tolerance", "Virtual Machines Load Balancing"}:Amended]  uint32 TeamingMode,
+		[IN]  string TeamName,
+		[IN]  boolean MFOEnable,		
+		[OUT] IANet_TeamOfAdapters REF TeamPath
+	);
+	
+	[Description (
+	"CreateTeamEx creates a new Intel NIC Team on the system.  The first input parameter Adapters[],"
+	"is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+	"The second parameter, TeamingMode is the desired mode of the team to be created and the third parameter, TeamName is the unique name "
+	"to be given to the new team.  The fourth parameter, PerformanceProfile is the desired performance profile to be set for the team."
+	"The remaining parameters are reserved for later use."
+	):Amended, implemented, Static
+	]
+	uint32 CreateTeamEx(
+		[IN]	IANet_PhysicalEthernetAdapter REF Adapters[],
+		[IN, 
+		 ValueMap {"0", "1", "2", "4", "5","6"}:Amended , 
+		 Values {"Adapter Fault Tolerance", "Adaptive Load Balancing", "Static Link Aggregation", "IEEE 802.3ad Dynamic Link Aggregation", "Switch Fault Tolerance", "Virtual Machines Load Balancing"}:Amended]  uint32 TeamingMode,
+		[IN]  string TeamName,
+		[IN]  uint32 PerformanceProfile,
+		[IN]  uint32 Reserved1,
+		[IN]  uint32 Reserved2,
+		[OUT] IANet_TeamOfAdapters REF TeamPath
+	);
+
+	[Description ("The CreateTeam2Ex method creates a new Intel NIC Team on the system.  The Adapters parameter is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+	"The TeamMode parameter specifies new mode of the team.  The TeamName parameter specifies the name of the team.  The PerformanceProfile parameter specifies the performance profile for the team.  The remaining parameters are reserved for later use."):Amended, implemented, Static]
+	uint32 CreateTeam2Ex
+	(
+		[IN]	IANet_PhysicalEthernetAdapter REF Adapters[],
+		[IN]	string TeamMode,
+		[IN]	string TeamName,
+		[IN]	uint32 PerformanceProfile,
+		[IN]	uint32 Reserved1,
+		[IN]	uint32 Reserved2,
+		[OUT]	IANet_TeamOfAdapters REF TeamPath
+	);
+
+	[Description (
+	"RenameTeam changes the name of an existing Intel NIC Team in the system.  The input parameter"
+	"TeamName is the unique new name to be given to the existing team."
+	):Amended, implemented
+	]
+	uint32 RenameTeam(
+		[IN]  string TeamName
+	);
+
+	[Description (
+	"ValidateAddAdapters validates the adapters which will be added to this team. The 1st input parameter Adapters "
+	"is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+	"ValResult is the validated result."
+	):Amended, implemented
+	]
+	uint32 ValidateAddAdapters(
+		[IN]	IANet_PhysicalEthernetAdapter REF Adapters[],
+		[IN]	uint32 TeamingMode,
+		[OUT]   WarningMessageObj WarningMessages[]		
+	);
+
+	[Description ("The ValidateAddAdaptersEx method returns information related to adding a new member to the team. The Adapters parameter is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+	              "The TeamMode parameter specifies the new team mode.  The WarningMessages object parameter returns any error messages associated with modifying the team."):Amended, implemented]
+	uint32 ValidateAddAdaptersEx
+	(
+		[IN]	IANet_PhysicalEthernetAdapter REF Adapters[],
+		[IN]	string TeamMode,
+		[OUT]   WarningMessageObj WarningMessages[]		
+	);
+	
+	[Description (
+	"ValidateNewTeamMembers validates the adapters during the creation of a new team. The 1st input parameter NewAdapters "
+	"is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+	"ValResultNewTeam is the validated result."
+	):Amended, implemented, Static
+	]
+	uint32 ValidateNewTeamMembers(
+		[IN]	IANet_PhysicalEthernetAdapter REF NewAdapters[],
+		[IN]    uint32 NewTeamMode,	
+		[OUT]   WarningMessageObj WarningMessages[]	
+	);
+
+	[Description ("The ValidateNewTeamMembersEx method returns information related to creating a new team.  The NewAdapters parameter is a reference to an array of IANet_PhysicalEthernetAdapter which will be added to this team."
+			      "The NewTeamMode parameter specifies the team mode of the new team.  The WarningMessages object parameter returns any error messages associated with create the new team."):Amended, implemented, Static]
+	uint32 ValidateNewTeamMembersEx
+	(
+		[IN]	IANet_PhysicalEthernetAdapter REF NewAdapters[],
+		[IN]    string NewTeamMode,	
+		[OUT]   WarningMessageObj WarningMessages[]	
+	);
+		
+	[Description (
+	"ValidateSetting validates the member adapter setting. " 
+	"Value is the setting value. SettingName is the " 		
+	"adapter setting. ValResult is the validated result."
+	):Amended, implemented
+	]
+	uint32 ValidateSetting(
+		[IN]	string SettingName,
+		[IN]    sint64 Value,
+		[OUT]   WarningMessageObj WarningMessages[]		
+	);
+	
+	[Description (
+	"ValidateTeamName validates the name of the team. The only input parameter is the name of the team.  A ValResult of zero indicates that the name is valid."
+	):Amended, implemented, Static
+	]
+	uint32 ValidateTeamName(
+		[IN]    string TeamName,
+		[OUT]   WarningMessageObj WarningMessages[]		
+	);
+
+	[Description (
+	"ValidateTeamMode validates the mode of the team. The only input parameter is the mode or type of the team.  A ValResult of zero indicates that the mode is compatible with all team members."
+	):Amended, implemented
+	]
+	uint32 ValidateTeamMode(
+		[IN]    uint32 TeamingMode,
+		[OUT]   WarningMessageObj WarningMessages[]		
+	);
+
+	[Description ("The ValidateTeamModeEx method returns information related to changing the mode of the team. The TeamMode parameter specifies new mode or type of the team."
+	              "The WarningMessages object parameter returns any warning messages associated with changing the team mode."):Amended, implemented]
+	uint32 ValidateTeamModeEx
+	(
+		[IN]    string TeamMode,
+		[OUT]   WarningMessageObj WarningMessages[]		
+	);
+
+	[Description ("The ValidateAndSetAdapterPriority sets the adapter priorities for the team."):Amended, implemented]
+	uint32 ValidateAndSetAdapterPriority
+	(
+		[IN]	IANet_PhysicalEthernetAdapter REF PrimaryAdapter,
+		[IN]	IANet_PhysicalEthernetAdapter REF SecondaryAdapter,	
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj WarningMessages[]	
+	);	
+};
+
+
+
+
+// ============================================================================
+// Teamed Member Adapter class 
+// ============================================================================
+		[Aggregation, dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), Association,
+		 Description("IANet_TeamedMemberAdapter objectifies "
+		 "the properties of an individual member of an Intel adapter team. "
+		 "Those properties attributed to the team as a whole will be found, not here "
+		 "but in IANet_TeamOfAdapters."):Amended,  LOCALE(0x409)
+		]
+class IANet_TeamedMemberAdapter : CIM_NetworkAdapterRedundancyComponent
+{
+		
+		[write, 
+		 Description ("AdapterFunction describes how the adapter is used in "
+		 "the team."):Amended,
+		 ValueMap {"0", "1", "2", "3"}:Amended, 
+		 Values {"Unknown", "Primary Adapter", "Secondary Adapter", "Other"}:Amended ] 	 
+    uint16 AdapterFunction;
+
+		[Description ("AdapterStatus describes the adapter's status within the team."):Amended,
+		 write, ValueMap {"0", "1", "2", "3"}:Amended, 
+		 Values {"Unknown", "Active", "StandBy", "InActive"}:Amended ] 	 
+    uint16 AdapterStatus;
+
+     [write, Override("GroupComponent"), 
+       Description (
+        "The RedundancyGroup representing a set of load balanced "
+        "NetworkAdapters."):Amended
+      ]
+    IANet_TeamOfAdapters REF GroupComponent;
+      [write, Override("PartComponent"), 
+       Description (
+        "The Network Adapter(s) belonging to the RedundancyGroup."):Amended
+      ]
+    IANet_PhysicalEthernetAdapter REF PartComponent;
+
+};
+
+
+
+// ============================================================================
+// Network Virtual Adapter class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), Association, Description (
+		 "NetworkVirtualAdapter describes that an instance of Network "
+         "Adapter is actually the result of several Adapters "
+         "participating in a load balanced RedundancyGroup."):Amended,  LOCALE(0x409)
+		]
+class IANet_NetworkVirtualAdapter : CIM_NetworkVirtualAdapter
+{
+		[Override ("SystemElement"), 
+		 Description ("The 'virtual' NetworkAdapter."):Amended
+		]
+    IANet_LogicalEthernetAdapter REF SystemElement;
+		[Override ("SameElement"), 
+		 Description (
+    	"The ExtraCapacity RedundancyGroup that describes the load "
+    	"balancing. The result of the load balancing is the 'virtual' "
+    	"Adapter.") :Amended
+		]
+   	IANet_TeamOfAdapters REF SameElement;
+};
+
+
+// ============================================================================
+// Intel IANet_TeamSetting Abstract Base Class
+// ============================================================================
+		[Abstract,  provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+		 Description("IANet_TeamSetting objectifies Team instance related "
+		 "driver and network device settings. IANet_TeamSetting is an "
+		 "Abstract superclass for a set of concrete classes of different "
+		 "types.  This set of classes allows open ended usage of a variable "
+		 "number of settings." 
+		):Amended,  LOCALE(0x409)
+		]
+class IANet_TeamSetting : IANet_Setting
+{
+	[Description("Specifies name of the team the setting is associated with."):Amended]	
+	string TeamName;
+};
+
+
+// ============================================================================
+// TeamSetting Int Class
+// ============================================================================
+
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+		 Description("IANet_TeamSettingInt objectifies Team related "
+		 "driver and network device settings. IANet_TeamSettingInt " 
+		 "specifically handles Integer settings. The following "
+		 "constraints are placed on the CurrentValue and default value:\n"
+		 "	min <= CurrentValue <= max\n"
+		 "	( CurrentValue - base ) is a multiple of step\n"):Amended,  LOCALE(0x409)]
+class IANet_TeamSettingInt : IANet_TeamSetting
+{
+		[Description(
+		 "Min is the minimum value that the integer can take."):Amended]
+	sint64 min;
+
+		[Description(
+		 "Max is the maximum value that the integer can take."):Amended]
+	sint64 max;
+
+		[Description(
+		 "Step is the granularity of the integer value."):Amended]
+	sint64 step;
+
+		[Description(
+		 "Base is the root from which the integer value may take values. i.e. "
+		 " CurrentValue - base is a multiple of step."):Amended]
+	uint64 base;
+
+		[Description(
+		 "DefaultValue is the initial value of the parameter."):Amended]	
+	sint64 DefaultValue;
+
+		[Write, Description(
+		 "CurrentValue is the actual value of the parameter - this is the only attribute that "
+		 "the user can change."):Amended]	
+	sint64 CurrentValue;
+
+	[Write, Description("RegistryValue is the actual value of the parameter."):Amended]	
+	sint64 RegistryValue;
+
+		[Description(
+		 "Scale is unit of measurement to set or estimate series of marks "
+		 "or points at known intervals to measure value of the parameter."):Amended]	
+	sint64 Scale;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();	
+};
+
+// ============================================================================
+//  Team Setting Enum Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+		 Description("IANet_TeamSettingEnum objectifies Team related "
+		 "driver and network device settings. IANet_TeamSettingEnum " 
+		 "specifically handles Enumeration settings"):Amended,  LOCALE(0x409)
+		]
+class IANet_TeamSettingEnum : IANet_TeamSetting
+{
+		[Description(
+		 "PossibleValues is an array of the possible values allowed for the enum."):Amended
+		]	
+	sint64 PossibleValues[];
+		
+		[Description(
+		 "DescriptionMap describes what each value means."):Amended
+		]	
+	string DescriptionMap[];
+		
+		[write, Description(
+		 "CurrentValue is the current setting for this parameter."):Amended
+		]	 
+	sint64 CurrentValue;
+
+	[write, Description("RegistryValue is the current setting for this parameter."):Amended]	 
+	sint64 RegistryValue;
+		
+		[Description(
+		 "DefaultValue is the initial setting for this value."):Amended
+		]
+	sint64 DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Team Setting Slider Class
+// ============================================================================
+    [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+    Description("IANet_TeamSettingSlider objectifies Team related "
+    "driver and network device settings. IANet_TeamSettingSlider " 
+    "specifically handles Slider settings"):Amended,  LOCALE(0x409)
+    ]
+class IANet_TeamSettingSlider : IANet_TeamSetting
+{
+		[Description(
+		 "PossibleValues is an array of all the possible values.  The values "
+		 "should be arranged with the first value on the left of the slider and "
+		 "the last value on the right. "):Amended
+		]
+	sint64 PossibleValues[];
+		[write, Description(
+		 "CurrentValue is the current setting for this parameter."):Amended
+		] 
+	sint64 CurrentValue;
+
+		[Description(
+		 "DefaultValue is the initial setting for this parameter."):Amended
+		]
+	sint64 DefaultValue;
+		
+		[Description(
+		 "FirstLabel is the label that should be displayed on the left of the slider."):Amended
+		]
+	string FirstLabel;
+		[Description(
+		 "LastLabel is the label that should be displayed on the right of the slider."):Amended
+		]
+	string LastLabel;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Team Setting Multi Selection Class
+// ============================================================================
+    [dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+    Description("IANet_TeamSettingMultiSelection objectifies Team related "
+    "driver and network device settings. IANet_TeamSettingMultiSelection " 
+    "specifically handles Multi Selection settings."):Amended,  LOCALE(0x409)
+    ]
+
+class IANet_TeamSettingMultiSelection : IANet_TeamSetting
+{
+		[Description(
+		 "PossibleValues is an array of all the possible selections."):Amended
+		]
+	sint64 PossibleValues[];
+		[Description(
+		 "DescriptionMap is an array of descriptions of the possible selections."):Amended
+		]
+	string DescriptionMap[];
+		[write, Description(
+		 "Current value is a bit-wise OR of the currently chosen options from the "
+		 "possible values."):Amended
+		] 
+	sint64 CurrentValue;
+
+		[write, Description(
+		 "Default value is a bit-wise OR of the default options from the "
+		 "possible values."):Amended	
+		] 
+	sint64 DefaultValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] sint64 CurrentValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+	
+};
+
+// ============================================================================
+//  Team Setting String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+		 Description("IANet_TeamSettingString objectifies Team related "
+		 "driver and network device settings. IANet_TeamSettingString " 
+		 "specifically handles String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_TeamSettingString : IANet_TeamSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+		[write, Description("CurrentString is the current value for the parameter."):Amended] 
+	string  CurrentValue;
+
+	[write, Description("RegistryValue is the current value for the parameter."):Amended] 
+	string  RegistryValue;
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue;
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] string CurrentValue, 
+		[IN] string DisplayValue, 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+//  Team Setting Multi-String Class
+// ============================================================================
+		[dynamic, provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll"), 
+		 Description("IANet_TeamSettingMultiString objectifies Team related "
+		 "driver and network device settings. IANet_TeamSettingMultiString " 
+		 "specifically handles Multi-String settings."):Amended,  LOCALE(0x409)
+		]
+class IANet_TeamSettingMultiString : IANet_TeamSetting
+{
+		[Description("MaxLength is the maximum length of the string."):Amended]
+	uint32  MaxLength;
+
+		[write, Description("CurrentString is the current values for the parameter."):Amended] 
+	string  CurrentValues[];
+
+	[write, Description("RegistryValue is the current values for the parameter."):Amended] 
+	string  RegistryValue[];
+
+		[Description("DefaultString is the initial value for the parameter."):Amended]
+	string  DefaultValue;
+
+	[Description("Specifies the current value of the setting."):Amended]	
+	string DisplayValue[];
+
+	[Description ("This method returns information related to changing the setting's value.  The CurrentValue or DisplayValue parameter specifies the new value of the setting."
+			"Use the SetValuesOnNoError to save the updates if no errors are encountered."
+			"The WarningMessages object parameter returns any error messages associated with changing the setting to the new value."):Amended, implemented]
+	uint32 ValidateAndSetSetting
+	( 
+		[IN] string CurrentValues [], 
+		[IN] string DisplayValues [], 
+		[IN] uint32 SetValuesOnNoError,
+		[OUT]   WarningMessageObj	WarningMessages[]
+	);
+
+	[Description (
+	"This method is called to set the setting to its default."
+	):Amended, implemented
+	]
+	uint32 SetDefault();
+};
+
+// ============================================================================
+// IANet_TeamToSettingAssoc class
+// ============================================================================
+[   Association, Description("This class associates Intel NIC Teams with their respective settings.")
+                :Amended,  LOCALE(0x409),
+    Dynamic,
+    Provider("Ncs2"), IANet_ModuleIdentifier("Ncs2Team.dll")
+]
+class IANet_TeamToTeamSettingAssoc  : CIM_ElementSetting
+{
+   [  Override("Element"),
+      Description ("The Team to which the Setting object belongs."):Amended
+   ]
+   IANet_LogicalEthernetAdapter REF Element = NULL;
+   [  Override("Setting"),
+      Description ("The Setting belonging to the Team."):Amended
+   ]
+   IANet_TeamSetting REF Setting = NULL;
+};
+
+
+
+
+
+
+
+
+

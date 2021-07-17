@@ -1,0 +1,35 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+<h1>Overview</h1>
+<h2>Intel&reg; Ethernet iSCSI Boot</h2>
+<p>Intel&reg; Ethernet iSCSI  Boot is designed for  PCI-Express Server Adapters. Intel 
+Ethernet iSCSI  Boot provides the capability to boot from a remote iSCSI disk volume located on an iSCSI-based Storage Area Network (SAN). This guide covers hardware and software installation, setup procedures, and troubleshooting tips for installing and booting the system using these adapters.</p><hr>
+<h2>iSCSI Over DCB (Data Center Bridging)</h2>
+<p>Intel® Ethernet adapters support iSCSI software initiators that are native to 
+the underlying operating system. In the case of Windows, the Microsoft iSCSI 
+Software Initiator, enables connection of a Windows host to an external iSCSI 
+storage array using an Intel Ethernet adapter. </p>
+<p>In the case of Open Source distributions, virtually all distributions include 
+support for an Open iSCSI Software Initiator and Intel® Ethernet adapters will 
+support them. Please consult your distribution documentation for additional 
+configuration details on their particular Open iSCSI initiator.</p>
+<p>Intel® 82599 and X540-based 10 gigabit adapters support iSCSI within a Data Center 
+Bridging cloud. Used in conjunction with switches and targets that support the 
+iSCSI/DCB application TLV, this solution can provide guaranteed minimum 
+bandwidth for iSCSI traffic between the host and target. This solution enables 
+storage administrators to segment iSCSI traffic from LAN traffic, similar to how 
+they can currently segment FCoE from LAN traffic. Previously, iSCSI traffic 
+within a DCB supported environment was treated as LAN traffic by switch 
+vendors.&nbsp; Please consult your switch and target vendors to ensure that they 
+support the iSCSI/DCB application TLV. </p>
+<p><a href="iscsi_windows_install.htm#DCB">iSCSI Over DCB</a><br></p>
+
+</body>
+</html>
