@@ -23,3 +23,12 @@ Setup file endings associations for:
 ### fix_dns.bat
 
 Executes a set of commands to flush DNS cache.
+
+### restic_setup.bat
+
+Setup restic configuration
+
+- Configure repository
+- Configure password file
+- Initialize repository
+- Setup scheduled task (Every night at 04:00)
