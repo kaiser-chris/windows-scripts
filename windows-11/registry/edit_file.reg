@@ -1,0 +1,28 @@
+Windows Registry Editor Version 5.00
+
+; Use Notepad++ when Edit 
+;=================================================================================
+[HKEY_CLASSES_ROOT\regfile\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\cmdfile\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\text\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\batfile\shell\edit\command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+[HKEY_CLASSES_ROOT\JSFile\Shell\Edit\Command]
+@="\"D:\\Programs\\Notepad++\\notepad++.exe\" \"%1\""
+
+; Use Paint.Net when editing images
+; Command is: "C:\Program Files\paint.net\PaintDotNet.exe" "%1"
+;=================================================================================
+[HKEY_CLASSES_ROOT\SystemFileAssociations\image\shell\edit\command]
+@=hex(2):22,00,43,00,3a,00,5c,00,50,00,72,00,6f,00,67,00,72,00,61,00,6d,00,20,\
+  00,46,00,69,00,6c,00,65,00,73,00,5c,00,70,00,61,00,69,00,6e,00,74,00,2e,00,\
+  6e,00,65,00,74,00,5c,00,50,00,61,00,69,00,6e,00,74,00,44,00,6f,00,74,00,4e,\
+  00,65,00,74,00,2e,00,65,00,78,00,65,00,22,00,20,00,22,00,25,00,31,00,22,00,\
+  00,00
