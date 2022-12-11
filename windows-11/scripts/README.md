@@ -31,5 +31,9 @@ Setup restic configuration
 - Configure repository
 - Configure password file
 - Initialize repository
-- Setup automatic update task (Every day at 12:00)
+- Setup automatic update task (Every day at 03:00)
+- Setup automatic clean up task (Every day at 03:30)
+  - Keep 7 daily backups
+  - Keep 12 monthly backups
+  - Keep 75 yearly backups
 - Setup scheduled backup tasks (Every night at 04:00)
